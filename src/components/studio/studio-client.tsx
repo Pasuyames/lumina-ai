@@ -3,23 +3,11 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import {
-  Sparkles,
-  Wand2,
-  Loader2,
-  Download,
-  RotateCcw,
-  ImageIcon,
-  PencilLine,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { ButtonLink } from "@/components/ui/button-link";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
-import { ImageDropzone } from "@/components/studio/image-dropzone";
-import { ConceptCard } from "@/components/studio/concept-card";
-import { PRODUCT_CATEGORIES, ROUTES } from "@/lib/constants";
+import { UploadStep } from "@/components/studio/upload-step";
+import { StartPanel, ConceptPanel } from "@/components/studio/concept-step";
+import { TemplatePanel } from "@/components/studio/render-step";
+import { ResultStep } from "@/components/studio/result-step";
+import { ROUTES } from "@/lib/constants";
 import type { StudioTemplate } from "@/lib/templates";
 import type { Concept } from "@/lib/gemini/analyze";
 import {
@@ -190,83 +178,21 @@ export function StudioClient({
 
   // ── SONUÇ EKRANI ──
   if (result) {
-    return (
-      <div className="grid gap-8 md:grid-cols-2">
-        <div className="overflow-hidden rounded-2xl border border-border bg-muted">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={result.url}
-            alt="Üretilen görsel"
-            className="aspect-[4/5] w-full object-cover"
-          />
-        </div>
-        <div className="flex flex-col justify-center gap-5">
-          <div>
-            <Badge className="gap-1.5">
-              <Sparkles className="size-3.5" /> Üretim tamamlandı
-            </Badge>
-            <h2 className="font-heading mt-3 text-2xl font-semibold">
-              Görseliniz hazır
-            </h2>
-            <p className="mt-1 text-muted-foreground">
-              2K çözünürlükte indirin veya geçmişinizden tekrar erişin. Kalan
-              krediniz: <strong>{balance}</strong>
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-3">
-            <a
-              href={result.url}
-              download
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex h-9 items-center gap-2 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground transition hover:bg-primary/80"
-            >
-              <Download className="size-4" /> 2K görseli indir
-            </a>
-            <ButtonLink
-              href={`${ROUTES.generations}/${result.id}`}
-              variant="outline"
-            >
-              Detayı gör
-            </ButtonLink>
-            <Button variant="ghost" onClick={fullReset} className="gap-2">
-              <RotateCcw className="size-4" /> Yeni üretim
-            </Button>
-          </div>
-        </div>
-      </div>
-    );
+    return <ResultStep result={result} balance={balance} onReset={fullReset} />;
   }
 
   // ── ÇALIŞMA EKRANI ──
   return (
     <div className="grid gap-8 lg:grid-cols-2">
       {/* SOL: yükleme + kategori */}
-      <div className="space-y-4">
-        <ImageDropzone
-          previewUrl={previewUrl}
-          onSelect={handleSelect}
-          onClear={handleClear}
-          disabled={busy}
-        />
-        <div className="space-y-1.5">
-          <Label htmlFor="category">Kategori (opsiyonel)</Label>
-          <select
-            id="category"
-            value={category}
-            disabled={busy}
-            onChange={(e) => setCategory(e.target.value)}
-            className="h-9 w-full rounded-lg border border-input bg-card px-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:opacity-60"
-          >
-            <option value="">Otomatik algıla</option>
-            {PRODUCT_CATEGORIES.map((c) => (
-              <option key={c.value} value={c.value}>
-                {c.label}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
+      <UploadStep
+        previewUrl={previewUrl}
+        onSelect={handleSelect}
+        onClear={handleClear}
+        category={category}
+        onCategoryChange={setCategory}
+        disabled={busy}
+      />
 
       {/* SAĞ: akışa göre değişen panel */}
       <div className="flex flex-col">
@@ -309,197 +235,6 @@ export function StudioClient({
           />
         )}
       </div>
-    </div>
-  );
-}
-
-/* ─── Başlangıç paneli (AI konsept öner) ─── */
-function StartPanel({
-  hasFile,
-  analyzing,
-  onAnalyze,
-}: {
-  hasFile: boolean;
-  analyzing: boolean;
-  onAnalyze: () => void;
-}) {
-  return (
-    <div className="flex flex-1 flex-col justify-center rounded-2xl border border-dashed border-border bg-card/50 p-8 text-center">
-      <span className="mx-auto grid size-12 place-items-center rounded-xl bg-primary/10 text-primary">
-        <Wand2 className="size-6" />
-      </span>
-      <h3 className="font-heading mt-4 text-lg font-medium">
-        Yapay zekâ konsept önersin
-      </h3>
-      <p className="mx-auto mt-1.5 max-w-xs text-sm text-muted-foreground">
-        Görseli yükleyin; Gemini ürünü analiz edip size 3 lüks stüdyo konsepti
-        sunsun. Bu adım ücretsizdir.
-      </p>
-      <Button
-        onClick={onAnalyze}
-        disabled={!hasFile || analyzing}
-        className="mx-auto mt-6 gap-2"
-        size="lg"
-      >
-        {analyzing ? (
-          <Loader2 className="size-4 animate-spin" />
-        ) : (
-          <Sparkles className="size-4" />
-        )}
-        {analyzing ? "Analiz ediliyor…" : "AI Konsept Öner"}
-      </Button>
-      {!hasFile && (
-        <p className="mt-3 text-xs text-muted-foreground">
-          Önce soldan bir görsel yükleyin.
-        </p>
-      )}
-    </div>
-  );
-}
-
-/* ─── Konsept seçim paneli ─── */
-function ConceptPanel({
-  concepts,
-  selectedPrompt,
-  usingCustom,
-  customPrompt,
-  busy,
-  generating,
-  onSelectConcept,
-  onUseCustom,
-  onCustomChange,
-  onGenerate,
-}: {
-  concepts: Concept[];
-  selectedPrompt: string | null;
-  usingCustom: boolean;
-  customPrompt: string;
-  busy: boolean;
-  generating: boolean;
-  onSelectConcept: (c: Concept) => void;
-  onUseCustom: () => void;
-  onCustomChange: (v: string) => void;
-  onGenerate: () => void;
-}) {
-  const canGenerate = usingCustom
-    ? customPrompt.trim().length > 0
-    : !!selectedPrompt;
-
-  return (
-    <div className="space-y-4">
-      <div>
-        <h3 className="font-heading text-lg font-medium">Bir konsept seçin</h3>
-        <p className="text-sm text-muted-foreground">
-          Yapay zekânın önerdiği stüdyo sahnelerinden birini seçin.
-        </p>
-      </div>
-
-      <div className="grid gap-3 sm:grid-cols-3">
-        {concepts.map((c, i) => (
-          <ConceptCard
-            key={i}
-            concept={c}
-            selected={!usingCustom && selectedPrompt === c.prompt}
-            onSelect={() => onSelectConcept(c)}
-            disabled={busy}
-          />
-        ))}
-      </div>
-
-      <button
-        type="button"
-        onClick={onUseCustom}
-        disabled={busy}
-        className={`flex w-full items-center gap-2 rounded-xl border p-3 text-left text-sm transition ${
-          usingCustom
-            ? "border-primary bg-accent/40"
-            : "border-border hover:border-primary/40"
-        }`}
-      >
-        <PencilLine className="size-4 text-primary" />
-        Kendi fikrimi yazmak istiyorum
-      </button>
-
-      {usingCustom && (
-        <Textarea
-          value={customPrompt}
-          onChange={(e) => onCustomChange(e.target.value)}
-          disabled={busy}
-          rows={3}
-          placeholder="Örn: Ürünü ıslak siyah taş üzerinde, tek bir dramatik tepe ışığıyla, lüks parfüm reklamı estetiğinde göster…"
-        />
-      )}
-
-      <Button
-        onClick={onGenerate}
-        disabled={!canGenerate || busy}
-        size="lg"
-        className="w-full gap-2"
-      >
-        {generating ? (
-          <Loader2 className="size-4 animate-spin" />
-        ) : (
-          <ImageIcon className="size-4" />
-        )}
-        {generating ? "Üretiliyor… (~10-20 sn)" : "Görseli Üret · 1 kredi"}
-      </Button>
-    </div>
-  );
-}
-
-/* ─── Hazır Stüdyo paneli ─── */
-function TemplatePanel({
-  template,
-  hasFile,
-  busy,
-  generating,
-  onGenerate,
-  onSwitchToAi,
-}: {
-  template: StudioTemplate;
-  hasFile: boolean;
-  busy: boolean;
-  generating: boolean;
-  onGenerate: () => void;
-  onSwitchToAi: () => void;
-}) {
-  return (
-    <div className="flex flex-1 flex-col justify-center space-y-4 rounded-2xl border border-border bg-card/50 p-6">
-      <Badge variant="secondary" className="w-fit gap-1.5">
-        <Sparkles className="size-3.5 text-primary" /> Hazır Stüdyo
-      </Badge>
-      <div>
-        <h3 className="font-heading text-xl font-medium">{template.title}</h3>
-        <p className="mt-1 text-sm text-muted-foreground">
-          {template.description}
-        </p>
-      </div>
-      <Button
-        onClick={onGenerate}
-        disabled={!hasFile || busy}
-        size="lg"
-        className="w-full gap-2"
-      >
-        {generating ? (
-          <Loader2 className="size-4 animate-spin" />
-        ) : (
-          <ImageIcon className="size-4" />
-        )}
-        {generating ? "Üretiliyor… (~10-20 sn)" : "Bu stüdyoyla üret · 1 kredi"}
-      </Button>
-      <button
-        type="button"
-        onClick={onSwitchToAi}
-        disabled={!hasFile || busy}
-        className="text-center text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline disabled:opacity-60"
-      >
-        veya yapay zekâ bana konsept önersin
-      </button>
-      {!hasFile && (
-        <p className="text-center text-xs text-muted-foreground">
-          Önce soldan bir görsel yükleyin.
-        </p>
-      )}
     </div>
   );
 }

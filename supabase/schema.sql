@@ -309,11 +309,32 @@ create policy "purchases_select_own" on public.purchases
 -- ══════════════════════════════════════════════════════════════
 insert into public.packages (name, description, credits, price_cents, currency, is_popular, sort_order)
 select * from (values
-  ('Başlangıç', '20 profesyonel görsel hakkı',   20,  9900,  'TRY', false, 1),
-  ('Profesyonel', '60 görsel + öncelikli üretim', 60, 24900, 'TRY', true,  2),
-  ('Stüdyo', '200 görsel + tüm şablonlar',       200, 69900, 'TRY', false, 3)
+  ('Başlangıç', '20 profesyonel görsel hakkı',    20,  24900, 'TRY', false, 1),
+  ('Profesyonel', '60 görsel + öncelikli üretim',  60,  59900, 'TRY', true,  2),
+  ('Stüdyo', '200 görsel + tüm şablonlar',        200, 169000, 'TRY', false, 3)
 ) as v(name, description, credits, price_cents, currency, is_popular, sort_order)
 where not exists (select 1 from public.packages);
+
+-- ── Mevcut kurulumlar için idempotent fiyat güncellemesi (2026-07-03) ──
+-- Seed bloğu yalnızca tablo boşken çalışır; zaten dolu kurulumlarda paket
+-- adına göre fiyat/kredi/açıklamayı yeni tarifeye taşır.
+update public.packages
+   set price_cents = 24900,
+       credits     = 20,
+       description = '20 profesyonel görsel hakkı'
+ where name = 'Başlangıç';
+
+update public.packages
+   set price_cents = 59900,
+       credits     = 60,
+       description = '60 görsel + öncelikli üretim'
+ where name = 'Profesyonel';
+
+update public.packages
+   set price_cents = 169000,
+       credits     = 200,
+       description = '200 görsel + tüm şablonlar'
+ where name = 'Stüdyo';
 
 -- ══════════════════════════════════════════════════════════════
 -- 11. STORAGE — ürün görselleri için bucket

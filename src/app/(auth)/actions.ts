@@ -5,19 +5,9 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { ROUTES } from "@/lib/constants";
 import { checkRateLimit, getClientIp } from "@/lib/security/rate-limit";
+import { safeInternalPath } from "@/lib/security/redirect";
 
 export type AuthState = { error: string } | null;
-
-/**
- * Açık yönlendirme (open redirect) koruması: yalnızca site içi,
- * "/" ile başlayan (ama "//" olmayan) yollar kabul edilir.
- */
-function safeInternalPath(raw: string): string {
-  if (raw.startsWith("/") && !raw.startsWith("//") && !raw.includes("\\")) {
-    return raw;
-  }
-  return ROUTES.dashboard;
-}
 
 /** E-posta + parola ile giriş. */
 export async function signInAction(

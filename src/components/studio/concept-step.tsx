@@ -5,7 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { ConceptCard } from "@/components/studio/concept-card";
+import {
+  RenderOptions,
+  renderButtonLabel,
+  type AspectRatioValue,
+} from "@/components/studio/render-options";
 import type { Concept } from "@/lib/gemini/analyze";
+import type { RenderQuality } from "@/lib/credits";
 
 /* ─── Başlangıç paneli (AI konsept öner + hazır stüdyolar) ─── */
 export function StartPanel({
@@ -79,6 +85,10 @@ export function ConceptPanel({
   customPrompt,
   busy,
   generating,
+  aspectRatio,
+  onAspectRatioChange,
+  quality,
+  onQualityChange,
   onSelectConcept,
   onUseCustom,
   onCustomChange,
@@ -90,6 +100,10 @@ export function ConceptPanel({
   customPrompt: string;
   busy: boolean;
   generating: boolean;
+  aspectRatio: AspectRatioValue;
+  onAspectRatioChange: (v: AspectRatioValue) => void;
+  quality: RenderQuality;
+  onQualityChange: (v: RenderQuality) => void;
   onSelectConcept: (c: Concept) => void;
   onUseCustom: () => void;
   onCustomChange: (v: string) => void;
@@ -150,6 +164,14 @@ export function ConceptPanel({
         </div>
       )}
 
+      <RenderOptions
+        aspectRatio={aspectRatio}
+        onAspectRatioChange={onAspectRatioChange}
+        quality={quality}
+        onQualityChange={onQualityChange}
+        disabled={busy}
+      />
+
       <Button
         onClick={onGenerate}
         disabled={!canGenerate || busy}
@@ -161,7 +183,7 @@ export function ConceptPanel({
         ) : (
           <ImageIcon className="size-4" />
         )}
-        {generating ? "Üretiliyor… (~10-20 sn)" : "Görseli Üret · 1 kredi"}
+        {generating ? "Üretiliyor… (~10-20 sn)" : renderButtonLabel(quality)}
       </Button>
     </div>
   );

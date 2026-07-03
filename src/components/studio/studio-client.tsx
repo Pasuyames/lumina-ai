@@ -8,9 +8,11 @@ import { StartPanel, ConceptPanel } from "@/components/studio/concept-step";
 import { TemplatePanel } from "@/components/studio/render-step";
 import { TemplateGallery } from "@/components/studio/template-gallery";
 import { ResultStep } from "@/components/studio/result-step";
+import type { AspectRatioValue } from "@/components/studio/render-options";
 import { ROUTES } from "@/lib/constants";
 import type { StudioTemplate } from "@/lib/templates";
 import type { Concept } from "@/lib/gemini/analyze";
+import { creditCostFor, type RenderQuality } from "@/lib/credits";
 import {
   analyzeProductAction,
   uploadSourceAction,
@@ -44,6 +46,8 @@ export function StudioClient({
   const [customPrompt, setCustomPrompt] = useState("");
   const [usingCustom, setUsingCustom] = useState(false);
   const [browsingTemplates, setBrowsingTemplates] = useState(false);
+  const [aspectRatio, setAspectRatio] = useState<AspectRatioValue>("4:5");
+  const [quality, setQuality] = useState<RenderQuality>("2K");
   const [status, setStatus] = useState<Status>("idle");
   const [result, setResult] = useState<{ url: string; id: string } | null>(
     null,
@@ -113,7 +117,8 @@ export function StudioClient({
       toast.error("Önce bir ürün görseli yükleyin.");
       return;
     }
-    if (balance < 1) {
+    const creditCost = creditCostFor(quality);
+    if (balance < creditCost) {
       toast.error("Krediniz yetersiz. Paket satın alın.");
       router.push(ROUTES.billing);
       return;
@@ -147,7 +152,8 @@ export function StudioClient({
           conceptTitle: title,
           category: category || undefined,
           templateId,
-          aspectRatio: "4:5",
+          aspectRatio,
+          quality,
         });
 
         if (!res.ok) {
@@ -160,7 +166,9 @@ export function StudioClient({
         setResult({ url: res.resultUrl, id: res.generationId });
         setBalance(res.balance);
         setStatus("idle");
-        toast.success("Görseliniz hazır! 1 kredi kullanıldı.");
+        toast.success(
+          `Görseliniz hazır! ${creditCost} kredi kullanıldı.`,
+        );
       } catch {
         toast.error("Beklenmeyen bir hata oluştu.");
         setStatus("idle");
@@ -206,6 +214,10 @@ export function StudioClient({
             customPrompt={customPrompt}
             busy={busy}
             generating={status === "generating"}
+            aspectRatio={aspectRatio}
+            onAspectRatioChange={setAspectRatio}
+            quality={quality}
+            onQualityChange={setQuality}
             onSelectConcept={(c) => {
               setSelectedPrompt(c.prompt);
               setSelectedTitle(c.title);
@@ -224,6 +236,10 @@ export function StudioClient({
             hasFile={!!file}
             busy={busy}
             generating={status === "generating"}
+            aspectRatio={aspectRatio}
+            onAspectRatioChange={setAspectRatio}
+            quality={quality}
+            onQualityChange={setQuality}
             onGenerate={() =>
               runGenerate(template.prompt, template.title, template.id)
             }

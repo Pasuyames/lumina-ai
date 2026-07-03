@@ -3,7 +3,11 @@
 export const APP_NAME = "Lumina";
 export const APP_TAGLINE = "Yapay zekâ destekli ürün fotoğrafçılığı";
 
-/** Bir final görsel üretiminin kredi maliyeti. */
+/**
+ * @deprecated Kalite bazlı maliyet için `creditCostFor` (src/lib/credits.ts)
+ * kullanılır. Bu sabit artık render akışında kullanılmıyor, geriye dönük
+ * referans için tutuluyor.
+ */
 export const CREDITS_PER_GENERATION = 1;
 
 /** Hedef ürün kategorileri (Gemini Vision'a bağlam olarak verilir). */

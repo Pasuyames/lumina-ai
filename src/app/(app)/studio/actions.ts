@@ -4,9 +4,9 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { analyzeProduct, type ProductAnalysis } from "@/lib/gemini/analyze";
 import { generateProductImage } from "@/lib/gemini/generate";
-import { CREDITS_PER_GENERATION } from "@/lib/constants";
 import { validateImageUpload } from "@/lib/security/image";
 import { checkRateLimit } from "@/lib/security/rate-limit";
+import { creditCostFor, type RenderQuality } from "@/lib/credits";
 
 const BUCKET = "product-images";
 
@@ -24,6 +24,15 @@ const MAX_TITLE_CHARS = 120;
 const ALLOWED_ASPECT_RATIOS = new Set([
   "1:1", "2:3", "3:2", "3:4", "4:3", "4:5", "5:4", "9:16", "16:9", "21:9",
 ]);
+
+/** Desteklenen render kaliteleri — istemciden gelen değer bu listeye göre doğrulanır. */
+const ALLOWED_QUALITIES = new Set<RenderQuality>(["2K", "4K"]);
+
+function resolveQuality(input?: string): RenderQuality {
+  return ALLOWED_QUALITIES.has(input as RenderQuality)
+    ? (input as RenderQuality)
+    : "2K";
+}
 
 // ─────────────────────────────────────────────────────────────
 // AŞAMA 1 — Analiz (kredi düşmez)
@@ -157,6 +166,7 @@ export async function generateImageAction(input: {
   category?: string;
   templateId?: string;
   aspectRatio?: string;
+  quality?: string;
 }): Promise<GenerateResult> {
   const supabase = await createClient();
   const {
@@ -195,6 +205,8 @@ export async function generateImageAction(input: {
       ? input.aspectRatio
       : "4:5";
   const conceptTitle = input.conceptTitle.slice(0, MAX_TITLE_CHARS);
+  const quality = resolveQuality(input.quality);
+  const creditCost = creditCostFor(quality);
 
   // 1) Kredi ön kontrolü — pahalı API çağrısından önce.
   const { data: credits } = await supabase
@@ -202,7 +214,7 @@ export async function generateImageAction(input: {
     .select("balance")
     .eq("user_id", user.id)
     .maybeSingle();
-  if (!credits || credits.balance < CREDITS_PER_GENERATION) {
+  if (!credits || credits.balance < creditCost) {
     return {
       ok: false,
       error: "Krediniz yetersiz. Devam etmek için paket satın alın.",
@@ -222,7 +234,7 @@ export async function generateImageAction(input: {
       prompt,
       template_id: input.templateId ?? null,
       model: process.env.GEMINI_IMAGE_MODEL ?? "gemini-3-pro-image-preview",
-      credits_spent: CREDITS_PER_GENERATION,
+      credits_spent: creditCost,
     })
     .select("id")
     .single();
@@ -245,6 +257,7 @@ export async function generateImageAction(input: {
       input.mimeType,
       prompt,
       aspectRatio,
+      quality,
     );
 
     // 5) Sonucu depola.
@@ -269,7 +282,7 @@ export async function generateImageAction(input: {
       "spend_credits",
       {
         p_user_id: user.id,
-        p_amount: CREDITS_PER_GENERATION,
+        p_amount: creditCost,
         p_reason: "generation",
         p_generation_id: gen.id,
       },
@@ -297,7 +310,7 @@ export async function generateImageAction(input: {
       ok: true,
       generationId: gen.id,
       resultUrl,
-      balance: (newBalance as number) ?? credits.balance - 1,
+      balance: (newBalance as number) ?? credits.balance - creditCost,
     };
   } catch (e) {
     // Başarısızlıkta kredi DÜŞMEZ; kaydı 'failed' yap.

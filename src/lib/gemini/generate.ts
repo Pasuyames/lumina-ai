@@ -28,6 +28,7 @@ export async function generateProductImage(
   mimeType: string,
   scenePrompt: string,
   aspectRatio = "4:5",
+  imageSize: "2K" | "4K" = "2K",
 ): Promise<GeneratedImage> {
   const ai = getGemini();
 
@@ -48,7 +49,7 @@ export async function generateProductImage(
         config: {
           imageConfig: {
             aspectRatio,
-            imageSize: "2K",
+            imageSize,
           },
         },
       }),

@@ -3,7 +3,13 @@
 import { Sparkles, Loader2, ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import {
+  RenderOptions,
+  renderButtonLabel,
+  type AspectRatioValue,
+} from "@/components/studio/render-options";
 import type { StudioTemplate } from "@/lib/templates";
+import type { RenderQuality } from "@/lib/credits";
 
 /* ─── Hazır Stüdyo paneli ─── */
 export function TemplatePanel({
@@ -11,6 +17,10 @@ export function TemplatePanel({
   hasFile,
   busy,
   generating,
+  aspectRatio,
+  onAspectRatioChange,
+  quality,
+  onQualityChange,
   onGenerate,
   onSwitchToAi,
 }: {
@@ -18,6 +28,10 @@ export function TemplatePanel({
   hasFile: boolean;
   busy: boolean;
   generating: boolean;
+  aspectRatio: AspectRatioValue;
+  onAspectRatioChange: (v: AspectRatioValue) => void;
+  quality: RenderQuality;
+  onQualityChange: (v: RenderQuality) => void;
   onGenerate: () => void;
   onSwitchToAi: () => void;
 }) {
@@ -32,6 +46,13 @@ export function TemplatePanel({
           {template.description}
         </p>
       </div>
+      <RenderOptions
+        aspectRatio={aspectRatio}
+        onAspectRatioChange={onAspectRatioChange}
+        quality={quality}
+        onQualityChange={onQualityChange}
+        disabled={busy}
+      />
       <Button
         onClick={onGenerate}
         disabled={!hasFile || busy}
@@ -43,7 +64,7 @@ export function TemplatePanel({
         ) : (
           <ImageIcon className="size-4" />
         )}
-        {generating ? "Üretiliyor… (~10-20 sn)" : "Bu stüdyoyla üret · 1 kredi"}
+        {generating ? "Üretiliyor… (~10-20 sn)" : renderButtonLabel(quality)}
       </Button>
       <button
         type="button"

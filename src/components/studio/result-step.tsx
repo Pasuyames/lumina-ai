@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { Sparkles, Download, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ButtonLink } from "@/components/ui/button-link";
@@ -18,12 +19,13 @@ export function ResultStep({
 }) {
   return (
     <div className="grid gap-8 md:grid-cols-2">
-      <div className="overflow-hidden rounded-2xl border border-border bg-muted">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+      <div className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl border border-border bg-muted">
+        <Image
           src={result.url}
           alt="Üretilen görsel"
-          className="aspect-[4/5] w-full object-cover"
+          fill
+          sizes="(min-width: 768px) 50vw, 100vw"
+          className="object-cover"
         />
       </div>
       <div className="flex flex-col justify-center gap-5">

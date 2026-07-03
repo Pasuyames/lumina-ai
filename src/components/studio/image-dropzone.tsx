@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import Image from "next/image";
 import { UploadCloud, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ACCEPTED_IMAGE_TYPES, MAX_UPLOAD_BYTES } from "@/lib/constants";
@@ -37,11 +38,13 @@ export function ImageDropzone({
   if (previewUrl) {
     return (
       <div className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl border border-border bg-muted">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+        <Image
           src={previewUrl}
           alt="Yüklenen ürün"
-          className="size-full object-contain"
+          fill
+          sizes="(min-width: 1024px) 40vw, 90vw"
+          unoptimized
+          className="object-contain"
         />
         {!disabled && (
           <button

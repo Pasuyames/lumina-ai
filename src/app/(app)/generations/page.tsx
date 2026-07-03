@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import type { Metadata } from "next";
 import { Sparkles } from "lucide-react";
 import { ButtonLink } from "@/components/ui/button-link";
@@ -59,11 +60,12 @@ export default async function GenerationsPage() {
             >
               <div className="relative aspect-[4/5] bg-muted">
                 {g.result_image_url ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
+                  <Image
                     src={g.result_image_url}
                     alt={g.concept_title ?? "Üretim"}
-                    className="size-full object-cover transition group-hover:scale-105"
+                    fill
+                    sizes="(min-width: 1024px) 25vw, 50vw"
+                    className="object-cover transition group-hover:scale-105"
                   />
                 ) : (
                   <div className="grid size-full place-items-center text-xs text-muted-foreground">

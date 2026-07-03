@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import Image from "next/image";
 import { ArrowLeft, Download } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import { ButtonLink } from "@/components/ui/button-link";
@@ -38,16 +39,17 @@ export default async function GenerationDetailPage({
       </ButtonLink>
 
       <div className="grid gap-8 md:grid-cols-2">
-        <div className="overflow-hidden rounded-2xl border border-border bg-muted">
+        <div className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl border border-border bg-muted">
           {g.result_image_url ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
+            <Image
               src={g.result_image_url}
               alt={g.concept_title ?? "Üretim"}
-              className="aspect-[4/5] w-full object-cover"
+              fill
+              sizes="(min-width: 768px) 50vw, 100vw"
+              className="object-cover"
             />
           ) : (
-            <div className="grid aspect-[4/5] w-full place-items-center text-muted-foreground">
+            <div className="grid size-full place-items-center text-muted-foreground">
               Görsel henüz hazır değil ({g.status})
             </div>
           )}

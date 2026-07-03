@@ -24,6 +24,14 @@ const nextConfig: NextConfig = {
   async headers() {
     return [{ source: "/(.*)", headers: securityHeaders }];
   },
+  images: {
+    remotePatterns: [
+      // Yerel Supabase Storage (Docker).
+      { protocol: "http", hostname: "127.0.0.1", port: "54321" },
+      // Supabase Cloud Storage.
+      { protocol: "https", hostname: "*.supabase.co" },
+    ],
+  },
 };
 
 export default nextConfig;

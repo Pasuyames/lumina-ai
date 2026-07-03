@@ -8,6 +8,7 @@ import {
   renderButtonLabel,
   type AspectRatioValue,
 } from "@/components/studio/render-options";
+import { useProgressMessages } from "@/lib/hooks/use-progress-messages";
 import type { StudioTemplate } from "@/lib/templates";
 import type { RenderQuality } from "@/lib/credits";
 
@@ -35,6 +36,7 @@ export function TemplatePanel({
   onGenerate: () => void;
   onSwitchToAi: () => void;
 }) {
+  const progressMessage = useProgressMessages(generating);
   return (
     <div className="flex flex-1 flex-col justify-center space-y-4 rounded-2xl border border-border bg-card/50 p-6">
       <Badge variant="secondary" className="w-fit gap-1.5">
@@ -64,7 +66,7 @@ export function TemplatePanel({
         ) : (
           <ImageIcon className="size-4" />
         )}
-        {generating ? "Üretiliyor… (~10-20 sn)" : renderButtonLabel(quality)}
+        {generating ? progressMessage : renderButtonLabel(quality)}
       </Button>
       <button
         type="button"

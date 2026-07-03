@@ -10,6 +10,7 @@ import {
   renderButtonLabel,
   type AspectRatioValue,
 } from "@/components/studio/render-options";
+import { useProgressMessages } from "@/lib/hooks/use-progress-messages";
 import type { Concept } from "@/lib/gemini/analyze";
 import type { RenderQuality } from "@/lib/credits";
 
@@ -112,6 +113,7 @@ export function ConceptPanel({
   const canGenerate = usingCustom
     ? customPrompt.trim().length > 0
     : !!selectedPrompt;
+  const progressMessage = useProgressMessages(generating);
 
   return (
     <div className="space-y-4">
@@ -183,7 +185,7 @@ export function ConceptPanel({
         ) : (
           <ImageIcon className="size-4" />
         )}
-        {generating ? "Üretiliyor… (~10-20 sn)" : renderButtonLabel(quality)}
+        {generating ? progressMessage : renderButtonLabel(quality)}
       </Button>
     </div>
   );

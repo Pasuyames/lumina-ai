@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import Image from "next/image";
-import { UploadCloud, X } from "lucide-react";
+import { UploadCloud, X, Camera } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ACCEPTED_IMAGE_TYPES, MAX_UPLOAD_BYTES } from "@/lib/constants";
 
@@ -18,6 +18,7 @@ export function ImageDropzone({
   disabled?: boolean;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
   const [dragOver, setDragOver] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -103,6 +104,26 @@ export function ImageDropzone({
         className="hidden"
         onChange={(e) => validateAndSelect(e.target.files?.[0])}
       />
+
+      {/* Mobilde doğrudan kamera açan ikinci seçenek — masaüstü akışı değişmez. */}
+      <button
+        type="button"
+        disabled={disabled}
+        onClick={() => cameraInputRef.current?.click()}
+        className="mt-3 flex w-full items-center justify-center gap-2 rounded-lg border border-border bg-card py-2.5 text-sm font-medium text-foreground transition hover:border-primary/50 hover:bg-accent/20 disabled:pointer-events-none disabled:opacity-60 sm:hidden"
+      >
+        <Camera className="size-4" />
+        Fotoğraf Çek
+      </button>
+      <input
+        ref={cameraInputRef}
+        type="file"
+        accept="image/*"
+        capture="environment"
+        className="hidden"
+        onChange={(e) => validateAndSelect(e.target.files?.[0])}
+      />
+
       {error && <p className="mt-2 text-sm text-destructive">{error}</p>}
     </div>
   );

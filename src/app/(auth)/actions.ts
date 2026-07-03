@@ -35,7 +35,16 @@ export async function signInAction(
   const { error } = await supabase.auth.signInWithPassword({ email, password });
 
   if (error) {
-    return { error: "Giriş başarısız: e-posta veya parola hatalı." };
+    // 400 = gerçekten yanlış kimlik bilgisi; diğerleri (ağ, sunucu kapalı vb.)
+    // kullanıcının parolasıyla ilgili değildir — yanıltıcı mesaj gösterme.
+    if (error.status === 400) {
+      return { error: "Giriş başarısız: e-posta veya parola hatalı." };
+    }
+    console.error("[auth/signin] beklenmeyen hata:", error);
+    return {
+      error:
+        "Sunucuya şu an ulaşılamıyor. Lütfen biraz sonra tekrar deneyin.",
+    };
   }
 
   revalidatePath("/", "layout");

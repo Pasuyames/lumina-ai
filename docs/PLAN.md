@@ -48,19 +48,18 @@ Karar: **Request Changes** — demo kalitesi iyi, prod'a çıkamaz.
 
 ## 4. Faz Planı
 
-### Faz A — Mühendislik Temeli (delegasyon: Sonnet 5) 🔧 ŞİMDİ
-Maliyet: 0 TL (API çağrısı yok). Kabul kriteri: `pnpm lint` + `tsc --noEmit` +
-`pnpm test` + `pnpm build` dördü de temiz; her mantıksal adım ayrı commit.
+### Faz A — Mühendislik Temeli ✅ TAMAMLANDI (2026-07-03, Sonnet 5)
+Doğrulama: lint 0/0, tsc temiz, 20/20 test yeşil, build başarılı, 8 commit.
 
-- [ ] A1. `git init` + `.gitignore` doğrulaması (.env.local ASLA commit'lenmez) + ilk commit
-- [ ] A2. Lint temizliği (kullanılmayan CreditBadge importu)
-- [ ] A3. `studio-client.tsx` refaktörü → aşama başına alt bileşen (davranış birebir aynı)
-- [ ] A4. `next/image` geçişi + `images.remotePatterns` (yerel 127.0.0.1:54321 + `*.supabase.co`)
-- [ ] A5. Vitest kurulumu + birim testler: `sniffImageType` (sahte MIME dahil),
-      `checkRateLimit` (pencere/limit/retryAfter), `withTimeout`, `safeInternalPath`
-- [ ] A6. `/api/health` endpoint'i (env varlığı + zaman damgası; sır sızdırmaz)
-- [ ] A7. GitHub Actions CI: install → lint → tsc → test → build
-- [ ] A8. Temel erişilebilirlik: form label/aria ilişkileri, alt metinleri, klavye odağı
+- [x] A1. `git init` + ilk commit (`e9fbe6e`) — .env.local git dışında doğrulandı
+- [x] A2. Lint temizliği (`2ab1315`)
+- [x] A3. Refaktör: upload/concept/render/result-step bileşenleri; studio-client 240 satır orkestrasyon (`2b051f3`)
+- [x] A4. `next/image` + remotePatterns (`3a50642`)
+- [x] A5. Vitest + 20 birim test; `safeInternalPath` → `lib/security/redirect.ts` (`788acf0`)
+- [x] A6. `/api/health` (`b367e49`)
+- [x] A7. GitHub Actions CI (`fbe48d4`) — GitHub remote eklenince otomatik çalışır
+- [x] A8. Temel a11y: role="alert", aria-describedby, aria-label (`920f2dc`) —
+      not: accesslint canlı denetimi CDP hatası verdi, manuel yapıldı; D fazında tekrar dene
 
 ### Faz B — Canlı Doğrulama (kullanıcı onayı ŞART — API maliyeti)
 - [ ] B1. 3-5 gerçek ürün fotoğrafıyla uçtan uca smoke test

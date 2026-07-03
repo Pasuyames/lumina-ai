@@ -2,6 +2,7 @@
 
 import { Sparkles, Wand2, Loader2, ImageIcon, PencilLine } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { ConceptCard } from "@/components/studio/concept-card";
 import type { Concept } from "@/lib/gemini/analyze";
@@ -114,13 +115,19 @@ export function ConceptPanel({
       </button>
 
       {usingCustom && (
-        <Textarea
-          value={customPrompt}
-          onChange={(e) => onCustomChange(e.target.value)}
-          disabled={busy}
-          rows={3}
-          placeholder="Örn: Ürünü ıslak siyah taş üzerinde, tek bir dramatik tepe ışığıyla, lüks parfüm reklamı estetiğinde göster…"
-        />
+        <div className="space-y-1.5">
+          <Label htmlFor="custom-prompt" className="sr-only">
+            Kendi konsept fikriniz
+          </Label>
+          <Textarea
+            id="custom-prompt"
+            value={customPrompt}
+            onChange={(e) => onCustomChange(e.target.value)}
+            disabled={busy}
+            rows={3}
+            placeholder="Örn: Ürünü ıslak siyah taş üzerinde, tek bir dramatik tepe ışığıyla, lüks parfüm reklamı estetiğinde göster…"
+          />
+        </div>
       )}
 
       <Button

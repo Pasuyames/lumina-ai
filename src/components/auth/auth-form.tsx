@@ -66,6 +66,8 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
               required
               autoComplete="email"
               placeholder="ornek@marka.com"
+              aria-describedby={state?.error ? "auth-form-error" : undefined}
+              aria-invalid={state?.error ? true : undefined}
             />
           </div>
           <div className="space-y-1.5">
@@ -78,11 +80,17 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
               minLength={6}
               autoComplete={isLogin ? "current-password" : "new-password"}
               placeholder="••••••••"
+              aria-describedby={state?.error ? "auth-form-error" : undefined}
+              aria-invalid={state?.error ? true : undefined}
             />
           </div>
           <input type="hidden" name="next" value={next} />
           {state?.error && (
-            <p className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">
+            <p
+              id="auth-form-error"
+              role="alert"
+              className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive"
+            >
               {state.error}
             </p>
           )}

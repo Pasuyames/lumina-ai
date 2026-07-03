@@ -58,7 +58,10 @@ export async function Navbar() {
             <>
               <CreditBadge balance={credits?.balance ?? 0} />
               <DropdownMenu>
-                <DropdownMenuTrigger className="rounded-full outline-none ring-offset-background focus-visible:ring-2 focus-visible:ring-ring">
+                <DropdownMenuTrigger
+                  aria-label="Hesap menüsü"
+                  className="rounded-full outline-none ring-offset-background focus-visible:ring-2 focus-visible:ring-ring"
+                >
                   <Avatar className="size-9 border border-border">
                     <AvatarFallback className="bg-primary/10 text-primary">
                       {initial}

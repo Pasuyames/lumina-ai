@@ -12,6 +12,7 @@ export const PRODUCT_CATEGORIES = [
   { value: "watch", label: "Saat" },
   { value: "bag", label: "Çanta" },
   { value: "accessory", label: "Aksesuar" },
+  { value: "beauty", label: "Parfüm & Kozmetik" },
   { value: "other", label: "Diğer" },
 ] as const;
 

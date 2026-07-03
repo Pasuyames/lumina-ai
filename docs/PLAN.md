@@ -67,13 +67,23 @@ Doğrulama: lint 0/0, tsc temiz, 20/20 test yeşil, build başarılı, 8 commit.
 - [ ] B3. Kredi düşme/iade akışının canlı doğrulaması
 
 ### Faz C — İçerik & UX
-- [ ] C1. Şablon kütüphanesi 6 → 24-30 (kategori bazlı + mevsimsel; lens/kompozisyon dili)
-- [ ] C2. Şablon referans görselleri (Nano Banana ile tek seferlik üretim — onay gerekli)
-- [ ] C3. Önce/sonra karşılaştırma slider'ı (sonuç ekranı + landing)
-- [ ] C4. En-boy oranı seçimi UI (1:1, 4:5, 9:16, 16:9)
-- [ ] C5. Üretim sırasında aşamalı ilerleme mesajları
-- [ ] C6. Landing'e gerçek örnekler + fiyatlandırma + SSS
-- [ ] C7. Mobil kamera yakalama (`capture` attribute)
+> Kapsam 2026-07-03'te vibedesignapp.com analiziyle güncellendi. Ana bulgular:
+> (1) Mevcut paket fiyatları API maliyetinin ALTINDA (5₺/görsel satış vs ~5-6₺
+> maliyet) — piyasa 26-32₺/görsele alıcı buluyor; (2) koruma teknolojisine isim
+> vermek ("DokuKilidi") güven satıyor; (3) "krediler yanmaz / otomatik yenileme
+> yok / gizli ücret yok" güven blokları; (4) 4K premium kademe fırsatı.
+
+- [x] C1. Şablon kütüphanesi 6 → 36 (30 flagship + 6 extended; filtre/arama UI) — 2026-07-03
+- [ ] C2. Şablon referans görselleri (script hazır: `generate-template-refs.mjs` — onay gerekli)
+- [x] C3. Önce/sonra slider'ı (`before-after-slider.tsx`, bağımlılıksız) — 2026-07-03, Sonnet
+- [x] C4. En-boy oranı + 2K/4K kalite seçimi; `lib/credits.ts` creditCostFor + test — 2026-07-03
+- [x] C5. Aşamalı ilerleme mesajları (`use-progress-messages.ts`) — 2026-07-03
+- [x] C6. Landing yenileme: hero + 3 adım + DokuKilidi + güven bloğu + SSS — 2026-07-03
+      · NOT: `public/examples/dokukilidi-{before,after}.jpg` bekleniyor (C2 ile üretilecek)
+- [x] C7. Mobil "Fotoğraf Çek" butonu (capture input) — 2026-07-03
+- [x] C8. Yeniden fiyatlandırma 249₺/599₺/1.690₺ — schema seed + UPDATE bloğu;
+      yerel DB'ye uygulandı ve doğrulandı — 2026-07-03
+- [ ] C9. Katman 2-3 şablonlar (extended ~100 + mevsimsel ~20; madencilik çıktısı `data/mined-prompts.json` hammadde)
 
 ### Faz D — Prod'a Çıkış
 - [ ] D1. Supabase Cloud (schema.sql tek sefer SQL Editor) + .env değişimi

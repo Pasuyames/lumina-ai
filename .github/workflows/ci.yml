@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    env:
+      # Build/derleme zamanı için sahte (dummy) değerler — gerçek API'ler
+      # ASLA CI'da çağrılmaz. src/lib/env.ts hangi değişkenleri zorunlu
+      # tutuyorsa hepsi burada sağlanır.
+      NEXT_PUBLIC_SUPABASE_URL: http://127.0.0.1:54321
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: dummy-anon-key
+      SUPABASE_SERVICE_ROLE_KEY: dummy-service-role-key
+      GEMINI_API_KEY: dummy-gemini-key
+      GEMINI_VISION_MODEL: gemini-2.5-pro
+      GEMINI_IMAGE_MODEL: gemini-3-pro-image-preview
+      NEXT_PUBLIC_SITE_URL: http://localhost:3000
+      NEXT_PUBLIC_FREE_SIGNUP_CREDITS: "3"
+    steps:
+      - name: Kodu çek
+        uses: actions/checkout@v4
+
+      - name: pnpm kur
+        uses: pnpm/action-setup@v4
+
+      - name: Node.js kur
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Bağımlılıkları yükle
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Tip kontrolü
+        run: pnpm exec tsc --noEmit
+
+      - name: Testler
+        run: pnpm test
+
+      - name: Build
+        run: pnpm build

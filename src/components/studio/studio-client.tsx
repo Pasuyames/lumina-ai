@@ -17,7 +17,6 @@ import { ButtonLink } from "@/components/ui/button-link";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { CreditBadge } from "@/components/billing/credit-badge";
 import { ImageDropzone } from "@/components/studio/image-dropzone";
 import { ConceptCard } from "@/components/studio/concept-card";
 import { PRODUCT_CATEGORIES, ROUTES } from "@/lib/constants";

@@ -49,9 +49,9 @@ export function StudioClient({
   const [aspectRatio, setAspectRatio] = useState<AspectRatioValue>("4:5");
   const [quality, setQuality] = useState<RenderQuality>("2K");
   const [status, setStatus] = useState<Status>("idle");
-  const [result, setResult] = useState<{ url: string; id: string } | null>(
-    null,
-  );
+  const [result, setResult] = useState<
+    { url: string; id: string; sourceUrl: string } | null
+  >(null);
 
   const busy = status !== "idle";
 
@@ -163,7 +163,11 @@ export function StudioClient({
           return;
         }
 
-        setResult({ url: res.resultUrl, id: res.generationId });
+        setResult({
+          url: res.resultUrl,
+          id: res.generationId,
+          sourceUrl: src.sourceUrl,
+        });
         setBalance(res.balance);
         setStatus("idle");
         toast.success(

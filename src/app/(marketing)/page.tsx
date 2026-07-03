@@ -5,35 +5,84 @@ import {
   Sparkles,
   Gem,
   Check,
+  ShieldCheck,
+  Infinity as InfinityIcon,
+  EyeOff,
 } from "lucide-react";
 import { ButtonLink } from "@/components/ui/button-link";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
+import { BeforeAfterSlider } from "@/components/ui/before-after-slider";
 import { ROUTES } from "@/lib/constants";
 import { STUDIO_TEMPLATES } from "@/lib/templates";
 
 const STEPS = [
   {
     icon: Upload,
-    title: "Ham fotoğrafı yükle",
+    title: "Yükle",
     desc: "Telefonla çekilmiş sade bir ürün fotoğrafı yeterli.",
   },
   {
     icon: Wand2,
-    title: "Konsepti seç",
-    desc: "Yapay zekâ ürünü analiz eder, 3 lüks stüdyo konsepti önerir.",
+    title: "Konsept Seç",
+    desc: "Yapay zekâ ürünü analiz eder, lüks stüdyo konseptleri önerir.",
   },
   {
     icon: Sparkles,
-    title: "2K görseli indir",
+    title: "İndir",
     desc: "Ürünün şekli korunur; arka plan, ışık ve yansıma yeniden üretilir.",
   },
 ];
 
 const PLANS = [
-  { name: "Başlangıç", credits: 20, price: "₺99", popular: false },
-  { name: "Profesyonel", credits: 60, price: "₺249", popular: true },
-  { name: "Stüdyo", credits: 200, price: "₺699", popular: false },
+  { name: "Başlangıç", credits: 20, price: "₺249", popular: false },
+  { name: "Profesyonel", credits: 60, price: "₺599", popular: true },
+  { name: "Stüdyo", credits: 200, price: "₺1.690", popular: false },
+];
+
+const TRUST_POINTS = [
+  {
+    icon: InfinityIcon,
+    title: "Krediler asla sona ermez",
+    desc: "Bu ay kullanmadığınız krediler gelecek aya aynen taşınır.",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Otomatik yenileme yok",
+    desc: "Abonelik değil, tek seferlik paket satın alımı. İstediğinizde alırsınız.",
+  },
+  {
+    icon: EyeOff,
+    title: "Gizli ücret yok",
+    desc: "Gördüğünüz fiyat ödediğiniz fiyattır — kurulum ya da işlem ücreti eklenmez.",
+  },
+];
+
+const FAQ = [
+  {
+    q: "Kredi sistemi nasıl çalışır?",
+    a: "Her paket belirli sayıda görsel hakkı (kredi) içerir. 2K bir görsel 1 kredi, 4K bir görsel 2 kredi harcar. Kredi yalnızca üretim başarılı olduğunda düşer.",
+  },
+  {
+    q: "Ürettiğim görsellerin hakları bana mı ait?",
+    a: "Evet. Oluşturduğunuz tüm görselleri ticari amaçlarla (ürün sayfası, sosyal medya, reklam) sınırsız kullanabilirsiniz.",
+  },
+  {
+    q: "Hangi ürün kategorilerini destekliyorsunuz?",
+    a: "Takı, saat, çanta, aksesuar, parfüm ve kozmetik ürünleri için özel olarak kalibre edilmiş sahneler sunuyoruz. Diğer küçük ürünler için de deneme yapabilirsiniz.",
+  },
+  {
+    q: "Bir görsel üretimi ne kadar sürer?",
+    a: "Ortalama 10-20 saniye. Yoğun saatlerde bu süre biraz uzayabilir, ancak her zaman dakikalar içinde sonuç alırsınız.",
+  },
+  {
+    q: "Üretim başarısız olursa kredim gider mi?",
+    a: "Hayır. Kredi yalnızca başarılı bir üretim tamamlandığında düşer. Bir hata oluşursa bakiyeniz aynen korunur.",
+  },
+  {
+    q: "2K ile 4K arasındaki fark nedir?",
+    a: "4K, daha yüksek çözünürlükte ve daha fazla detayla üretim yapar; büyük baskı veya yakın çekim vitrin görselleri için önerilir. 2K çoğu e-ticaret kullanımı için yeterlidir ve 1 kredi tutar.",
+  },
 ];
 
 export default function LandingPage() {
@@ -54,31 +103,33 @@ export default function LandingPage() {
             Takı · Saat · Çanta için tasarlandı
           </Badge>
           <h1 className="font-heading mx-auto max-w-3xl text-balance text-4xl font-semibold leading-[1.1] tracking-tight sm:text-6xl">
-            Ürünleriniz <span className="text-gold-gradient">stüdyo
-            kalitesinde</span> parlasın
+            Telefon çekiminden <span className="text-gold-gradient">stüdyo
+            kalitesine.</span>
           </h1>
           <p className="mx-auto mt-6 max-w-xl text-pretty text-lg text-muted-foreground">
-            Ham ürün fotoğrafınızı yükleyin, yapay zekânın önerdiği lüks
-            konseptlerden birini seçin ve saniyeler içinde profesyonel bir
-            e-ticaret görseli elde edin.
+            60 saniyede, tek fotoğraftan profesyonel ürün çekimi.
           </p>
           <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
             <ButtonLink href={ROUTES.register} size="lg" className="gap-2">
-              3 görseli ücretsiz dene <ArrowRight className="size-4" />
+              Ücretsiz Dene — 3 görsel hediye <ArrowRight className="size-4" />
             </ButtonLink>
             <ButtonLink href={ROUTES.gallery} size="lg" variant="outline">
-              Hazır stüdyoları gör
+              Stüdyoları Keşfet
             </ButtonLink>
           </div>
           <p className="mt-4 text-sm text-muted-foreground">
-            Kayıt olan herkese <strong className="text-foreground">3 ücretsiz
-            görsel hakkı</strong> — kredi kartı gerekmez.
+            <strong className="text-foreground">Kart bilgisi gerekmez.</strong>
           </p>
         </div>
       </section>
 
       {/* ── NASIL ÇALIŞIR ── */}
       <section className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6">
+        <div className="mb-10 text-center">
+          <h2 className="font-heading text-2xl font-semibold sm:text-3xl">
+            Nasıl çalışır
+          </h2>
+        </div>
         <div className="grid gap-6 md:grid-cols-3">
           {STEPS.map((s, i) => (
             <Card key={s.title} className="relative p-6">
@@ -94,6 +145,45 @@ export default function LandingPage() {
               <p className="mt-1.5 text-sm text-muted-foreground">{s.desc}</p>
             </Card>
           ))}
+        </div>
+      </section>
+
+      {/* ── DOKUKİLİDİ ── */}
+      <section className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6">
+        <div className="grid items-center gap-10 lg:grid-cols-2">
+          <div>
+            <Badge variant="secondary" className="mb-4 gap-1.5">
+              <ShieldCheck className="size-3.5 text-primary" /> DokuKilidi
+              Teknolojisi
+            </Badge>
+            <h2 className="font-heading text-2xl font-semibold sm:text-3xl">
+              DokuKilidi Teknolojisi
+            </h2>
+            <p className="mt-3 text-muted-foreground">
+              Ürününüzün şekli, rengi ve dokusu piksel piksel korunur; yalnızca
+              sahne değişir.
+            </p>
+            <ul className="mt-6 space-y-3 text-sm">
+              <li className="flex items-start gap-2">
+                <Check className="mt-0.5 size-4 shrink-0 text-primary" />
+                Ürün geometrisi ve orantıları bozulmadan kalır
+              </li>
+              <li className="flex items-start gap-2">
+                <Check className="mt-0.5 size-4 shrink-0 text-primary" />
+                Malzeme, renk ve doku aynen korunur
+              </li>
+              <li className="flex items-start gap-2">
+                <Check className="mt-0.5 size-4 shrink-0 text-primary" />
+                Yalnızca arka plan, ışık ve yansımalar yeniden üretilir
+              </li>
+            </ul>
+          </div>
+          <BeforeAfterSlider
+            beforeSrc="/examples/dokukilidi-before.jpg"
+            afterSrc="/examples/dokukilidi-after.jpg"
+            beforeAlt="Ham telefon çekimi"
+            afterAlt="DokuKilidi ile stüdyo görseli"
+          />
         </div>
       </section>
 
@@ -118,7 +208,7 @@ export default function LandingPage() {
           </ButtonLink>
         </div>
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
-          {STUDIO_TEMPLATES.map((t) => (
+          {STUDIO_TEMPLATES.slice(0, 12).map((t) => (
             <div
               key={t.id}
               className="group relative aspect-[3/4] overflow-hidden rounded-xl border border-border bg-gradient-to-br from-accent/60 to-muted"
@@ -134,6 +224,23 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* ── GÜVEN BLOĞU ── */}
+      <section className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6">
+        <div className="grid gap-6 sm:grid-cols-3">
+          {TRUST_POINTS.map((t) => (
+            <Card key={t.title} className="p-6">
+              <span className="grid size-11 place-items-center rounded-lg bg-primary/10 text-primary ring-1 ring-primary/20">
+                <t.icon className="size-5" />
+              </span>
+              <h3 className="font-heading mt-4 text-base font-medium">
+                {t.title}
+              </h3>
+              <p className="mt-1.5 text-sm text-muted-foreground">{t.desc}</p>
+            </Card>
+          ))}
+        </div>
+      </section>
+
       {/* ── FİYATLANDIRMA ── */}
       <section className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6">
         <div className="mb-10 text-center">
@@ -141,7 +248,7 @@ export default function LandingPage() {
             Basit, kredili fiyatlandırma
           </h2>
           <p className="mt-2 text-muted-foreground">
-            Her başarılı görsel 1 kredi. Kullandıkça öde, abonelik yok.
+            2K görsel 1 kredi, 4K görsel 2 kredi. Kullandıkça öde, abonelik yok.
           </p>
         </div>
         <div className="grid gap-6 md:grid-cols-3">
@@ -168,7 +275,7 @@ export default function LandingPage() {
               </p>
               <ul className="mt-5 space-y-2 text-sm">
                 <li className="flex items-center gap-2">
-                  <Check className="size-4 text-primary" /> 2K çözünürlük
+                  <Check className="size-4 text-primary" /> 2K/4K çözünürlük
                 </li>
                 <li className="flex items-center gap-2">
                   <Check className="size-4 text-primary" /> Tüm hazır stüdyolar
@@ -185,6 +292,29 @@ export default function LandingPage() {
                 Başla
               </ButtonLink>
             </Card>
+          ))}
+        </div>
+      </section>
+
+      {/* ── SSS ── */}
+      <section className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6">
+        <div className="mb-10 text-center">
+          <h2 className="font-heading text-2xl font-semibold sm:text-3xl">
+            Sıkça sorulan sorular
+          </h2>
+        </div>
+        <div className="mx-auto max-w-2xl divide-y divide-border rounded-2xl border border-border">
+          {FAQ.map((item) => (
+            <details key={item.q} className="group p-5 open:bg-accent/20">
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-heading text-base font-medium">
+                {item.q}
+                <ArrowRight
+                  aria-hidden
+                  className="size-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-90"
+                />
+              </summary>
+              <p className="mt-3 text-sm text-muted-foreground">{item.a}</p>
+            </details>
           ))}
         </div>
       </section>

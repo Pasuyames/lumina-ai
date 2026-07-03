@@ -21,6 +21,13 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  experimental: {
+    serverActions: {
+      // Ürün görselleri server action ile yüklenir; uygulama sınırı 10 MB
+      // (MAX_UPLOAD_BYTES) + form payı. Next varsayılanı 1 MB'dır.
+      bodySizeLimit: "12mb",
+    },
+  },
   async headers() {
     return [{ source: "/(.*)", headers: securityHeaders }];
   },

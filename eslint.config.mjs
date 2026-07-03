@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Geçici clone dosyaları ve mined prompt çıktısı
+    "tmp/**",
+    "data/mined-prompts.*",
   ]),
 ]);
 

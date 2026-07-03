@@ -46,3 +46,9 @@ next-env.d.ts
 # Supabase CLI yerel çalışma zamanı dosyaları
 supabase/.branches
 supabase/.temp
+
+# geçici clone dosyaları
+/tmp/
+
+# prompt madencilik çıktısı (içerik ekibi için hammadde)
+/data/mined-prompts.json

@@ -7,15 +7,17 @@ import { Textarea } from "@/components/ui/textarea";
 import { ConceptCard } from "@/components/studio/concept-card";
 import type { Concept } from "@/lib/gemini/analyze";
 
-/* ─── Başlangıç paneli (AI konsept öner) ─── */
+/* ─── Başlangıç paneli (AI konsept öner + hazır stüdyolar) ─── */
 export function StartPanel({
   hasFile,
   analyzing,
   onAnalyze,
+  onBrowseTemplates,
 }: {
   hasFile: boolean;
   analyzing: boolean;
   onAnalyze: () => void;
+  onBrowseTemplates?: () => void;
 }) {
   return (
     <div className="flex flex-1 flex-col justify-center rounded-2xl border border-dashed border-border bg-card/50 p-8 text-center">
@@ -42,6 +44,24 @@ export function StartPanel({
         )}
         {analyzing ? "Analiz ediliyor…" : "AI Konsept Öner"}
       </Button>
+      {onBrowseTemplates && (
+        <>
+          <div className="mx-auto my-4 flex w-full max-w-xs items-center gap-3">
+            <span className="h-px flex-1 bg-border" />
+            <span className="text-xs text-muted-foreground">veya</span>
+            <span className="h-px flex-1 bg-border" />
+          </div>
+          <Button
+            onClick={onBrowseTemplates}
+            variant="outline"
+            className="mx-auto gap-2"
+            size="lg"
+          >
+            <ImageIcon className="size-4" />
+            Hazır Stüdyoları Keşfet
+          </Button>
+        </>
+      )}
       {!hasFile && (
         <p className="mt-3 text-xs text-muted-foreground">
           Önce soldan bir görsel yükleyin.

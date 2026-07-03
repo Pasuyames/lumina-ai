@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { UploadStep } from "@/components/studio/upload-step";
 import { StartPanel, ConceptPanel } from "@/components/studio/concept-step";
 import { TemplatePanel } from "@/components/studio/render-step";
+import { TemplateGallery } from "@/components/studio/template-gallery";
 import { ResultStep } from "@/components/studio/result-step";
 import { ROUTES } from "@/lib/constants";
 import type { StudioTemplate } from "@/lib/templates";
@@ -42,6 +43,7 @@ export function StudioClient({
   const [selectedTitle, setSelectedTitle] = useState("");
   const [customPrompt, setCustomPrompt] = useState("");
   const [usingCustom, setUsingCustom] = useState(false);
+  const [browsingTemplates, setBrowsingTemplates] = useState(false);
   const [status, setStatus] = useState<Status>("idle");
   const [result, setResult] = useState<{ url: string; id: string } | null>(
     null,
@@ -227,11 +229,33 @@ export function StudioClient({
             }
             onSwitchToAi={handleAnalyze}
           />
+        ) : browsingTemplates ? (
+          <div className="flex-1 overflow-y-auto">
+            <div className="mb-4 flex items-center justify-between">
+              <h3 className="font-heading text-lg font-medium">
+                Hazır Stüdyolar
+              </h3>
+              <button
+                type="button"
+                onClick={() => setBrowsingTemplates(false)}
+                className="text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+              >
+                Geri
+              </button>
+            </div>
+            <TemplateGallery
+              onSelect={(t) => {
+                setTemplate(t);
+                setBrowsingTemplates(false);
+              }}
+            />
+          </div>
         ) : (
           <StartPanel
             hasFile={!!file}
             analyzing={status === "analyzing"}
             onAnalyze={handleAnalyze}
+            onBrowseTemplates={() => setBrowsingTemplates(true)}
           />
         )}
       </div>

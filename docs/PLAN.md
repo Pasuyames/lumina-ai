@@ -43,7 +43,7 @@ Karar: **Request Changes** — demo kalitesi iyi, prod'a çıkamaz.
 | 7 | `studio-client.tsx` 506 satır (limit ~200) | Required | 🔧 Faz A |
 | 8 | `<img>` yerine `next/image` yok | Required | 🔧 Faz A |
 | 9 | Kullanılmayan import (CreditBadge) | Nit | 🔧 Faz A |
-| 10 | Landing placeholder, galeri görselsiz | Consider | Faz C |
+| 10 | Landing placeholder, galeri görselsiz | Consider | Şablon galerisi ✅ C11 (gradient önizleme); landing before/after hâlâ C2 bekliyor |
 | ✅ | Güvenlik ekseni: rate limit, magic-bytes, open-redirect, başlıklar, audit 0 | — | Tamam (2026-07-03) |
 
 ## 4. Faz Planı

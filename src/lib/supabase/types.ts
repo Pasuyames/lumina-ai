@@ -88,6 +88,8 @@ export interface Database {
           error: string | null;
           created_at: string;
           completed_at: string | null;
+          /** Satış Seti (C10): aynı üretimden doğan 4 karenin ortak kimliği; tekil üretimlerde null. */
+          set_id: string | null;
         };
         Insert: {
           user_id: string;
@@ -104,6 +106,7 @@ export interface Database {
           credits_spent?: number;
           error?: string | null;
           completed_at?: string | null;
+          set_id?: string | null;
         };
         Update: Partial<
           Database["public"]["Tables"]["generations"]["Insert"]

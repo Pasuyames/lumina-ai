@@ -71,6 +71,12 @@ create table if not exists public.generations (
 create index if not exists generations_user_idx
   on public.generations (user_id, created_at desc);
 
+-- Satış Seti (C10): tek üründen üretilen 4 karelik seti gruplayan kimlik.
+-- Var olan kurulumlarda idempotent ekleme — canlı DB'de zaten mevcut.
+alter table public.generations add column if not exists set_id uuid;
+create index if not exists generations_set_idx
+  on public.generations (set_id) where set_id is not null;
+
 -- ──────────────────────────────────────────────────────────────
 -- 5. PACKAGES — satın alınabilir kredi paketleri
 -- ──────────────────────────────────────────────────────────────

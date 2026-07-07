@@ -17,6 +17,8 @@ export interface StudioTemplate {
   tier: TemplateTier;
   season?: TemplateSeason;
   referenceImage?: string;
+  /** Referans görsel yokken kartta gösterilen CSS sahne önizlemesi. */
+  preview?: { from: string; via?: string; to: string };
   prompt: string;
   sortOrder: number;
 }

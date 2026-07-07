@@ -17,6 +17,14 @@ const CATEGORY_LABEL = Object.fromEntries(
   PRODUCT_CATEGORIES.map((c) => [c.value, c.label]),
 );
 
+/** Şablonun `preview` renklerinden CSS linear-gradient dizgesi üretir. */
+function previewGradient(preview: NonNullable<StudioTemplate["preview"]>) {
+  const stops = [preview.from, preview.via, preview.to].filter(
+    (c): c is string => Boolean(c),
+  );
+  return `linear-gradient(135deg, ${stops.join(", ")})`;
+}
+
 export function TemplateGallery({
   onSelect,
 }: {
@@ -140,6 +148,15 @@ function TemplateCard({
             sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
             className="object-cover transition group-hover:scale-105"
           />
+        ) : template.preview ? (
+          <div
+            className="absolute inset-0 grid place-items-center transition group-hover:scale-105"
+            style={{ background: previewGradient(template.preview) }}
+          >
+            {/* İkonun her sahne renginde okunur kalması için hafif koyu perde */}
+            <div className="absolute inset-0 bg-black/10" />
+            <Gem className="relative size-10 text-white/70 drop-shadow-sm" />
+          </div>
         ) : (
           <div className="absolute inset-0 grid place-items-center text-primary/30 transition group-hover:scale-110">
             <Gem className="size-10" />

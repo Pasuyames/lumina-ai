@@ -4,7 +4,11 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { UploadStep } from "@/components/studio/upload-step";
-import { StartPanel, ConceptPanel } from "@/components/studio/concept-step";
+import {
+  StartPanel,
+  ConceptPanel,
+  CustomPromptPanel,
+} from "@/components/studio/concept-step";
 import { TemplatePanel } from "@/components/studio/render-step";
 import { TemplateGallery } from "@/components/studio/template-gallery";
 import { ResultStep } from "@/components/studio/result-step";
@@ -46,6 +50,7 @@ export function StudioClient({
   const [customPrompt, setCustomPrompt] = useState("");
   const [usingCustom, setUsingCustom] = useState(false);
   const [browsingTemplates, setBrowsingTemplates] = useState(false);
+  const [writingPrompt, setWritingPrompt] = useState(false);
   const [aspectRatio, setAspectRatio] = useState<AspectRatioValue>("4:5");
   const [quality, setQuality] = useState<RenderQuality>("2K");
   const [status, setStatus] = useState<Status>("idle");
@@ -62,6 +67,7 @@ export function StudioClient({
     setSelectedTitle("");
     setUsingCustom(false);
     setCustomPrompt("");
+    setWritingPrompt(false);
     setResult(null);
   }
 
@@ -249,6 +255,27 @@ export function StudioClient({
             }
             onSwitchToAi={handleAnalyze}
           />
+        ) : writingPrompt ? (
+          <CustomPromptPanel
+            customPrompt={customPrompt}
+            hasFile={!!file}
+            busy={busy}
+            generating={status === "generating"}
+            aspectRatio={aspectRatio}
+            onAspectRatioChange={setAspectRatio}
+            quality={quality}
+            onQualityChange={setQuality}
+            onCustomChange={setCustomPrompt}
+            onGenerate={() => {
+              const p = customPrompt.trim();
+              if (!p) {
+                toast.error("Lütfen sahnenizi birkaç cümleyle anlatın.");
+                return;
+              }
+              runGenerate(p, "Özel konsept");
+            }}
+            onBack={() => setWritingPrompt(false)}
+          />
         ) : browsingTemplates ? (
           <div className="flex-1 overflow-y-auto">
             <div className="mb-4 flex items-center justify-between">
@@ -276,6 +303,7 @@ export function StudioClient({
             analyzing={status === "analyzing"}
             onAnalyze={handleAnalyze}
             onBrowseTemplates={() => setBrowsingTemplates(true)}
+            onWritePrompt={() => setWritingPrompt(true)}
           />
         )}
       </div>

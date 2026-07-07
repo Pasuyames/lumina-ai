@@ -1,6 +1,14 @@
 "use client";
 
-import { Sparkles, Wand2, Loader2, ImageIcon, PencilLine } from "lucide-react";
+import {
+  Sparkles,
+  Wand2,
+  Loader2,
+  ImageIcon,
+  PencilLine,
+  ShoppingBag,
+  ArrowRight,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -14,83 +22,111 @@ import { useProgressMessages } from "@/lib/hooks/use-progress-messages";
 import type { Concept } from "@/lib/gemini/analyze";
 import type { RenderQuality } from "@/lib/credits";
 
-/* ─── Başlangıç paneli (AI konsept öner + hazır stüdyolar + özel prompt) ─── */
+/* ─── Başlangıç paneli (Satış Seti + AI konsept öner + hazır stüdyolar + özel prompt) ─── */
 export function StartPanel({
   hasFile,
   analyzing,
   onAnalyze,
   onBrowseTemplates,
   onWritePrompt,
+  onSalesSet,
 }: {
   hasFile: boolean;
   analyzing: boolean;
   onAnalyze: () => void;
   onBrowseTemplates?: () => void;
   onWritePrompt?: () => void;
+  onSalesSet?: () => void;
 }) {
   return (
-    <div className="flex flex-1 flex-col justify-center rounded-2xl border border-dashed border-border bg-card/50 p-8 text-center">
-      <span className="mx-auto grid size-12 place-items-center rounded-xl bg-primary/10 text-primary">
-        <Wand2 className="size-6" />
-      </span>
-      <h3 className="font-heading mt-4 text-lg font-medium">
-        Yapay zekâ konsept önersin
-      </h3>
-      <p className="mx-auto mt-1.5 max-w-xs text-sm text-muted-foreground">
-        Görseli yükleyin; Gemini ürünü analiz edip size 3 lüks stüdyo konsepti
-        sunsun. Bu adım ücretsizdir.
-      </p>
-      <Button
-        onClick={onAnalyze}
-        disabled={!hasFile || analyzing}
-        className="mx-auto mt-6 gap-2"
-        size="lg"
-      >
-        {analyzing ? (
-          <Loader2 className="size-4 animate-spin" />
-        ) : (
-          <Sparkles className="size-4" />
-        )}
-        {analyzing ? "Analiz ediliyor…" : "AI Konsept Öner"}
-      </Button>
-      {(onBrowseTemplates || onWritePrompt) && (
-        <>
-          <div className="mx-auto my-4 flex w-full max-w-xs items-center gap-3">
-            <span className="h-px flex-1 bg-border" />
-            <span className="text-xs text-muted-foreground">veya</span>
-            <span className="h-px flex-1 bg-border" />
-          </div>
-          <div className="mx-auto flex flex-wrap justify-center gap-3">
-            {onBrowseTemplates && (
-              <Button
-                onClick={onBrowseTemplates}
-                variant="outline"
-                className="gap-2"
-                size="lg"
-              >
-                <ImageIcon className="size-4" />
-                Hazır Stüdyoları Keşfet
-              </Button>
-            )}
-            {onWritePrompt && (
-              <Button
-                onClick={onWritePrompt}
-                variant="outline"
-                className="gap-2"
-                size="lg"
-              >
-                <PencilLine className="size-4" />
-                Kendi Promptunu Yaz
-              </Button>
-            )}
-          </div>
-        </>
+    <div className="flex flex-1 flex-col gap-4">
+      {onSalesSet && (
+        <button
+          type="button"
+          onClick={onSalesSet}
+          disabled={!hasFile}
+          className="group relative overflow-hidden rounded-2xl border border-primary bg-gradient-to-br from-primary/15 via-card to-card p-6 text-left shadow-sm transition hover:shadow-md disabled:pointer-events-none disabled:opacity-50"
+        >
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/15 px-2.5 py-1 text-xs font-medium text-primary">
+            <ShoppingBag className="size-3.5" /> Öne çıkan
+          </span>
+          <h3 className="font-heading mt-3 text-lg font-medium">
+            🛍️ Satış Seti Üret — 4 kare
+          </h3>
+          <p className="mt-1.5 text-sm text-muted-foreground">
+            Pazaryeri ana görseli, model üstünde, detay ve vitrin karesi — tek
+            tıkla.
+          </p>
+          <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-primary">
+            Satış Setine başla
+            <ArrowRight className="size-4 transition group-hover:translate-x-0.5" />
+          </span>
+        </button>
       )}
-      {!hasFile && (
-        <p className="mt-3 text-xs text-muted-foreground">
-          Önce soldan bir görsel yükleyin.
+
+      <div className="flex flex-1 flex-col justify-center rounded-2xl border border-dashed border-border bg-card/50 p-8 text-center">
+        <span className="mx-auto grid size-12 place-items-center rounded-xl bg-primary/10 text-primary">
+          <Wand2 className="size-6" />
+        </span>
+        <h3 className="font-heading mt-4 text-lg font-medium">
+          Yapay zekâ konsept önersin
+        </h3>
+        <p className="mx-auto mt-1.5 max-w-xs text-sm text-muted-foreground">
+          Görseli yükleyin; Gemini ürünü analiz edip size 3 lüks stüdyo
+          konsepti sunsun. Bu adım ücretsizdir.
         </p>
-      )}
+        <Button
+          onClick={onAnalyze}
+          disabled={!hasFile || analyzing}
+          className="mx-auto mt-6 gap-2"
+          size="lg"
+        >
+          {analyzing ? (
+            <Loader2 className="size-4 animate-spin" />
+          ) : (
+            <Sparkles className="size-4" />
+          )}
+          {analyzing ? "Analiz ediliyor…" : "AI Konsept Öner"}
+        </Button>
+        {(onBrowseTemplates || onWritePrompt) && (
+          <>
+            <div className="mx-auto my-4 flex w-full max-w-xs items-center gap-3">
+              <span className="h-px flex-1 bg-border" />
+              <span className="text-xs text-muted-foreground">veya</span>
+              <span className="h-px flex-1 bg-border" />
+            </div>
+            <div className="mx-auto flex flex-wrap justify-center gap-3">
+              {onBrowseTemplates && (
+                <Button
+                  onClick={onBrowseTemplates}
+                  variant="outline"
+                  className="gap-2"
+                  size="lg"
+                >
+                  <ImageIcon className="size-4" />
+                  Hazır Stüdyoları Keşfet
+                </Button>
+              )}
+              {onWritePrompt && (
+                <Button
+                  onClick={onWritePrompt}
+                  variant="outline"
+                  className="gap-2"
+                  size="lg"
+                >
+                  <PencilLine className="size-4" />
+                  Kendi Promptunu Yaz
+                </Button>
+              )}
+            </div>
+          </>
+        )}
+        {!hasFile && (
+          <p className="mt-3 text-xs text-muted-foreground">
+            Önce soldan bir görsel yükleyin.
+          </p>
+        )}
+      </div>
     </div>
   );
 }

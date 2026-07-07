@@ -65,32 +65,54 @@ export function RenderOptions({
         </div>
       </div>
 
-      <div>
-        <span className="text-sm font-medium text-foreground">Kalite</span>
-        <div
-          role="radiogroup"
-          aria-label="Render kalitesi"
-          className="mt-2 flex flex-wrap gap-1.5"
-        >
-          {QUALITY_OPTIONS.map((opt) => (
-            <button
-              key={opt.value}
-              type="button"
-              role="radio"
-              aria-checked={quality === opt.value}
-              disabled={disabled}
-              onClick={() => onQualityChange(opt.value)}
-              className={cn(
-                "rounded-lg border px-2.5 py-1 text-xs font-medium transition disabled:pointer-events-none disabled:opacity-50",
-                quality === opt.value
-                  ? "border-primary bg-primary/10 text-primary"
-                  : "border-border text-muted-foreground hover:border-primary/40 hover:text-foreground",
-              )}
-            >
-              {opt.label}
-            </button>
-          ))}
-        </div>
+      <QualityPicker
+        quality={quality}
+        onQualityChange={onQualityChange}
+        disabled={disabled}
+      />
+    </div>
+  );
+}
+
+/**
+ * Yalnızca kalite seçici — Satış Seti gibi en-boy oranı sahne başına sabit olan
+ * akışlarda RenderOptions'ın tamamı yerine tek başına kullanılır.
+ */
+export function QualityPicker({
+  quality,
+  onQualityChange,
+  disabled,
+}: {
+  quality: RenderQuality;
+  onQualityChange: (v: RenderQuality) => void;
+  disabled?: boolean;
+}) {
+  return (
+    <div>
+      <span className="text-sm font-medium text-foreground">Kalite</span>
+      <div
+        role="radiogroup"
+        aria-label="Render kalitesi"
+        className="mt-2 flex flex-wrap gap-1.5"
+      >
+        {QUALITY_OPTIONS.map((opt) => (
+          <button
+            key={opt.value}
+            type="button"
+            role="radio"
+            aria-checked={quality === opt.value}
+            disabled={disabled}
+            onClick={() => onQualityChange(opt.value)}
+            className={cn(
+              "rounded-lg border px-2.5 py-1 text-xs font-medium transition disabled:pointer-events-none disabled:opacity-50",
+              quality === opt.value
+                ? "border-primary bg-primary/10 text-primary"
+                : "border-border text-muted-foreground hover:border-primary/40 hover:text-foreground",
+            )}
+          >
+            {opt.label}
+          </button>
+        ))}
       </div>
     </div>
   );

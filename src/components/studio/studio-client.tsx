@@ -12,15 +12,19 @@ import {
 import { TemplatePanel } from "@/components/studio/render-step";
 import { TemplateGallery } from "@/components/studio/template-gallery";
 import { ResultStep } from "@/components/studio/result-step";
+import { SalesSetPanel } from "@/components/studio/sales-set-panel";
+import { SalesSetResult } from "@/components/studio/sales-set-result";
 import type { AspectRatioValue } from "@/components/studio/render-options";
 import { ROUTES } from "@/lib/constants";
 import type { StudioTemplate } from "@/lib/templates";
 import type { Concept } from "@/lib/gemini/analyze";
-import { creditCostFor, type RenderQuality } from "@/lib/credits";
+import { creditCostFor, salesSetCreditCost, type RenderQuality } from "@/lib/credits";
 import {
   analyzeProductAction,
   uploadSourceAction,
   generateImageAction,
+  generateSalesSetAction,
+  type SalesSetShotResult,
 } from "@/app/(app)/studio/actions";
 
 type Source = { sourcePath: string; sourceUrl: string; mimeType: string };
@@ -51,12 +55,17 @@ export function StudioClient({
   const [usingCustom, setUsingCustom] = useState(false);
   const [browsingTemplates, setBrowsingTemplates] = useState(false);
   const [writingPrompt, setWritingPrompt] = useState(false);
+  const [browsingSalesSet, setBrowsingSalesSet] = useState(false);
   const [aspectRatio, setAspectRatio] = useState<AspectRatioValue>("4:5");
   const [quality, setQuality] = useState<RenderQuality>("2K");
   const [status, setStatus] = useState<Status>("idle");
   const [result, setResult] = useState<
     { url: string; id: string; sourceUrl: string } | null
   >(null);
+  const [salesSetResult, setSalesSetResult] = useState<{
+    results: SalesSetShotResult[];
+    balance: number;
+  } | null>(null);
 
   const busy = status !== "idle";
 
@@ -68,7 +77,9 @@ export function StudioClient({
     setUsingCustom(false);
     setCustomPrompt("");
     setWritingPrompt(false);
+    setBrowsingSalesSet(false);
     setResult(null);
+    setSalesSetResult(null);
   }
 
   function handleSelect(f: File) {
@@ -186,6 +197,70 @@ export function StudioClient({
     });
   }
 
+  // ── Satış Seti: tek üründen 4 karelik e-ticaret listeleme seti ──
+  function runGenerateSalesSet() {
+    if (!file) {
+      toast.error("Önce bir ürün görseli yükleyin.");
+      return;
+    }
+    const cost = salesSetCreditCost(quality);
+    if (balance < cost) {
+      toast.error("Krediniz yetersiz. Paket satın alın.");
+      router.push(ROUTES.billing);
+      return;
+    }
+    setStatus("generating");
+    startTransition(async () => {
+      try {
+        // Kaynak henüz yüklenmediyse önce yükle (StartPanel'den doğrudan gelinebilir).
+        let src = source;
+        if (!src) {
+          const fd = new FormData();
+          fd.set("image", file);
+          const up = await uploadSourceAction(fd);
+          if (!up.ok) {
+            toast.error(up.error);
+            setStatus("idle");
+            return;
+          }
+          src = {
+            sourcePath: up.sourcePath,
+            sourceUrl: up.sourceUrl,
+            mimeType: up.mimeType,
+          };
+          setSource(src);
+        }
+
+        const res = await generateSalesSetAction({
+          sourcePath: src.sourcePath,
+          mimeType: src.mimeType,
+          category: category || undefined,
+          quality,
+        });
+
+        if (!res.ok) {
+          toast.error(res.error);
+          if (res.needCredits) router.push(ROUTES.billing);
+          setStatus("idle");
+          return;
+        }
+
+        setSalesSetResult({ results: res.results, balance: res.balance });
+        setBalance(res.balance);
+        setStatus("idle");
+        const successCount = res.results.filter(
+          (r) => r.status === "completed",
+        ).length;
+        toast.success(
+          `Satış Seti hazır! ${successCount}/4 kare üretildi, ${res.spentCredits} kredi kullanıldı.`,
+        );
+      } catch {
+        toast.error("Beklenmeyen bir hata oluştu.");
+        setStatus("idle");
+      }
+    });
+  }
+
   function handleGenerateSelected() {
     const prompt = usingCustom ? customPrompt.trim() : selectedPrompt;
     const title = usingCustom ? "Özel konsept" : selectedTitle;
@@ -197,6 +272,19 @@ export function StudioClient({
   }
 
   // ── SONUÇ EKRANI ──
+  if (salesSetResult) {
+    return (
+      <SalesSetResult
+        results={salesSetResult.results}
+        balance={salesSetResult.balance}
+        onReset={fullReset}
+        onBackToStudio={() => {
+          setSalesSetResult(null);
+          setBrowsingSalesSet(false);
+        }}
+      />
+    );
+  }
   if (result) {
     return <ResultStep result={result} balance={balance} onReset={fullReset} />;
   }
@@ -297,6 +385,16 @@ export function StudioClient({
               }}
             />
           </div>
+        ) : browsingSalesSet ? (
+          <SalesSetPanel
+            hasFile={!!file}
+            busy={busy}
+            generating={status === "generating"}
+            quality={quality}
+            onQualityChange={setQuality}
+            onGenerate={runGenerateSalesSet}
+            onBack={() => setBrowsingSalesSet(false)}
+          />
         ) : (
           <StartPanel
             hasFile={!!file}
@@ -304,6 +402,7 @@ export function StudioClient({
             onAnalyze={handleAnalyze}
             onBrowseTemplates={() => setBrowsingTemplates(true)}
             onWritePrompt={() => setWritingPrompt(true)}
+            onSalesSet={() => setBrowsingSalesSet(true)}
           />
         )}
       </div>

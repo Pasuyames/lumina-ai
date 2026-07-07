@@ -84,6 +84,20 @@ Doğrulama: lint 0/0, tsc temiz, 20/20 test yeşil, build başarılı, 8 commit.
 - [x] C8. Yeniden fiyatlandırma 249₺/599₺/1.690₺ — schema seed + UPDATE bloğu;
       yerel DB'ye uygulandı ve doğrulandı — 2026-07-03
 - [ ] C9. Katman 2-3 şablonlar (extended ~100 + mevsimsel ~20; madencilik çıktısı `data/mined-prompts.json` hammadde)
+- [x] C10. **SATIŞ SETİ** — tek fotoğraftan 4 karelik e-ticaret listeleme seti:
+      ① temiz packshot (beyaz fon, pazaryeri ana görseli) ② model üstünde /
+      kullanım anı (YÜZ KADRAJ DIŞI — tekinsiz vadi yok, e-ticarette standart)
+      ③ detay/makro (doku, dikiş, donanım) ④ atmosfer/hero (premium editoryal).
+      Vision analizi ürüne göre 4 shot promptu üretir (giyilebilir → model
+      üstünde; değilse → elde kullanım). Hiper-gerçekçilik çıpaları zorunlu
+      (DSLR görünümü, doğal kusurlar, film greni — "AI olduğu anlaşılmasın").
+      4 kredi (2K) / 8 kredi (4K); kredi görsel başına yalnızca başarıda düşer;
+      generations.set_id ile gruplanır. Paralel render (allSettled), kısmi
+      başarı destekli. NOT: prod'da uzun istek — Faz F'de kuyruğa taşınacak.
+      — 2026-07-07, Sonnet 5: `lib/gemini/sales-set.ts` (analyzeForSalesSet) +
+      `lib/sales-set-shots.ts` (normalizeShots, saf/testli) + `generateSalesSetAction`
+      + `SalesSetPanel`/`SalesSetResult` UI. Canlı API çağrısı yapılmadı (yasak),
+      lint/tsc/build temiz, 22→32 test yeşil.
 
 ### Faz D — Prod'a Çıkış
 - [ ] D1. Supabase Cloud (schema.sql tek sefer SQL Editor) + .env değişimi

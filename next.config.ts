@@ -38,6 +38,14 @@ const nextConfig: NextConfig = {
       // Supabase Cloud Storage.
       { protocol: "https", hostname: "*.supabase.co" },
     ],
+    // Next 16: remotePatterns eşleşse bile optimizer, hostname'i çözümleyip
+    // private/loopback IP çıkarsa (127.0.0.1 dahil) isteği reddediyor
+    // (varsayılan dangerouslyAllowLocalIP=false, "Local IP Restriction" breaking
+    // change). Yerel Supabase Docker storage'ı 127.0.0.1 kullandığı için bu bayrak
+    // olmadan optimizer, remotePatterns doğru olsa dahi 400 "url parameter is not
+    // allowed" döner. Sadece dev'de aç; prod zaten genel bir hostname
+    // (*.supabase.co) kullandığından bu koşulun tetiklenmesine gerek yok.
+    dangerouslyAllowLocalIP: process.env.NODE_ENV !== "production",
   },
 };
 

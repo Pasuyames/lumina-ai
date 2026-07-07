@@ -98,6 +98,11 @@ Doğrulama: lint 0/0, tsc temiz, 20/20 test yeşil, build başarılı, 8 commit.
       `lib/sales-set-shots.ts` (normalizeShots, saf/testli) + `generateSalesSetAction`
       + `SalesSetPanel`/`SalesSetResult` UI. Canlı API çağrısı yapılmadı (yasak),
       lint/tsc/build temiz, 22→32 test yeşil.
+- [x] C11. Üretilmiş görseller boş kutu görünüyordu — kök neden: Next 16
+      `images.dangerouslyAllowLocalIP` varsayılanı `false` oldu; remotePatterns
+      eşleşse bile optimizer 127.0.0.1'i private IP sayıp 400 "not allowed"
+      döndürüyordu. Fix: `next.config.ts`'te dev'de `dangerouslyAllowLocalIP: true`
+      (NODE_ENV bazlı, prod'u etkilemez). — 2026-07-08, Sonnet 5
 
 ### Faz D — Prod'a Çıkış
 - [ ] D1. Supabase Cloud (schema.sql tek sefer SQL Editor) + .env değişimi

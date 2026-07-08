@@ -121,6 +121,10 @@ Doğrulama: lint 0/0, tsc temiz, 20/20 test yeşil, build başarılı, 8 commit.
         Vision sistem promptlarına "ucuzlatan sahne yasağı + premium zemin
         zorunluluğu" eklendi (mermer/taş/kadife/saten/cam/lake; ahşap yalnızca
         lüks bağlamda).
+      · Lüks imza görünümü (2026-07-08 ✅): `generate.ts`'e LUXURY_ANCHOR —
+        her render'a kod tarafında zorlanan lüks kampanya estetiği (premium
+        ışık/renk/doku işleme; sahne içeriğine karışmaz). Vision promptlarına
+        da "lüks marka kampanyası dili" kuralı (Cartier/Rolex/Hermès çıtası).
 
 ### Faz D — Prod'a Çıkış
 - [ ] D1. Supabase Cloud (schema.sql tek sefer SQL Editor) + .env değişimi

@@ -37,7 +37,10 @@ Kurallar:
 - Ürün algısını UCUZLATAN sahnelerden kaçın: sıradan/rustik ahşap masa üstü, dağınık ev
   ortamı, mutfak tezgâhı, ucuz plastik yüzeyler YASAK. Zemin daima premium olmalı:
   mermer, doğal taş, kadife, saten, cam, lake veya fırçalanmış metal. Ahşap yalnızca
-  lüks bağlamda kabul edilebilir (koyu ceviz, yüksek cila, butik vitrin sunumu).`;
+  lüks bağlamda kabul edilebilir (koyu ceviz, yüksek cila, butik vitrin sunumu).
+- Her promptu LÜKS MARKA KAMPANYASI diliyle yaz: high-end editorial/advertising estetiği,
+  kontrollü stüdyo ışığı, zengin gölge-parlaklık dengesi, rafine renk paleti. Referans
+  çıta: Cartier/Rolex/Hermès kampanya fotoğrafçılığı — asla stok fotoğraf sıradanlığı.`;
 
 const RESPONSE_SCHEMA = {
   type: Type.OBJECT,

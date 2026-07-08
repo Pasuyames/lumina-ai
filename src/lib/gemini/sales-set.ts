@@ -63,7 +63,11 @@ Kurallar:
   ortamı, mutfak tezgâhı, ucuz plastik yüzeyler YASAK (özellikle HERO ve CONTEXT
   karelerinde). Zeminler daima premium olmalı: mermer, doğal taş, kadife, saten, cam,
   lake veya fırçalanmış metal. Ahşap yalnızca lüks bağlamda kabul edilebilir (koyu
-  ceviz, yüksek cila, butik vitrin sunumu).`;
+  ceviz, yüksek cila, butik vitrin sunumu).
+- HERO ve CONTEXT promptlarını LÜKS MARKA KAMPANYASI diliyle yaz: high-end
+  editorial/advertising estetiği, kontrollü ışık, rafine renk paleti; model/stil
+  detayları da premium olsun (bakımlı eller, kaliteli kıyafet, zarif duruş).
+  Referans çıta: Cartier/Rolex/Hermès kampanyası — asla stok fotoğraf sıradanlığı.`;
 
 const RESPONSE_SCHEMA = {
   type: Type.OBJECT,

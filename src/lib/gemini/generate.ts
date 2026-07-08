@@ -20,6 +20,18 @@ const PRESERVE_INSTRUCTION =
   "in focus as the hero of a premium e-commerce photograph.";
 
 /**
+ * Her render'a kod tarafında zorlanan lüks kampanya estetiği — Lumina'nın imza
+ * görünümü. Sahne İÇERİĞİNİ değiştirmez; ışık/renk/doku işleme kalitesini
+ * yukarı çeker (REALISM_ANCHOR ile aynı desen: prompta güvenme, kodla zorla).
+ */
+const LUXURY_ANCHOR =
+  "Style: high-end luxury advertising campaign aesthetic — premium commercial " +
+  "product photography, impeccable styling, refined cinematic color grading, " +
+  "deep controlled shadows and elegant highlights, rich tactile material " +
+  "rendering, the expensive polished look of a flagship brand campaign. " +
+  "Nothing in the frame may look cheap, cluttered or amateur.";
+
+/**
  * AŞAMA 2 — Nano Banana 2 (gemini-3-pro-image-preview) ile 2K render.
  * Maliyet: GÖRSEL ÜRETİMİ — pahalı. Çağıran taraf krediyi yönetmeli.
  */
@@ -41,7 +53,9 @@ export async function generateProductImage(
           {
             role: "user",
             parts: [
-              { text: `${PRESERVE_INSTRUCTION}\n\nScene: ${scenePrompt}` },
+              {
+                text: `${PRESERVE_INSTRUCTION}\n\nScene: ${scenePrompt}\n\n${LUXURY_ANCHOR}`,
+              },
               { inlineData: { mimeType, data: imageBase64 } },
             ],
           },

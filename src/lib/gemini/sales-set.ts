@@ -58,7 +58,12 @@ Kurallar:
   gölge ve yansıma, atmosfer, kompozisyon ve kamera açısı içermeli.
 - Her prompt, ürünün ORİJİNAL şeklini, rengini, yapısını ve dokusunu KORUMASI gerektiğini
   vurgulamalı — yalnızca arka plan, ışık, zemin, yansıma ve (context karesinde) kullanım
-  bağlamı değişmeli.`;
+  bağlamı değişmeli.
+- Ürün algısını UCUZLATAN sahnelerden kaçın: sıradan/rustik ahşap masa üstü, dağınık ev
+  ortamı, mutfak tezgâhı, ucuz plastik yüzeyler YASAK (özellikle HERO ve CONTEXT
+  karelerinde). Zeminler daima premium olmalı: mermer, doğal taş, kadife, saten, cam,
+  lake veya fırçalanmış metal. Ahşap yalnızca lüks bağlamda kabul edilebilir (koyu
+  ceviz, yüksek cila, butik vitrin sunumu).`;
 
 const RESPONSE_SCHEMA = {
   type: Type.OBJECT,

@@ -103,6 +103,24 @@ Doğrulama: lint 0/0, tsc temiz, 20/20 test yeşil, build başarılı, 8 commit.
       eşleşse bile optimizer 127.0.0.1'i private IP sayıp 400 "not allowed"
       döndürüyordu. Fix: `next.config.ts`'te dev'de `dangerouslyAllowLocalIP: true`
       (NODE_ENV bazlı, prod'u etkilemez). — 2026-07-08, Sonnet 5
+- [ ] C12. **SATIŞ SETİ v2** — canlı test eleştirisiyle kapsam (2026-07-08).
+      Mevcut 4 kare listelemenin ilk 4 görselini dolduruyor; gerçek satıcı 6-8
+      görselle listeler. Öncelik sırasıyla:
+      ① **Çok açılı girdi**: müşteri 2-3 fotoğraf yükler (ön/arka/iç) → her
+        açının packshot'ı üretilir. Tek fotoğraftan arka yüz ASLA uydurulmaz —
+        DokuKilidi vaadiyle çelişir; görülmeyen açı üretilmez.
+      ② **Tek kare yeniden üretim**: set sonucunda beğenilmeyen kare için
+        "bu kareyi yeniden çevir" (1 kredi, aynı set_id'ye yeni kayıt).
+      ③ **Ölçü/infografik karesi**: ölçüler kullanıcıdan formla alınır; metin
+        bindirme AI'ya BIRAKILMAZ (metin render güvenilmez) — packshot üstüne
+        istemci tarafında canvas/SVG overlay.
+      ④ **Platform hedefi**: Trendyol/Hepsiburada (3:4), Amazon (1:1),
+        Instagram (4:5) seçimi → set oranları hedefe göre kurulur.
+      · B2 kalibrasyonu (2026-07-08 ✅): kullanıcı canlı çıktıda rustik ahşap
+        masa sahnesini "kaliteyi düşürüyor" diye eledi → analyze.ts + sales-set.ts
+        Vision sistem promptlarına "ucuzlatan sahne yasağı + premium zemin
+        zorunluluğu" eklendi (mermer/taş/kadife/saten/cam/lake; ahşap yalnızca
+        lüks bağlamda).
 
 ### Faz D — Prod'a Çıkış
 - [ ] D1. Supabase Cloud (schema.sql tek sefer SQL Editor) + .env değişimi

@@ -33,7 +33,11 @@ Kurallar:
   ışık yönü ve sıcaklığı, gölge ve yansıma, atmosfer, kompozisyon ve kamera açısı içermeli.
 - Her prompt, ürünün ORİJİNAL şeklini, yapısını ve dokusunu KORUMASI gerektiğini vurgulamalı;
   yalnızca arka plan, ışık, zemin ve yansıma değişmeli.
-- 3 konsept belirgin şekilde farklı olmalı (ör. mermer lüks, sıcak doğal, dramatik stüdyo).`;
+- 3 konsept belirgin şekilde farklı olmalı (ör. mermer lüks, sıcak doğal, dramatik stüdyo).
+- Ürün algısını UCUZLATAN sahnelerden kaçın: sıradan/rustik ahşap masa üstü, dağınık ev
+  ortamı, mutfak tezgâhı, ucuz plastik yüzeyler YASAK. Zemin daima premium olmalı:
+  mermer, doğal taş, kadife, saten, cam, lake veya fırçalanmış metal. Ahşap yalnızca
+  lüks bağlamda kabul edilebilir (koyu ceviz, yüksek cila, butik vitrin sunumu).`;
 
 const RESPONSE_SCHEMA = {
   type: Type.OBJECT,

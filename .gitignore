@@ -52,3 +52,4 @@ supabase/.temp
 
 # prompt madencilik çıktısı (içerik ekibi için hammadde)
 /data/mined-prompts.json
+.github/workflows/

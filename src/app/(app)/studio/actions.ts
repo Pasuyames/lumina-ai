@@ -607,7 +607,7 @@ export async function generateSalesSetAction(input: {
 }
 
 // ─────────────────────────────────────────────────────────────
-// KREATİF ÜRET — tek tık sürpriz: Vision cüretkar TEK sahne tasarlar,
+// KREATİF ÜRET — tek tık: Vision cüretkar TEK sahne tasarlar,
 // doğrudan render edilir (konsept seçim adımı yok).
 // ─────────────────────────────────────────────────────────────
 export type CreativeResult =

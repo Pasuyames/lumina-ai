@@ -262,7 +262,7 @@ export function StudioClient({
     });
   }
 
-  // ── Kreatif Üret: tek tık sürpriz — Vision cüretkar TEK sahne tasarlar, doğrudan render eder ──
+  // ── Kreatif Üret: tek tık — Vision cüretkar TEK sahne tasarlar, doğrudan render eder ──
   function runGenerateCreative() {
     if (!file) {
       toast.error("Önce bir ürün görseli yükleyin.");

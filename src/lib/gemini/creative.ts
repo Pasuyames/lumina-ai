@@ -15,8 +15,8 @@ export interface CreativeConcept {
 }
 
 const SYSTEM_PROMPT = `Sen ödüllü bir reklam ajansının baş yaratıcı yönetmenisin. Sana verilen
-ürün fotoğrafı için TEK ve CÜRETKAR bir kampanya sahnesi tasarla — kullanıcı "sürpriz beni"
-dedi, güvenli/beklenen bir sahne istemiyor.
+ürün fotoğrafı için TEK ve CÜRETKAR bir kampanya sahnesi tasarla — kullanıcı kreatif bir
+sonuç istiyor, güvenli/beklenen bir sahne istemiyor.
 
 Kurallar:
 - Standart e-ticaret kalıplarından (düz beyaz fon, sıradan masa üstü) UZAK DUR. Bunun yerine
@@ -43,7 +43,7 @@ const RESPONSE_SCHEMA = {
 };
 
 /**
- * Kreatif Üret (tek tık sürpriz) — Gemini Vision ile ürüne özel, cüretkar TEK
+ * Kreatif Üret (tek tık) — Gemini Vision ile ürüne özel, cüretkar TEK
  * kampanya sahnesi üretir. Maliyet: sadece metin/vision (görsel üretim YOK),
  * kredi düşmez; çağıran taraf sonucu doğrudan render'a gönderir.
  */

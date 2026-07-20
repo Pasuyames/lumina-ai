@@ -116,7 +116,7 @@ export function StartPanel({
                   ) : (
                     <Shuffle className="size-4" />
                   )}
-                  {creativeLoading ? "Kreatif üretiliyor…" : "Kreatif Üret — Sürpriz Beni"}
+                  {creativeLoading ? "Kreatif üretiliyor…" : "Kreatif Üret"}
                 </Button>
               )}
               {onBrowseTemplates && (

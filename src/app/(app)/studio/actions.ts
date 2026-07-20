@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { analyzeProduct, type ProductAnalysis } from "@/lib/gemini/analyze";
+import { analyzeForCreative } from "@/lib/gemini/creative";
 import { generateProductImage } from "@/lib/gemini/generate";
 import {
   analyzeForSalesSet,
@@ -30,6 +31,7 @@ const ANALYZE_LIMIT = 15; // kredisiz ama Vision API maliyeti var
 const UPLOAD_LIMIT = 30;
 const GENERATE_LIMIT = 30; // asıl fren kredi; bu sadece emniyet kemeri
 const SALES_SET_LIMIT = 5; // saatlik — her istek 4 render tetikler, ayrı ve daha sıkı sınır
+const CREATIVE_LIMIT = 15; // saatlik — Vision + render tek istekte, generate ile aynı mertebe
 
 /** Kullanıcının prompt'u için üst sınır — token maliyeti kontrolü. */
 const MAX_PROMPT_CHARS = 2_000;
@@ -602,4 +604,183 @@ export async function generateSalesSetAction(input: {
     balance: freshCredits?.balance ?? credits.balance,
     spentCredits: successCount * creditCostFor(quality),
   };
+}
+
+// ─────────────────────────────────────────────────────────────
+// KREATİF ÜRET — tek tık sürpriz: Vision cüretkar TEK sahne tasarlar,
+// doğrudan render edilir (konsept seçim adımı yok).
+// ─────────────────────────────────────────────────────────────
+export type CreativeResult =
+  | {
+      ok: true;
+      generationId: string;
+      resultUrl: string;
+      balance: number;
+      title: string;
+    }
+  | { ok: false; error: string; needCredits?: boolean };
+
+export async function generateCreativeAction(input: {
+  sourcePath: string;
+  mimeType: string;
+  category?: string;
+  aspectRatio?: string;
+  quality?: string;
+}): Promise<CreativeResult> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, error: "Oturum bulunamadı." };
+
+  const rl = checkRateLimit(`creative:${user.id}`, CREATIVE_LIMIT, HOUR_MS);
+  if (!rl.ok) {
+    return {
+      ok: false,
+      error: `Çok sık kreatif üretim istediniz. Lütfen ${Math.ceil(rl.retryAfterSec / 60)} dakika sonra tekrar deneyin.`,
+    };
+  }
+
+  // Kaynak görsel yalnızca kullanıcının kendi klasöründen okunabilir.
+  if (
+    !input.sourcePath.startsWith(`${user.id}/sources/`) ||
+    input.sourcePath.includes("..")
+  ) {
+    return { ok: false, error: "Geçersiz kaynak görsel." };
+  }
+  const aspectRatio =
+    input.aspectRatio && ALLOWED_ASPECT_RATIOS.has(input.aspectRatio)
+      ? input.aspectRatio
+      : "4:5";
+  const quality = resolveQuality(input.quality);
+  const creditCost = creditCostFor(quality);
+
+  // 1) Kredi ön kontrolü — pahalı API çağrısından önce.
+  const { data: credits } = await supabase
+    .from("credits")
+    .select("balance")
+    .eq("user_id", user.id)
+    .maybeSingle();
+  if (!credits || credits.balance < creditCost) {
+    return {
+      ok: false,
+      error: "Krediniz yetersiz. Devam etmek için paket satın alın.",
+      needCredits: true,
+    };
+  }
+
+  // 2) Kaynak görseli depodan indir.
+  const { data: blob, error: dlErr } = await supabase.storage
+    .from(BUCKET)
+    .download(input.sourcePath);
+  if (dlErr || !blob) {
+    return { ok: false, error: "Kaynak görsel okunamadı." };
+  }
+  const srcBase64 = Buffer.from(await blob.arrayBuffer()).toString("base64");
+
+  // 3) Vision — cüretkar tek sahne tasarımı (kredi düşmez).
+  let concept: { title: string; prompt: string };
+  try {
+    concept = await analyzeForCreative(srcBase64, input.mimeType, input.category);
+  } catch (e) {
+    return {
+      ok: false,
+      error: e instanceof Error ? e.message : "Analiz başarısız oldu.",
+    };
+  }
+  const conceptTitle = concept.title.slice(0, MAX_TITLE_CHARS);
+  const prompt = concept.prompt.slice(0, MAX_PROMPT_CHARS);
+
+  // 4) Üretim kaydını 'processing' olarak aç.
+  const { data: gen, error: genErr } = await supabase
+    .from("generations")
+    .insert({
+      user_id: user.id,
+      status: "processing",
+      source_image_path: input.sourcePath,
+      category: input.category?.slice(0, 40) ?? null,
+      concept_title: conceptTitle,
+      prompt,
+      model: process.env.GEMINI_IMAGE_MODEL ?? "gemini-3-pro-image-preview",
+      credits_spent: creditCost,
+    })
+    .select("id")
+    .single();
+  if (genErr || !gen) {
+    console.error("[studio/creative] üretim kaydı hatası:", genErr);
+    return { ok: false, error: "Üretim kaydı oluşturulamadı." };
+  }
+
+  try {
+    // 5) Nano Banana 2 ile render.
+    const image = await generateProductImage(
+      srcBase64,
+      input.mimeType,
+      prompt,
+      aspectRatio,
+      quality,
+    );
+
+    // 6) Sonucu depola.
+    const resultPath = `${user.id}/results/${gen.id}.png`;
+    const resultBytes = Buffer.from(image.base64, "base64");
+    const { error: rUpErr } = await supabase.storage
+      .from(BUCKET)
+      .upload(resultPath, resultBytes, {
+        contentType: image.mimeType,
+        upsert: true,
+      });
+    if (rUpErr) {
+      console.error("[studio/creative] sonuç upload hatası:", rUpErr);
+      throw new Error("Sonuç görseli kaydedilemedi, lütfen tekrar deneyin.");
+    }
+    const {
+      data: { publicUrl: resultUrl },
+    } = supabase.storage.from(BUCKET).getPublicUrl(resultPath);
+
+    // 7) Krediyi atomik düş (yalnızca başarılı render sonrası).
+    const { data: newBalance, error: spendErr } = await supabase.rpc(
+      "spend_credits",
+      {
+        p_user_id: user.id,
+        p_amount: creditCost,
+        p_reason: "generation",
+        p_generation_id: gen.id,
+      },
+    );
+    if (spendErr) {
+      console.error("[studio/creative] spend_credits hatası:", spendErr);
+      throw new Error("Kredi düşülemedi.");
+    }
+
+    // 8) Üretimi tamamlandı olarak işaretle.
+    await supabase
+      .from("generations")
+      .update({
+        status: "completed",
+        result_image_path: resultPath,
+        result_image_url: resultUrl,
+        completed_at: new Date().toISOString(),
+      })
+      .eq("id", gen.id);
+
+    revalidatePath("/generations");
+    revalidatePath("/dashboard");
+
+    return {
+      ok: true,
+      generationId: gen.id,
+      resultUrl,
+      balance: (newBalance as number) ?? credits.balance - creditCost,
+      title: conceptTitle,
+    };
+  } catch (e) {
+    // Başarısızlıkta kredi DÜŞMEZ; kaydı 'failed' yap.
+    const message = e instanceof Error ? e.message : "Üretim başarısız oldu.";
+    await supabase
+      .from("generations")
+      .update({ status: "failed", error: message })
+      .eq("id", gen.id);
+    return { ok: false, error: message };
+  }
 }

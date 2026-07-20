@@ -24,6 +24,7 @@ import {
   uploadSourceAction,
   generateImageAction,
   generateSalesSetAction,
+  generateCreativeAction,
   type SalesSetShotResult,
 } from "@/app/(app)/studio/actions";
 
@@ -261,6 +262,69 @@ export function StudioClient({
     });
   }
 
+  // ── Kreatif Üret: tek tık sürpriz — Vision cüretkar TEK sahne tasarlar, doğrudan render eder ──
+  function runGenerateCreative() {
+    if (!file) {
+      toast.error("Önce bir ürün görseli yükleyin.");
+      return;
+    }
+    const creditCost = creditCostFor(quality);
+    if (balance < creditCost) {
+      toast.error("Krediniz yetersiz. Paket satın alın.");
+      router.push(ROUTES.billing);
+      return;
+    }
+    setStatus("generating");
+    startTransition(async () => {
+      try {
+        let src = source;
+        if (!src) {
+          const fd = new FormData();
+          fd.set("image", file);
+          const up = await uploadSourceAction(fd);
+          if (!up.ok) {
+            toast.error(up.error);
+            setStatus("idle");
+            return;
+          }
+          src = {
+            sourcePath: up.sourcePath,
+            sourceUrl: up.sourceUrl,
+            mimeType: up.mimeType,
+          };
+          setSource(src);
+        }
+
+        const res = await generateCreativeAction({
+          sourcePath: src.sourcePath,
+          mimeType: src.mimeType,
+          category: category || undefined,
+          aspectRatio,
+          quality,
+        });
+
+        if (!res.ok) {
+          toast.error(res.error);
+          if (res.needCredits) router.push(ROUTES.billing);
+          setStatus("idle");
+          return;
+        }
+
+        setResult({
+          url: res.resultUrl,
+          id: res.generationId,
+          sourceUrl: src.sourceUrl,
+        });
+        setBalance(res.balance);
+        setStatus("idle");
+        toast.success(`"${res.title}" hazır! ${creditCost} kredi kullanıldı.`);
+      } catch {
+        toast.error("Beklenmeyen bir hata oluştu.");
+        setStatus("idle");
+      }
+    });
+  }
+
   function handleGenerateSelected() {
     const prompt = usingCustom ? customPrompt.trim() : selectedPrompt;
     const title = usingCustom ? "Özel konsept" : selectedTitle;
@@ -399,10 +463,12 @@ export function StudioClient({
           <StartPanel
             hasFile={!!file}
             analyzing={status === "analyzing"}
+            creativeLoading={status === "generating"}
             onAnalyze={handleAnalyze}
             onBrowseTemplates={() => setBrowsingTemplates(true)}
             onWritePrompt={() => setWritingPrompt(true)}
             onSalesSet={() => setBrowsingSalesSet(true)}
+            onCreative={runGenerateCreative}
           />
         )}
       </div>

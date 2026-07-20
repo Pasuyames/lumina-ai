@@ -126,6 +126,17 @@ Doğrulama: lint 0/0, tsc temiz, 20/20 test yeşil, build başarılı, 8 commit.
         ışık/renk/doku işleme; sahne içeriğine karışmaz). Vision promptlarına
         da "lüks marka kampanyası dili" kuralı (Cartier/Rolex/Hermès çıtası).
 
+- [x] C14. **KREATİF ÜRET** — 5. başlangıç yolu, tek tık sürpriz üretim.
+      `lib/gemini/creative.ts` (analyzeForCreative): Vision cüretkar/sanatsal
+      TEK sahne tasarlar (yüksek temperature 1.1, güvenli e-ticaret kalıpları
+      dışında — beklenmedik ortam/renk/kompozisyon; ucuzlatan sahne yasağı ve
+      LUXURY_ANCHOR yine geçerli, generate.ts'te otomatik uygulanıyor).
+      `generateCreativeAction` (studio/actions.ts): analiz + render tek
+      istekte, konsept seçim adımı yok; kredi yalnızca başarılı render
+      sonrası düşer (creditCostFor(quality)); rate limit `creative:` 15/sa.
+      StartPanel'de "Kreatif Üret — Sürpriz Beni" butonu (Shuffle ikonu),
+      AI Konsept Öner'in altındaki ikincil satırda. — 2026-07-08
+
 ### Faz D — Prod'a Çıkış
 - [ ] D1. Supabase Cloud (schema.sql tek sefer SQL Editor) + .env değişimi
 - [ ] D2. Vercel deploy + domain + Auth redirect URL'leri

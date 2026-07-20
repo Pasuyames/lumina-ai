@@ -8,6 +8,7 @@ import {
   PencilLine,
   ShoppingBag,
   ArrowRight,
+  Shuffle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -22,29 +23,35 @@ import { useProgressMessages } from "@/lib/hooks/use-progress-messages";
 import type { Concept } from "@/lib/gemini/analyze";
 import type { RenderQuality } from "@/lib/credits";
 
-/* ─── Başlangıç paneli (Satış Seti + AI konsept öner + hazır stüdyolar + özel prompt) ─── */
+/* ─── Başlangıç paneli (Satış Seti + AI konsept öner + hazır stüdyolar + özel prompt + kreatif) ─── */
 export function StartPanel({
   hasFile,
   analyzing,
+  creativeLoading,
   onAnalyze,
   onBrowseTemplates,
   onWritePrompt,
   onSalesSet,
+  onCreative,
 }: {
   hasFile: boolean;
   analyzing: boolean;
+  /** Kreatif Üret tek tık üretimi sürerken true — diğer butonlar da kilitlenir. */
+  creativeLoading?: boolean;
   onAnalyze: () => void;
   onBrowseTemplates?: () => void;
   onWritePrompt?: () => void;
   onSalesSet?: () => void;
+  onCreative?: () => void;
 }) {
+  const busy = analyzing || !!creativeLoading;
   return (
     <div className="flex flex-1 flex-col gap-4">
       {onSalesSet && (
         <button
           type="button"
           onClick={onSalesSet}
-          disabled={!hasFile}
+          disabled={!hasFile || busy}
           className="group relative overflow-hidden rounded-2xl border border-primary bg-gradient-to-br from-primary/15 via-card to-card p-6 text-left shadow-sm transition hover:shadow-md disabled:pointer-events-none disabled:opacity-50"
         >
           <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/15 px-2.5 py-1 text-xs font-medium text-primary">
@@ -77,7 +84,7 @@ export function StartPanel({
         </p>
         <Button
           onClick={onAnalyze}
-          disabled={!hasFile || analyzing}
+          disabled={!hasFile || busy}
           className="mx-auto mt-6 gap-2"
           size="lg"
         >
@@ -88,7 +95,7 @@ export function StartPanel({
           )}
           {analyzing ? "Analiz ediliyor…" : "AI Konsept Öner"}
         </Button>
-        {(onBrowseTemplates || onWritePrompt) && (
+        {(onBrowseTemplates || onWritePrompt || onCreative) && (
           <>
             <div className="mx-auto my-4 flex w-full max-w-xs items-center gap-3">
               <span className="h-px flex-1 bg-border" />
@@ -96,9 +103,26 @@ export function StartPanel({
               <span className="h-px flex-1 bg-border" />
             </div>
             <div className="mx-auto flex flex-wrap justify-center gap-3">
+              {onCreative && (
+                <Button
+                  onClick={onCreative}
+                  disabled={!hasFile || busy}
+                  variant="outline"
+                  className="gap-2"
+                  size="lg"
+                >
+                  {creativeLoading ? (
+                    <Loader2 className="size-4 animate-spin" />
+                  ) : (
+                    <Shuffle className="size-4" />
+                  )}
+                  {creativeLoading ? "Kreatif üretiliyor…" : "Kreatif Üret — Sürpriz Beni"}
+                </Button>
+              )}
               {onBrowseTemplates && (
                 <Button
                   onClick={onBrowseTemplates}
+                  disabled={busy}
                   variant="outline"
                   className="gap-2"
                   size="lg"
@@ -110,6 +134,7 @@ export function StartPanel({
               {onWritePrompt && (
                 <Button
                   onClick={onWritePrompt}
+                  disabled={busy}
                   variant="outline"
                   className="gap-2"
                   size="lg"

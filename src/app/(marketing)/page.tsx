@@ -8,6 +8,7 @@ import {
   ShieldCheck,
   Infinity as InfinityIcon,
   EyeOff,
+  Zap,
 } from "lucide-react";
 import { ButtonLink } from "@/components/ui/button-link";
 import { Badge } from "@/components/ui/badge";
@@ -17,6 +18,9 @@ import { PackageCard } from "@/components/billing/package-card";
 import { ROUTES } from "@/lib/constants";
 import { STUDIO_TEMPLATES } from "@/lib/templates";
 import { getActivePackages } from "@/lib/queries";
+import { cn } from "@/lib/utils";
+
+const HERO_CATEGORIES = ["Takı", "Saat", "Çanta", "Aksesuar", "Parfüm"];
 
 const STEPS = [
   {
@@ -87,22 +91,19 @@ export default async function LandingPage() {
   return (
     <div className="flex flex-col">
       {/* ── HERO ── */}
-      <section className="relative overflow-hidden">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(60%_50%_at_50%_0%,oklch(0.93_0.05_82/0.6),transparent)]"
-        />
-        <div className="mx-auto max-w-6xl px-4 py-24 text-center sm:px-6 sm:py-32">
+      <section className="relative overflow-hidden pb-8 pt-20 sm:pt-28">
+        <div className="mx-auto max-w-3xl px-4 text-center sm:px-6">
           <Badge
-            variant="secondary"
-            className="mb-6 gap-1.5 rounded-full px-3 py-1"
+            variant="outline"
+            className="mb-6 gap-1.5 border-border bg-card px-3 py-1 shadow-sm"
           >
             <Gem className="size-3.5 text-primary" />
             Takı · Saat · Çanta için tasarlandı
           </Badge>
-          <h1 className="font-heading mx-auto max-w-3xl text-balance text-4xl font-semibold leading-[1.1] tracking-tight sm:text-6xl">
-            Telefon çekiminden <span className="text-gold-gradient">stüdyo
-            kalitesine.</span>
+          <h1 className="font-heading mx-auto max-w-2xl text-balance text-5xl font-extrabold leading-[1.05] text-foreground sm:text-6xl md:text-7xl">
+            Telefon çekiminden
+            <br />
+            <span className="font-accent text-primary">stüdyo kalitesine</span>
           </h1>
           <p className="mx-auto mt-6 max-w-xl text-pretty text-lg text-muted-foreground">
             60 saniyede, tek fotoğraftan profesyonel ürün çekimi.
@@ -118,6 +119,67 @@ export default async function LandingPage() {
           <p className="mt-4 text-sm text-muted-foreground">
             <strong className="text-foreground">Kart bilgisi gerekmez.</strong>
           </p>
+        </div>
+
+        {/* Hero görseli — projede gerçek ürün fotoğrafı bulunmadığı için
+            (bkz. brief) yumuşak stüdyo-ışığı kompozisyonu + süzülen rozetler. */}
+        <div className="relative mx-auto mt-16 max-w-4xl px-4 sm:px-6">
+          <div
+            aria-hidden
+            className="coral-glow pointer-events-none absolute -inset-10 -z-10"
+          />
+          <div className="relative aspect-[16/10] overflow-hidden rounded-[2rem] border border-border bg-card shadow-[0_30px_80px_-30px_rgba(24,24,27,0.25)] sm:aspect-[16/9]">
+            <div
+              aria-hidden
+              className="absolute inset-0 bg-[radial-gradient(60%_60%_at_50%_38%,#fff,transparent)]"
+            />
+            <div className="absolute inset-0 grid place-items-center">
+              <div className="relative">
+                <div
+                  aria-hidden
+                  className="coral-gradient-bg absolute -inset-8 rounded-full opacity-20 blur-2xl"
+                />
+                <span className="relative grid size-28 place-items-center rounded-full bg-card text-primary shadow-[0_20px_50px_-15px_rgba(201,77,44,0.35)] ring-1 ring-border sm:size-40">
+                  <Gem className="size-14 sm:size-20" strokeWidth={1.25} />
+                </span>
+                <div
+                  aria-hidden
+                  className="absolute -bottom-5 left-1/2 h-4 w-24 -translate-x-1/2 rounded-full bg-foreground/10 blur-md sm:-bottom-6 sm:w-32"
+                />
+              </div>
+            </div>
+
+            <FloatingBadge
+              icon={<Sparkles className="size-3.5" />}
+              label="AI destekli"
+              className="left-[6%] top-[16%] -rotate-3"
+            />
+            <FloatingBadge
+              icon={<Zap className="size-3.5" />}
+              label="60 saniye"
+              className="right-[8%] top-[22%] rotate-2"
+            />
+            <FloatingBadge
+              icon={<ShieldCheck className="size-3.5" />}
+              label="DokuKilidi"
+              className="bottom-[14%] left-[12%] rotate-2"
+            />
+          </div>
+        </div>
+
+        {/* Kategori şeridi — sahte marka/logo yok, sadece desteklenen kategoriler */}
+        <div className="mx-auto mt-14 max-w-3xl px-4 text-center sm:px-6">
+          <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
+            Şunlar için tasarlandı
+          </p>
+          <div className="mt-3 flex flex-wrap items-center justify-center gap-x-2 gap-y-2 text-sm font-medium text-muted-foreground/80">
+            {HERO_CATEGORIES.map((c, i) => (
+              <span key={c} className="flex items-center gap-x-2">
+                {i > 0 && <span aria-hidden>·</span>}
+                <span>{c}</span>
+              </span>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -306,5 +368,28 @@ export default async function LandingPage() {
         </Card>
       </section>
     </div>
+  );
+}
+
+/** Hero görselinin etrafında süzülen küçük özellik rozeti. */
+function FloatingBadge({
+  icon,
+  label,
+  className,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  className?: string;
+}) {
+  return (
+    <span
+      className={cn(
+        "absolute hidden items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-xs font-medium text-foreground shadow-md sm:inline-flex",
+        className,
+      )}
+    >
+      <span className="text-primary">{icon}</span>
+      {label}
+    </span>
   );
 }

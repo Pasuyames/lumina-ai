@@ -14,3 +14,11 @@ export const SALES_SET_SHOT_COUNT = 4;
 export function salesSetCreditCost(quality: RenderQuality): number {
   return SALES_SET_SHOT_COUNT * creditCostFor(quality);
 }
+
+/**
+ * Harcanan krediden render kalitesini geri çıkarır (creditCostFor'un tersi).
+ * Kare başına harcama esas alındığı için Satış Seti kayıtları için de doğrudur.
+ */
+export function qualityLabelFor(creditsSpent: number): RenderQuality {
+  return creditsSpent >= 2 ? "4K" : "2K";
+}

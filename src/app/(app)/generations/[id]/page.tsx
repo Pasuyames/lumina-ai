@@ -6,6 +6,7 @@ import { ButtonLink } from "@/components/ui/button-link";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { getCurrentUser, getGenerationById } from "@/lib/queries";
+import { qualityLabelFor } from "@/lib/credits";
 import { ROUTES } from "@/lib/constants";
 import { formatDate } from "@/lib/utils/format";
 
@@ -78,7 +79,7 @@ export default async function GenerationDetailPage({
               rel="noreferrer"
               className={buttonVariants({ className: "gap-2" })}
             >
-              <Download className="size-4" /> 2K görseli indir
+              <Download className="size-4" /> {qualityLabelFor(g.credits_spent)} görseli indir
             </a>
           )}
         </div>

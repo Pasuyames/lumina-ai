@@ -137,6 +137,43 @@ Doğrulama: lint 0/0, tsc temiz, 20/20 test yeşil, build başarılı, 8 commit.
       StartPanel'de "Kreatif Üret" butonu (Shuffle ikonu), AI Konsept
       Öner'in altındaki ikincil satırda. — 2026-07-08
 
+### Frontend Denetim + Refactor — TAMAMLANDI (2026-07-08, Sonnet 5)
+Plan dosyası: `C:\Users\musta\.claude\plans\linked-wishing-storm.md` (3 paralel
+keşif ajanı + Plan ajanıyla hazırlandı, kullanıcı onayladı). Backend/kredi/RLS
+mantığına dokunulmadı, yeni bağımlılık eklenmedi.
+
+**Faz A (yüksek etki, düşük risk) — commit'ler 04c0383/5e4bd1a/ef4b320/dbc29a4:**
+- Billing satın alma butonuna pending state (`purchase-button.tsx`, useFormStatus)
+- `getGenerationById` — merkezi sorgu katmanına taşındı (`lib/queries.ts`)
+- "2K görseli indir" hardcode bug'ı → `qualityLabelFor(creditsSpent)` gerçek kaliteyi gösterir
+- **Mobil hamburger navigasyon** (kritik eksik — mobilde /studio ve /generations'a
+  hiç yol yoktu) — `mobile-nav.tsx`, mevcut Dialog primitive'i reuse edildi
+- Navbar aktif route vurgusu (`nav-link.tsx`, usePathname + aria-current)
+- Doğrulama: lint/tsc/test yeşil + gerçek Playwright testiyle mobil menü
+  açma/linke tıklama/kapanma ve aktif route vurgusu görsel olarak teyit edildi.
+
+**Faz B (bileşen konsolidasyonu) — commit'ler fd1d494/d38f238/0fc7504/267d547/
+0598528/96ae55a/5aa36ce/a8237a4:**
+- `app-shell.tsx` (Navbar+main+Footer ortak iskelet)
+- `page-header.tsx` (başlık+genişlik standardizasyonu, 5 sayfa)
+- `empty-state.tsx`, `spinner.tsx` (tekilleştirme)
+- `studio/*` içinde Card'ın seçici benimsenmesi (statik konteynerler geçti,
+  interaktif/gradient kartlara dokunulmadı)
+- Landing `PLANS` hardcode kaldırıldı → `getActivePackages()` + paylaşılan
+  `package-card.tsx` (landing artık billing ile senkron gerçek fiyat gösteriyor)
+- **`studio-client.tsx` (477 satır) → `hooks/use-studio-generation.ts`** (en
+  riskli madde — üretim mantığı/state saf taşımayla hook'a çıkarıldı, davranış
+  birebir korundu)
+- Route-level `loading.tsx` iskeletleri (dashboard/generations/billing)
+- Doğrulama: lint/tsc/test/build yeşil + gerçek Playwright testiyle landing
+  fiyat senkronu, dashboard/generations görsel regresyon yokluğu, `/studio`
+  AI Konsept Öner akışı (analiz→3 konsept) uçtan uca doğrulandı — görsel
+  üretim API'si test için ÇAĞRILMADI.
+
+**Faz C (bilerek YAPILMADI, follow-up):** dark mode toggle (next-themes kurulu
+ama unwired), derin a11y geçişi (image-dropzone/concept-card), SSS accordion,
+ikon boyutu kozmetik temizliği, `--sidebar-*` ölü CSS token'larının kaderi.
+
 ### Faz D — Prod'a Çıkış
 - [ ] D1. Supabase Cloud (schema.sql tek sefer SQL Editor) + .env değişimi
 - [ ] D2. Vercel deploy + domain + Auth redirect URL'leri

@@ -60,7 +60,7 @@ export default async function GenerationsPage() {
             <Link
               key={g.id}
               href={`${ROUTES.generations}/${g.id}`}
-              className="group overflow-hidden rounded-xl border border-border bg-card transition hover:border-primary/40"
+              className="group overflow-hidden rounded-2xl border border-border bg-card transition hover:border-primary/40"
             >
               <div className="relative aspect-[4/5] bg-muted">
                 {g.result_image_url ? (

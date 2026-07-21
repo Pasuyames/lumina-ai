@@ -10,13 +10,13 @@ export default function DashboardLoading() {
           <Skeleton className="h-9 w-64" />
           <Skeleton className="mt-2 h-5 w-80" />
         </div>
-        <Skeleton className="h-11 w-44 rounded-lg" />
+        <Skeleton className="h-11 w-44 rounded-full" />
       </div>
 
       {/* Özet kartları */}
       <div className="mt-8 grid gap-4 sm:grid-cols-3">
         {Array.from({ length: 3 }).map((_, i) => (
-          <div key={i} className="rounded-xl bg-card p-4 ring-1 ring-foreground/10">
+          <div key={i} className="rounded-2xl bg-card p-4 ring-1 ring-foreground/10">
             <div className="flex items-center justify-between">
               <Skeleton className="h-4 w-24" />
               <Skeleton className="size-5 rounded-full" />
@@ -35,7 +35,7 @@ export default function DashboardLoading() {
         </div>
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
           {Array.from({ length: 6 }).map((_, i) => (
-            <Skeleton key={i} className="aspect-[3/4] rounded-xl" />
+            <Skeleton key={i} className="aspect-[3/4] rounded-2xl" />
           ))}
         </div>
       </div>

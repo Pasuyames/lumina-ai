@@ -10,14 +10,14 @@ export default function GenerationsLoading() {
           <Skeleton className="h-9 w-48" />
           <Skeleton className="mt-2 h-5 w-72" />
         </div>
-        <Skeleton className="h-10 w-28 rounded-lg" />
+        <Skeleton className="h-10 w-28 rounded-full" />
       </div>
 
       <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
         {Array.from({ length: 8 }).map((_, i) => (
           <div
             key={i}
-            className="overflow-hidden rounded-xl border border-border bg-card"
+            className="overflow-hidden rounded-2xl border border-border bg-card"
           >
             <Skeleton className="aspect-[4/5] rounded-none" />
             <div className="space-y-2 p-3">

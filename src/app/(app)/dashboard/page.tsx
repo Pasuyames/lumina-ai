@@ -86,7 +86,7 @@ export default async function DashboardPage() {
               <Link
                 key={g.id}
                 href={`${ROUTES.generations}/${g.id}`}
-                className="group relative aspect-[3/4] overflow-hidden rounded-xl border border-border bg-muted"
+                className="group relative aspect-[3/4] overflow-hidden rounded-2xl border border-border bg-muted"
               >
                 {g.result_image_url ? (
                   <Image

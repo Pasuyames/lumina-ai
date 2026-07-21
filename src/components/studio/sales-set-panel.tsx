@@ -73,7 +73,7 @@ export function SalesSetPanel({
           return (
             <li
               key={type}
-              className="flex items-start gap-3 rounded-xl border border-border bg-card/50 p-3"
+              className="flex items-start gap-3 rounded-2xl border border-border bg-card/50 p-3"
             >
               <span className="mt-0.5 grid size-8 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary">
                 <Icon className="size-4" />

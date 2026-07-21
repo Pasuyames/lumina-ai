@@ -53,7 +53,7 @@ export function RenderOptions({
               disabled={disabled}
               onClick={() => onAspectRatioChange(opt.value)}
               className={cn(
-                "rounded-lg border px-2.5 py-1 text-xs font-medium transition disabled:pointer-events-none disabled:opacity-50",
+                "rounded-full border px-2.5 py-1 text-xs font-medium transition disabled:pointer-events-none disabled:opacity-50",
                 aspectRatio === opt.value
                   ? "border-primary bg-primary/10 text-primary"
                   : "border-border text-muted-foreground hover:border-primary/40 hover:text-foreground",

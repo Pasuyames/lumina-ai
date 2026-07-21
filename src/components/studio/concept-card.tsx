@@ -21,7 +21,7 @@ export function ConceptCard({
       onClick={onSelect}
       disabled={disabled}
       className={cn(
-        "group relative flex h-full flex-col rounded-xl border p-5 text-left transition",
+        "group relative flex h-full flex-col rounded-2xl border p-5 text-left transition",
         selected
           ? "border-primary bg-accent/40 ring-1 ring-primary/30"
           : "border-border bg-card hover:border-primary/40 hover:bg-accent/20",

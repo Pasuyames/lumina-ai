@@ -315,7 +315,7 @@ export function ConceptPanel({
         type="button"
         onClick={onUseCustom}
         disabled={busy}
-        className={`flex w-full items-center gap-2 rounded-xl border p-3 text-left text-sm transition ${
+        className={`flex w-full items-center gap-2 rounded-2xl border p-3 text-left text-sm transition ${
           usingCustom
             ? "border-primary bg-accent/40"
             : "border-border hover:border-primary/40"

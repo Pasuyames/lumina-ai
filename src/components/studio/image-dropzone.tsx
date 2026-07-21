@@ -110,7 +110,7 @@ export function ImageDropzone({
         type="button"
         disabled={disabled}
         onClick={() => cameraInputRef.current?.click()}
-        className="mt-3 flex w-full items-center justify-center gap-2 rounded-lg border border-border bg-card py-2.5 text-sm font-medium text-foreground transition hover:border-primary/50 hover:bg-accent/20 disabled:pointer-events-none disabled:opacity-60 sm:hidden"
+        className="mt-3 flex w-full items-center justify-center gap-2 rounded-full border border-border bg-card py-2.5 text-sm font-medium text-foreground transition hover:border-primary/50 hover:bg-accent/20 disabled:pointer-events-none disabled:opacity-60 sm:hidden"
       >
         <Camera className="size-4" />
         Fotoğraf Çek

@@ -7,6 +7,8 @@ import {
   User as UserIcon,
 } from "lucide-react";
 import { Logo } from "@/components/site/logo";
+import { NavLink } from "@/components/site/nav-link";
+import { MobileNav } from "@/components/site/mobile-nav";
 import { CreditBadge } from "@/components/billing/credit-badge";
 import { ButtonLink } from "@/components/ui/button-link";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -100,28 +102,11 @@ export async function Navbar() {
               </ButtonLink>
             </>
           )}
+          <div className="md:hidden">
+            <MobileNav user={user} credits={credits} />
+          </div>
         </div>
       </div>
     </header>
-  );
-}
-
-function NavLink({
-  href,
-  icon,
-  children,
-}: {
-  href: string;
-  icon: React.ReactNode;
-  children: React.ReactNode;
-}) {
-  return (
-    <Link
-      href={href}
-      className="inline-flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent/50 hover:text-foreground"
-    >
-      {icon}
-      {children}
-    </Link>
   );
 }

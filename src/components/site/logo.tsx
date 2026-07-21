@@ -9,7 +9,7 @@ export function Logo({ className }: { className?: string }) {
       href="/"
       className={cn("group inline-flex items-center gap-2", className)}
     >
-      <span className="grid size-8 place-items-center rounded-md bg-primary/10 text-primary ring-1 ring-primary/20 transition-colors group-hover:bg-primary/15">
+      <span className="grid size-8 place-items-center rounded-full bg-primary/10 text-primary ring-1 ring-primary/20 transition-colors group-hover:bg-primary/15">
         <Gem className="size-4" />
       </span>
       <span className="font-heading text-lg font-semibold tracking-tight">

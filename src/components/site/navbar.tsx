@@ -33,8 +33,8 @@ export async function Navbar() {
     "U";
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-border/60 bg-background/80 backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
+    <header className="sticky top-3 z-40 w-full px-3 sm:top-4 sm:px-6">
+      <div className="mx-auto flex h-14 max-w-5xl items-center justify-between gap-4 rounded-full border border-border bg-card/95 px-3 shadow-sm backdrop-blur-md sm:px-5">
         <div className="flex items-center gap-8">
           <Logo />
           <nav className="hidden items-center gap-1 md:flex">

@@ -111,7 +111,7 @@ export function MobileNav({
               <form action={signOutAction}>
                 <button
                   type="submit"
-                  className="flex w-full items-center gap-2 rounded-md px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent/50 hover:text-foreground"
+                  className="flex w-full items-center gap-2 rounded-full px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent/60 hover:text-foreground"
                 >
                   <LogOut className="size-4" /> Çıkış yap
                 </button>
@@ -148,8 +148,8 @@ function MobileNavLink({
       href={href}
       aria-current={isActive ? "page" : undefined}
       className={cn(
-        "flex items-center gap-2.5 rounded-md px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent/50 hover:text-foreground",
-        isActive && "bg-accent/50 text-foreground",
+        "flex items-center gap-2.5 rounded-full px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent/60 hover:text-foreground",
+        isActive && "bg-accent/60 text-foreground",
       )}
     >
       {icon}

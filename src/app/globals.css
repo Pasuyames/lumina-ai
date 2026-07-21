@@ -140,8 +140,20 @@
 }
 
 @layer utilities {
+  /* Warm Native'de başlıklar kalın grotesk sans (Geist) — serif Playfair
+     artık genel başlık fontu değil, yalnızca .font-accent ile tek kelimelik
+     vurgularda kullanılıyor (aşağıda). */
   .font-heading {
+    font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+    letter-spacing: -0.015em;
+  }
+
+  /* İtalik serif vurgu — başlıklarda tek kelime/ifadeyi öne çıkarmak için
+     (Playfair Display italic, --font-heading değişkeni üzerinden). */
+  .font-accent {
     font-family: var(--font-heading), Georgia, "Times New Roman", serif;
+    font-style: italic;
+    letter-spacing: 0;
   }
 
   /* Marka gradyanı — SADECE dekoratif çerçeve/gölge/rozet aksanlarında

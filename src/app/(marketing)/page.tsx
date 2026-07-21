@@ -13,8 +13,10 @@ import { ButtonLink } from "@/components/ui/button-link";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { BeforeAfterSlider } from "@/components/ui/before-after-slider";
+import { PackageCard } from "@/components/billing/package-card";
 import { ROUTES } from "@/lib/constants";
 import { STUDIO_TEMPLATES } from "@/lib/templates";
+import { getActivePackages } from "@/lib/queries";
 
 const STEPS = [
   {
@@ -32,12 +34,6 @@ const STEPS = [
     title: "İndir",
     desc: "Ürünün şekli korunur; arka plan, ışık ve yansıma yeniden üretilir.",
   },
-];
-
-const PLANS = [
-  { name: "Başlangıç", credits: 20, price: "₺249", popular: false },
-  { name: "Profesyonel", credits: 60, price: "₺599", popular: true },
-  { name: "Stüdyo", credits: 200, price: "₺1.690", popular: false },
 ];
 
 const TRUST_POINTS = [
@@ -85,7 +81,9 @@ const FAQ = [
   },
 ];
 
-export default function LandingPage() {
+export default async function LandingPage() {
+  const packages = await getActivePackages();
+
   return (
     <div className="flex flex-col">
       {/* ── HERO ── */}
@@ -252,46 +250,20 @@ export default function LandingPage() {
           </p>
         </div>
         <div className="grid gap-6 md:grid-cols-3">
-          {PLANS.map((p) => (
-            <Card
-              key={p.name}
-              className={`relative p-6 ${
-                p.popular ? "border-primary shadow-lg ring-1 ring-primary/20" : ""
-              }`}
-            >
-              {p.popular && (
-                <Badge className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  En popüler
-                </Badge>
-              )}
-              <h3 className="font-heading text-lg font-medium">{p.name}</h3>
-              <div className="mt-3 flex items-baseline gap-1">
-                <span className="font-heading text-4xl font-semibold">
-                  {p.price}
-                </span>
-              </div>
-              <p className="mt-1 text-sm text-muted-foreground">
-                {p.credits} görsel hakkı
-              </p>
-              <ul className="mt-5 space-y-2 text-sm">
-                <li className="flex items-center gap-2">
-                  <Check className="size-4 text-primary" /> 2K/4K çözünürlük
-                </li>
-                <li className="flex items-center gap-2">
-                  <Check className="size-4 text-primary" /> Tüm hazır stüdyolar
-                </li>
-                <li className="flex items-center gap-2">
-                  <Check className="size-4 text-primary" /> Ticari kullanım
-                </li>
-              </ul>
-              <ButtonLink
-                href={ROUTES.register}
-                className="mt-6 w-full"
-                variant={p.popular ? "default" : "outline"}
-              >
-                Başla
-              </ButtonLink>
-            </Card>
+          {packages.map((pkg) => (
+            <PackageCard
+              key={pkg.id}
+              pkg={pkg}
+              action={
+                <ButtonLink
+                  href={ROUTES.register}
+                  className="w-full"
+                  variant={pkg.is_popular ? "default" : "outline"}
+                >
+                  Başla
+                </ButtonLink>
+              }
+            />
           ))}
         </div>
       </section>

@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Check, Coins, Star } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { PurchaseButton } from "@/components/billing/purchase-button";
 import { getCurrentUser, getCredits, getActivePackages } from "@/lib/queries";
 import { formatPrice } from "@/lib/utils/format";
 import { purchasePackageAction } from "./actions";
@@ -86,13 +86,12 @@ export default async function BillingPage() {
               </ul>
               <form action={purchasePackageAction}>
                 <input type="hidden" name="package_id" value={pkg.id} />
-                <Button
-                  type="submit"
+                <PurchaseButton
                   className="w-full"
                   variant={pkg.is_popular ? "default" : "outline"}
                 >
                   Satın al
-                </Button>
+                </PurchaseButton>
               </form>
             </CardContent>
           </Card>

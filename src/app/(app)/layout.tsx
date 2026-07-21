@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation";
-import { Navbar } from "@/components/site/navbar";
-import { Footer } from "@/components/site/footer";
+import { AppShell } from "@/components/site/app-shell";
 import { getCurrentUser } from "@/lib/queries";
 import { ROUTES } from "@/lib/constants";
 
@@ -13,11 +12,5 @@ export default async function AppLayout({
   const user = await getCurrentUser();
   if (!user) redirect(ROUTES.login);
 
-  return (
-    <>
-      <Navbar />
-      <main className="flex-1">{children}</main>
-      <Footer />
-    </>
-  );
+  return <AppShell>{children}</AppShell>;
 }

@@ -53,6 +53,21 @@ export async function getGenerations(
   return data ?? [];
 }
 
+/** Tek bir üretim kaydı (kullanıcıya ait olmalı). */
+export async function getGenerationById(
+  userId: string,
+  id: string,
+): Promise<Generation | null> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("generations")
+    .select("*")
+    .eq("id", id)
+    .eq("user_id", userId)
+    .maybeSingle();
+  return data;
+}
+
 /** Aktif kredi paketleri (fiyatlandırma sayfası). */
 export async function getActivePackages(): Promise<Package[]> {
   const supabase = await createClient();

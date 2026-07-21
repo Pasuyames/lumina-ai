@@ -5,8 +5,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { ButtonLink } from "@/components/ui/button-link";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { createClient } from "@/lib/supabase/server";
-import { getCurrentUser } from "@/lib/queries";
+import { getCurrentUser, getGenerationById } from "@/lib/queries";
 import { ROUTES } from "@/lib/constants";
 import { formatDate } from "@/lib/utils/format";
 
@@ -17,13 +16,7 @@ export default async function GenerationDetailPage({
 }) {
   const { id } = await params;
   const user = (await getCurrentUser())!;
-  const supabase = await createClient();
-  const { data: g } = await supabase
-    .from("generations")
-    .select("*")
-    .eq("id", id)
-    .eq("user_id", user.id)
-    .maybeSingle();
+  const g = await getGenerationById(user.id, id);
 
   if (!g) notFound();
 

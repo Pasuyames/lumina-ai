@@ -1,8 +1,8 @@
 "use client";
 
 import { useFormStatus } from "react-dom";
-import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import type { VariantProps } from "class-variance-authority";
 import type { buttonVariants } from "@/components/ui/button";
 
@@ -17,7 +17,7 @@ export function PurchaseButton({
 
   return (
     <Button type="submit" variant={variant} disabled={pending} {...props}>
-      {pending ? <Loader2 className="size-4 animate-spin" /> : null}
+      {pending ? <Spinner /> : null}
       {children}
     </Button>
   );

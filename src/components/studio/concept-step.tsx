@@ -3,7 +3,6 @@
 import {
   Sparkles,
   Wand2,
-  Loader2,
   ImageIcon,
   PencilLine,
   ShoppingBag,
@@ -13,6 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Spinner } from "@/components/ui/spinner";
 import { ConceptCard } from "@/components/studio/concept-card";
 import {
   RenderOptions,
@@ -89,7 +89,7 @@ export function StartPanel({
           size="lg"
         >
           {analyzing ? (
-            <Loader2 className="size-4 animate-spin" />
+            <Spinner />
           ) : (
             <Sparkles className="size-4" />
           )}
@@ -112,7 +112,7 @@ export function StartPanel({
                   size="lg"
                 >
                   {creativeLoading ? (
-                    <Loader2 className="size-4 animate-spin" />
+                    <Spinner />
                   ) : (
                     <Shuffle className="size-4" />
                   )}
@@ -237,7 +237,7 @@ export function CustomPromptPanel({
         className="w-full gap-2"
       >
         {generating ? (
-          <Loader2 className="size-4 animate-spin" />
+          <Spinner />
         ) : (
           <ImageIcon className="size-4" />
         )}
@@ -355,7 +355,7 @@ export function ConceptPanel({
         className="w-full gap-2"
       >
         {generating ? (
-          <Loader2 className="size-4 animate-spin" />
+          <Spinner />
         ) : (
           <ImageIcon className="size-4" />
         )}

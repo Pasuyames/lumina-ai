@@ -1,8 +1,9 @@
 "use client";
 
-import { Sparkles, Loader2, ImageIcon } from "lucide-react";
+import { Sparkles, ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Spinner } from "@/components/ui/spinner";
 import {
   RenderOptions,
   renderButtonLabel,
@@ -62,7 +63,7 @@ export function TemplatePanel({
         className="w-full gap-2"
       >
         {generating ? (
-          <Loader2 className="size-4 animate-spin" />
+          <Spinner />
         ) : (
           <ImageIcon className="size-4" />
         )}

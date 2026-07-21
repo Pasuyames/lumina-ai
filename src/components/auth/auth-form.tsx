@@ -3,10 +3,10 @@
 import { useActionState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Spinner } from "@/components/ui/spinner";
 import {
   Card,
   CardContent,
@@ -97,7 +97,7 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
         </CardContent>
         <CardFooter className="mt-2 flex-col gap-3">
           <Button type="submit" className="w-full" disabled={pending}>
-            {pending && <Loader2 className="size-4 animate-spin" />}
+            {pending && <Spinner />}
             {isLogin ? "Giriş yap" : "Ücretsiz başla"}
           </Button>
           <p className="text-center text-sm text-muted-foreground">

@@ -3,6 +3,7 @@
 import { Sparkles, ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
 import {
   RenderOptions,
@@ -39,7 +40,7 @@ export function TemplatePanel({
 }) {
   const progressMessage = useProgressMessages(generating);
   return (
-    <div className="flex flex-1 flex-col justify-center space-y-4 rounded-2xl border border-border bg-card/50 p-6">
+    <Card className="flex-1 justify-center gap-4 rounded-2xl border border-border bg-card/50 p-6 ring-0">
       <Badge variant="secondary" className="w-fit gap-1.5">
         <Sparkles className="size-3.5 text-primary" /> Hazır Stüdyo
       </Badge>
@@ -82,6 +83,6 @@ export function TemplatePanel({
           Önce soldan bir görsel yükleyin.
         </p>
       )}
-    </div>
+    </Card>
   );
 }

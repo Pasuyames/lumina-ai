@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Search, Gem, ArrowRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { STUDIO_TEMPLATES, filterTemplates } from "@/data/templates";
@@ -110,7 +111,7 @@ export function TemplateGallery({
 
       {/* Ana liste */}
       {empty ? (
-        <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-card/50 py-16 text-center">
+        <Card className="items-center justify-center gap-0 rounded-2xl border border-dashed border-border bg-card/50 py-16 text-center ring-0">
           <Gem className="size-10 text-muted-foreground/40" />
           <p className="mt-3 font-heading text-lg font-medium">
             Bu filtreyle eşleşen stüdyo yok
@@ -118,7 +119,7 @@ export function TemplateGallery({
           <p className="mt-1 text-sm text-muted-foreground">
             Filtreyi değiştirip tekrar deneyin.
           </p>
-        </div>
+        </Card>
       ) : (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {regular.map((t) => (

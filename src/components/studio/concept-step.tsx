@@ -10,6 +10,7 @@ import {
   Shuffle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Spinner } from "@/components/ui/spinner";
@@ -71,7 +72,7 @@ export function StartPanel({
         </button>
       )}
 
-      <div className="flex flex-1 flex-col justify-center rounded-2xl border border-dashed border-border bg-card/50 p-8 text-center">
+      <Card className="flex-1 justify-center gap-0 rounded-2xl border border-dashed border-border bg-card/50 p-8 text-center ring-0">
         <span className="mx-auto grid size-12 place-items-center rounded-xl bg-primary/10 text-primary">
           <Wand2 className="size-6" />
         </span>
@@ -151,7 +152,7 @@ export function StartPanel({
             Önce soldan bir görsel yükleyin.
           </p>
         )}
-      </div>
+      </Card>
     </div>
   );
 }

@@ -5,6 +5,7 @@ import { Sparkles } from "lucide-react";
 import { ButtonLink } from "@/components/ui/button-link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { PageHeader } from "@/components/ui/page-header";
 import {
   failStaleGenerations,
   getCurrentUser,
@@ -28,19 +29,16 @@ export default async function GenerationsPage() {
   const generations = await getGenerations(user.id, 60);
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
-      <div className="flex items-end justify-between">
-        <div>
-          <h1 className="font-heading text-3xl font-semibold">Üretimlerim</h1>
-          <p className="mt-1 text-muted-foreground">
-            Ürettiğiniz tüm görseller ve geçmişi.
-          </p>
-        </div>
+    <PageHeader
+      title="Üretimlerim"
+      description="Ürettiğiniz tüm görseller ve geçmişi."
+      width="wide"
+      actions={
         <ButtonLink href={ROUTES.studio} className="gap-2">
           <Sparkles className="size-4" /> Yeni
         </ButtonLink>
-      </div>
-
+      }
+    >
       {generations.length === 0 ? (
         <Card className="mt-8 border-dashed">
           <CardContent className="py-16 text-center text-muted-foreground">
@@ -91,6 +89,6 @@ export default async function GenerationsPage() {
           ))}
         </div>
       )}
-    </div>
+    </PageHeader>
   );
 }

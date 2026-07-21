@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { Sparkles, Coins, Images, ArrowRight } from "lucide-react";
 import { ButtonLink } from "@/components/ui/button-link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { PageHeader } from "@/components/ui/page-header";
 import { getCurrentUser, getCredits, getGenerations } from "@/lib/queries";
 import { ROUTES } from "@/lib/constants";
 import { formatDate } from "@/lib/utils/format";
@@ -22,21 +23,16 @@ export default async function DashboardPage() {
     "tekrar";
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="font-heading text-3xl font-semibold">
-            Merhaba, {firstName} 👋
-          </h1>
-          <p className="mt-1 text-muted-foreground">
-            Stüdyonuza hoş geldiniz. Yeni bir görsel üretmeye hazır mısınız?
-          </p>
-        </div>
+    <PageHeader
+      title={`Merhaba, ${firstName} 👋`}
+      description="Stüdyonuza hoş geldiniz. Yeni bir görsel üretmeye hazır mısınız?"
+      width="wide"
+      actions={
         <ButtonLink href={ROUTES.studio} size="lg" className="gap-2">
           <Sparkles className="size-4" /> Yeni görsel üret
         </ButtonLink>
-      </div>
-
+      }
+    >
       {/* Özet kartları */}
       <div className="mt-8 grid gap-4 sm:grid-cols-3">
         <StatCard
@@ -121,7 +117,7 @@ export default async function DashboardPage() {
           </div>
         )}
       </div>
-    </div>
+    </PageHeader>
   );
 }
 

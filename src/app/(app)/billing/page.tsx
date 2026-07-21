@@ -3,6 +3,7 @@ import { Check, Coins, Star } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PurchaseButton } from "@/components/billing/purchase-button";
+import { PageHeader } from "@/components/ui/page-header";
 import { getCurrentUser, getCredits, getActivePackages } from "@/lib/queries";
 import { formatPrice } from "@/lib/utils/format";
 import { purchasePackageAction } from "./actions";
@@ -18,12 +19,11 @@ export default async function BillingPage() {
   const balance = credits?.balance ?? 0;
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
-      <h1 className="font-heading text-3xl font-semibold">Kredi & Paketler</h1>
-      <p className="mt-1 text-muted-foreground">
-        Her başarılı görsel üretimi 1 kredi harcar.
-      </p>
-
+    <PageHeader
+      title="Kredi & Paketler"
+      description="Her başarılı görsel üretimi 1 kredi harcar."
+      width="narrow"
+    >
       {/* Mevcut bakiye */}
       <Card className="mt-6">
         <CardContent className="flex items-center gap-4 py-5">
@@ -102,6 +102,6 @@ export default async function BillingPage() {
         Ödeme altyapısı şu an <strong>mock</strong> modundadır — gerçek tahsilat
         yapılmaz. Stripe/Iyzico entegrasyonu ileride eklenecektir.
       </p>
-    </div>
+    </PageHeader>
   );
 }

@@ -3,9 +3,9 @@ import Image from "next/image";
 import type { Metadata } from "next";
 import { Sparkles } from "lucide-react";
 import { ButtonLink } from "@/components/ui/button-link";
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { PageHeader } from "@/components/ui/page-header";
+import { EmptyState } from "@/components/ui/empty-state";
 import {
   failStaleGenerations,
   getCurrentUser,
@@ -40,14 +40,20 @@ export default async function GenerationsPage() {
       }
     >
       {generations.length === 0 ? (
-        <Card className="mt-8 border-dashed">
-          <CardContent className="py-16 text-center text-muted-foreground">
-            Henüz üretim yok.{" "}
-            <Link href={ROUTES.studio} className="text-primary hover:underline">
-              İlkini oluştur
-            </Link>
-          </CardContent>
-        </Card>
+        <EmptyState
+          className="mt-8"
+          title={
+            <>
+              Henüz üretim yok.{" "}
+              <Link
+                href={ROUTES.studio}
+                className="text-primary hover:underline"
+              >
+                İlkini oluştur
+              </Link>
+            </>
+          }
+        />
       ) : (
         <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
           {generations.map((g) => (

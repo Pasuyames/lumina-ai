@@ -5,6 +5,7 @@ import { Sparkles, Coins, Images, ArrowRight } from "lucide-react";
 import { ButtonLink } from "@/components/ui/button-link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PageHeader } from "@/components/ui/page-header";
+import { EmptyState } from "@/components/ui/empty-state";
 import { getCurrentUser, getCredits, getGenerations } from "@/lib/queries";
 import { ROUTES } from "@/lib/constants";
 import { formatDate } from "@/lib/utils/format";
@@ -70,19 +71,15 @@ export default async function DashboardPage() {
         </div>
 
         {generations.length === 0 ? (
-          <Card className="border-dashed">
-            <CardContent className="flex flex-col items-center justify-center gap-3 py-16 text-center">
-              <span className="grid size-12 place-items-center rounded-full bg-primary/10 text-primary">
-                <Sparkles className="size-6" />
-              </span>
-              <p className="text-muted-foreground">
-                Henüz üretim yok. İlk lüks görselinizi oluşturun.
-              </p>
+          <EmptyState
+            icon={<Sparkles className="size-6" />}
+            title="Henüz üretim yok. İlk lüks görselinizi oluşturun."
+            action={
               <ButtonLink href={ROUTES.studio} className="mt-1">
                 Stüdyoyu aç
               </ButtonLink>
-            </CardContent>
-          </Card>
+            }
+          />
         ) : (
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
             {generations.map((g) => (

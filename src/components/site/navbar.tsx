@@ -34,26 +34,25 @@ export async function Navbar() {
 
   return (
     <header className="sticky top-3 z-40 w-full px-3 sm:top-4 sm:px-6">
-      <div className="mx-auto flex h-14 max-w-5xl items-center justify-between gap-4 rounded-full border border-border bg-card/95 px-3 shadow-sm backdrop-blur-md sm:px-5">
-        <div className="flex items-center gap-8">
-          <Logo />
-          <nav className="hidden items-center gap-1 md:flex">
-            <NavLink href={ROUTES.studio} icon={<Sparkles className="size-4" />}>
-              Stüdyo
+      <div className="relative mx-auto flex h-14 max-w-5xl items-center justify-between gap-4 rounded-full border border-border bg-card/95 px-3 shadow-sm backdrop-blur-md sm:px-5">
+        <Logo />
+
+        <nav className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-1 md:flex">
+          <NavLink href={ROUTES.studio} icon={<Sparkles className="size-4" />}>
+            Stüdyo
+          </NavLink>
+          <NavLink href={ROUTES.gallery} icon={<Images className="size-4" />}>
+            Hazır Stüdyolar
+          </NavLink>
+          {user && (
+            <NavLink
+              href={ROUTES.generations}
+              icon={<LayoutDashboard className="size-4" />}
+            >
+              Üretimlerim
             </NavLink>
-            <NavLink href={ROUTES.gallery} icon={<Images className="size-4" />}>
-              Hazır Stüdyolar
-            </NavLink>
-            {user && (
-              <NavLink
-                href={ROUTES.generations}
-                icon={<LayoutDashboard className="size-4" />}
-              >
-                Üretimlerim
-              </NavLink>
-            )}
-          </nav>
-        </div>
+          )}
+        </nav>
 
         <div className="flex items-center gap-3">
           {user ? (

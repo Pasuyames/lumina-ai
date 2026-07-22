@@ -122,7 +122,7 @@ export default async function LandingPage() {
       <section className="relative overflow-hidden pb-8 pt-20 sm:pt-28">
         <div
           aria-hidden
-          className="coral-glow pointer-events-none absolute -right-20 top-0 -z-10 h-[560px] w-[560px]"
+          className="coral-glow pointer-events-none absolute -right-32 -top-40 -z-10 h-[560px] w-[560px]"
         />
 
         <div className="relative mx-auto grid max-w-6xl items-center gap-10 px-4 sm:px-6 lg:grid-cols-[1.1fr_1fr] lg:gap-4">

@@ -269,6 +269,42 @@ export default async function LandingPage() {
         </div>
       </section>
 
+      {/* ── RAKAMLARLA ── */}
+      <section className="mx-auto w-full max-w-6xl px-4 sm:px-6">
+        <div className="relative overflow-hidden rounded-[2rem] border border-border bg-accent/40 p-8 sm:p-12">
+          <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-center sm:-space-x-4">
+            <div className="flex-1 rounded-full border border-border bg-card px-8 py-6 text-center shadow-sm sm:rotate-[-1deg]">
+              <p className="font-heading text-4xl font-semibold sm:text-5xl">
+                60 <span className="text-primary">saniye</span>
+              </p>
+              <p className="mt-1.5 text-sm text-muted-foreground">
+                ortalama üretim süresi
+              </p>
+            </div>
+            <div className="flex-1 rounded-full border border-border bg-card px-8 py-6 text-center shadow-md sm:z-10 sm:scale-105">
+              <p className="font-heading text-4xl font-semibold sm:text-5xl">
+                3 <span className="text-primary">görsel</span>
+              </p>
+              <p className="mt-1.5 text-sm text-muted-foreground">
+                kayıt olunca hediye
+              </p>
+            </div>
+            <div className="flex-1 rounded-full border border-border bg-card px-8 py-6 text-center shadow-sm sm:rotate-[1deg]">
+              <p className="font-heading text-4xl font-semibold sm:text-5xl">
+                6 <span className="text-primary">yol</span>
+              </p>
+              <p className="mt-1.5 text-sm text-muted-foreground">
+                her ürüne uygun üretim seçeneği
+              </p>
+            </div>
+          </div>
+          <p className="relative mt-8 text-center text-xs text-muted-foreground">
+            Ortalama süre yoğun saatlerde uzayabilir; kredi yalnızca başarılı
+            üretimde düşer.
+          </p>
+        </div>
+      </section>
+
       {/* ── DOKUKİLİDİ ── */}
       <section className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6">
         <div className="grid items-center gap-10 lg:grid-cols-2">

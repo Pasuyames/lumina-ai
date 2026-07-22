@@ -108,7 +108,11 @@ export function StudioClient({
       toast.error("Lütfen bir konsept seçin veya kendi promptunuzu yazın.");
       return;
     }
-    runGenerate(prompt, title);
+    // usingCustom=true → kullanıcı kendi ham metnini yazdı, ürüne özel
+    // zenginleştirme gerekir ("custom"). usingCustom=false → kullanıcı 3
+    // AI-konseptinden birini seçti, bu zaten analyzeProduct() ile ürüne özel
+    // üretilmiş — yeniden zenginleştirme çifte Vision maliyeti olur ("concept").
+    runGenerate(prompt, title, undefined, usingCustom ? "custom" : "concept");
   }
 
   // ── SONUÇ EKRANI ──
@@ -187,7 +191,12 @@ export function StudioClient({
             quality={quality}
             onQualityChange={setQuality}
             onGenerate={() =>
-              runGenerate(template.prompt, template.title, template.id)
+              runGenerate(
+                template.prompt,
+                template.title,
+                template.id,
+                "template",
+              )
             }
             onSwitchToAi={handleAnalyzeClick}
           />
@@ -208,7 +217,7 @@ export function StudioClient({
                 toast.error("Lütfen sahnenizi birkaç cümleyle anlatın.");
                 return;
               }
-              runGenerate(p, "Özel konsept");
+              runGenerate(p, "Özel konsept", undefined, "custom");
             }}
             onBack={() => setWritingPrompt(false)}
           />

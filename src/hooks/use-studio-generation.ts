@@ -110,7 +110,12 @@ export function useStudioGeneration({
   }
 
   // ── Aşama 2: Render ──
-  function runGenerate(prompt: string, title: string, templateId?: string) {
+  function runGenerate(
+    prompt: string,
+    title: string,
+    templateId?: string,
+    promptSource: "concept" | "template" | "custom" = "concept",
+  ) {
     if (!file) {
       toast.error("Önce bir ürün görseli yükleyin.");
       return;
@@ -152,6 +157,7 @@ export function useStudioGeneration({
           templateId,
           aspectRatio,
           quality,
+          promptSource,
         });
 
         if (!res.ok) {

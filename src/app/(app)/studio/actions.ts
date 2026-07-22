@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { analyzeProduct, type ProductAnalysis } from "@/lib/gemini/analyze";
 import { analyzeForCreative } from "@/lib/gemini/creative";
+import { enrichTemplatePrompt, enrichCustomPrompt } from "@/lib/gemini/architect";
 import { generateProductImage } from "@/lib/gemini/generate";
 import {
   analyzeForSalesSet,
@@ -184,6 +185,12 @@ export async function generateImageAction(input: {
   templateId?: string;
   aspectRatio?: string;
   quality?: string;
+  /**
+   * "concept" (varsayılan): prompt zaten analyzeProduct() ile ürüne özel
+   * üretilmiş, olduğu gibi kullanılır. "template"/"custom": prompt render'dan
+   * önce enrichTemplatePrompt/enrichCustomPrompt ile ürüne özel zenginleştirilir.
+   */
+  promptSource?: "concept" | "template" | "custom";
 }): Promise<GenerateResult> {
   const supabase = await createClient();
   const {
@@ -239,7 +246,49 @@ export async function generateImageAction(input: {
     };
   }
 
-  // 2) Üretim kaydını 'processing' olarak aç.
+  // 2) "template"/"custom" ise: kaynak görseli INSERT'ten önce indir ve
+  // prompt'u ürüne özel zenginleştir (kredi düşmez). "concept" (varsayılan)
+  // durumunda prompt zaten analyzeProduct() ile ürüne özel üretilmiş —
+  // yeniden zenginleştirmek çifte Vision maliyeti olur, atlanır.
+  const promptSource = input.promptSource ?? "concept";
+  let finalPrompt = prompt;
+  let srcBase64: string | undefined;
+
+  if (promptSource === "template" || promptSource === "custom") {
+    const { data: blob, error: dlErr } = await supabase.storage
+      .from(BUCKET)
+      .download(input.sourcePath);
+    if (dlErr || !blob) {
+      return { ok: false, error: "Kaynak görsel okunamadı." };
+    }
+    srcBase64 = Buffer.from(await blob.arrayBuffer()).toString("base64");
+
+    try {
+      const enriched =
+        promptSource === "template"
+          ? await enrichTemplatePrompt(
+              srcBase64,
+              input.mimeType,
+              conceptTitle,
+              prompt,
+              input.category,
+            )
+          : await enrichCustomPrompt(
+              srcBase64,
+              input.mimeType,
+              prompt,
+              input.category,
+            );
+      finalPrompt = enriched.prompt.slice(0, MAX_PROMPT_CHARS);
+    } catch (e) {
+      return {
+        ok: false,
+        error: e instanceof Error ? e.message : "Zenginleştirme başarısız oldu.",
+      };
+    }
+  }
+
+  // 3) Üretim kaydını 'processing' olarak aç.
   const { data: gen, error: genErr } = await supabase
     .from("generations")
     .insert({
@@ -248,7 +297,7 @@ export async function generateImageAction(input: {
       source_image_path: input.sourcePath,
       category: input.category?.slice(0, 40) ?? null,
       concept_title: conceptTitle,
-      prompt,
+      prompt: finalPrompt,
       template_id: input.templateId ?? null,
       model: process.env.GEMINI_IMAGE_MODEL ?? "gemini-3-pro-image-preview",
       credits_spent: creditCost,
@@ -261,23 +310,25 @@ export async function generateImageAction(input: {
   }
 
   try {
-    // 3) Kaynak görseli depodan indir.
-    const { data: blob, error: dlErr } = await supabase.storage
-      .from(BUCKET)
-      .download(input.sourcePath);
-    if (dlErr || !blob) throw new Error("Kaynak görsel okunamadı.");
-    const srcBase64 = Buffer.from(await blob.arrayBuffer()).toString("base64");
+    // 4) Kaynak görsel henüz indirilmediyse (promptSource "concept") indir.
+    if (!srcBase64) {
+      const { data: blob, error: dlErr } = await supabase.storage
+        .from(BUCKET)
+        .download(input.sourcePath);
+      if (dlErr || !blob) throw new Error("Kaynak görsel okunamadı.");
+      srcBase64 = Buffer.from(await blob.arrayBuffer()).toString("base64");
+    }
 
-    // 4) Nano Banana 2 ile render.
+    // 5) Nano Banana 2 ile render.
     const image = await generateProductImage(
       srcBase64,
       input.mimeType,
-      prompt,
+      finalPrompt,
       aspectRatio,
       quality,
     );
 
-    // 5) Sonucu depola.
+    // 6) Sonucu depola.
     const resultPath = `${user.id}/results/${gen.id}.png`;
     const resultBytes = Buffer.from(image.base64, "base64");
     const { error: rUpErr } = await supabase.storage
@@ -294,7 +345,7 @@ export async function generateImageAction(input: {
       data: { publicUrl: resultUrl },
     } = supabase.storage.from(BUCKET).getPublicUrl(resultPath);
 
-    // 6) Krediyi atomik düş (yalnızca başarılı render sonrası).
+    // 7) Krediyi atomik düş (yalnızca başarılı render sonrası).
     const { data: newBalance, error: spendErr } = await supabase.rpc(
       "spend_credits",
       {
@@ -309,7 +360,7 @@ export async function generateImageAction(input: {
       throw new Error("Kredi düşülemedi.");
     }
 
-    // 7) Üretimi tamamlandı olarak işaretle.
+    // 8) Üretimi tamamlandı olarak işaretle.
     await supabase
       .from("generations")
       .update({

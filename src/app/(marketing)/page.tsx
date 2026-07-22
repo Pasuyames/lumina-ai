@@ -9,6 +9,10 @@ import {
   Infinity as InfinityIcon,
   EyeOff,
   Zap,
+  LayoutGrid,
+  Shuffle,
+  ImageIcon,
+  PencilLine,
 } from "lucide-react";
 import { ButtonLink } from "@/components/ui/button-link";
 import { Badge } from "@/components/ui/badge";
@@ -40,6 +44,45 @@ const STEPS = [
     icon: Sparkles,
     title: "İndir",
     desc: "Ürünün şekli korunur; arka plan, ışık ve yansıma yeniden üretilir.",
+  },
+];
+
+const CAPABILITIES = [
+  {
+    icon: LayoutGrid,
+    title: "Satış Seti",
+    desc: "Pazaryeri ana görseli, model üstünde, detay ve vitrin karesi — tek tıkla 4 görsel.",
+    badge: "4 kredi",
+  },
+  {
+    icon: Wand2,
+    title: "AI Konsept Öner",
+    desc: "Ürününüzü analiz eder, birbirinden farklı 3 lüks stüdyo konsepti sunar.",
+    badge: "Ücretsiz",
+  },
+  {
+    icon: Shuffle,
+    title: "Kreatif Üret",
+    desc: "Hiçbir şey seçmeden tek tıkla cüretkâr, sürpriz bir sahne üretilir.",
+    badge: "1 kredi",
+  },
+  {
+    icon: ImageIcon,
+    title: "Hazır Stüdyolar",
+    desc: "30'dan fazla küratörlü sahneden birini seçin, ürününüz anında oraya taşınsın.",
+    badge: "1 kredi",
+  },
+  {
+    icon: PencilLine,
+    title: "Kendi Promptunuz",
+    desc: "Hayalinizdeki sahneyi birkaç cümleyle anlatın, ürününüz o sahneye taşınsın.",
+    badge: "1 kredi",
+  },
+  {
+    icon: Sparkles,
+    title: "2K / 4K Kalite",
+    desc: "İhtiyacınıza göre standart veya yüksek çözünürlükte üretim yapın.",
+    badge: "1-2 kredi",
   },
 ];
 
@@ -191,6 +234,36 @@ export default async function LandingPage() {
                 {s.title}
               </h3>
               <p className="mt-1.5 text-sm text-muted-foreground">{s.desc}</p>
+            </Card>
+          ))}
+        </div>
+      </section>
+
+      {/* ── YETENEKLER ── */}
+      <section className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6">
+        <div className="mb-10 max-w-xl">
+          <p className="text-sm font-semibold text-primary">Stüdyoda neler var</p>
+          <h2 className="font-heading mt-2 text-2xl font-semibold sm:text-3xl">
+            Tek bir fotoğraftan altı farklı yol.
+          </h2>
+          <p className="mt-3 text-muted-foreground">
+            Her üretim yalnızca başarılı olduğunda kredi harcar; hangi yolu
+            seçerseniz seçin ürününüzün gerçekliği DokuKilidi ile korunur.
+          </p>
+        </div>
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {CAPABILITIES.map((c) => (
+            <Card key={c.title} className="p-6">
+              <span className="grid size-11 place-items-center rounded-lg bg-primary/10 text-primary ring-1 ring-primary/20">
+                <c.icon className="size-5" />
+              </span>
+              <h3 className="font-heading mt-4 text-base font-medium">
+                {c.title}
+              </h3>
+              <p className="mt-1.5 text-sm text-muted-foreground">{c.desc}</p>
+              <Badge variant="secondary" className="mt-4 text-xs">
+                {c.badge}
+              </Badge>
             </Card>
           ))}
         </div>

@@ -95,65 +95,62 @@ export default async function LandingPage() {
     <div className="flex flex-col">
       {/* ── HERO ── */}
       <section className="relative overflow-hidden pb-8 pt-20 sm:pt-28">
-        <div className="mx-auto max-w-3xl px-4 text-center sm:px-6">
-          <Badge
-            variant="outline"
-            className="mb-6 gap-1.5 border-border bg-card px-3 py-1 shadow-sm"
-          >
-            <Gem className="size-3.5 text-primary" />
-            Takı · Saat · Çanta için tasarlandı
-          </Badge>
-          <h1 className="font-heading mx-auto max-w-2xl text-balance text-5xl font-extrabold leading-[1.05] text-foreground sm:text-6xl md:text-7xl">
-            Telefon çekiminden
-            <br />
-            <span className="font-accent text-primary">stüdyo kalitesine</span>
-          </h1>
-          <p className="mx-auto mt-6 max-w-xl text-pretty text-lg text-muted-foreground">
-            60 saniyede, tek fotoğraftan profesyonel ürün çekimi.
-          </p>
-          <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
-            <ButtonLink href={ROUTES.register} size="lg" className="gap-2">
-              Ücretsiz Dene — 3 görsel hediye <ArrowRight className="size-4" />
-            </ButtonLink>
-            <ButtonLink href={ROUTES.gallery} size="lg" variant="outline">
-              Stüdyoları Keşfet
-            </ButtonLink>
-          </div>
-          <p className="mt-4 text-sm text-muted-foreground">
-            <strong className="text-foreground">Kart bilgisi gerekmez.</strong>
-          </p>
-        </div>
+        <div
+          aria-hidden
+          className="coral-glow pointer-events-none absolute -right-20 top-0 -z-10 h-[560px] w-[560px]"
+        />
 
-        {/* Hero görseli — projede gerçek ürün fotoğrafı bulunmadığı için
-            (bkz. brief) yumuşak stüdyo-ışığı kompozisyonu + süzülen rozetler. */}
-        <div className="relative mx-auto mt-16 max-w-4xl px-4 sm:px-6">
-          <div
-            aria-hidden
-            className="coral-glow pointer-events-none absolute -inset-10 -z-10"
-          />
-          <div className="relative aspect-[16/10] overflow-hidden rounded-[2rem] border border-border bg-card shadow-[0_30px_80px_-30px_rgba(24,24,27,0.25)] sm:aspect-[16/9]">
-            <div
-              aria-hidden
-              className="absolute inset-0 bg-[radial-gradient(60%_60%_at_50%_38%,#fff,transparent)]"
-            />
-            <div className="absolute inset-0 grid place-items-center">
-              <FacetedGem className="h-48 w-48 sm:h-64 sm:w-64" />
+        <div className="relative mx-auto grid max-w-6xl items-center gap-10 px-4 sm:px-6 lg:grid-cols-[1.1fr_1fr] lg:gap-4">
+          {/* Metin — masaüstünde sola yaslı, mobilde ortalanmış */}
+          <div className="text-center lg:text-left">
+            <Badge
+              variant="outline"
+              className="mb-6 gap-1.5 border-border bg-card px-3 py-1 shadow-sm"
+            >
+              <Gem className="size-3.5 text-primary" />
+              Takı · Saat · Çanta için tasarlandı
+            </Badge>
+            <h1 className="font-heading text-balance text-5xl font-extrabold leading-[1.05] text-foreground sm:text-6xl lg:text-7xl">
+              Telefon çekiminden
+              <br />
+              <span className="font-accent text-primary">stüdyo kalitesine</span>
+            </h1>
+            <p className="mx-auto mt-6 max-w-xl text-pretty text-lg text-muted-foreground lg:mx-0">
+              60 saniyede, tek fotoğraftan profesyonel ürün çekimi.
+            </p>
+            <div className="mt-10 flex flex-wrap items-center justify-center gap-3 lg:justify-start">
+              <ButtonLink href={ROUTES.register} size="lg" className="gap-2">
+                Ücretsiz Dene — 3 görsel hediye <ArrowRight className="size-4" />
+              </ButtonLink>
+              <ButtonLink href={ROUTES.gallery} size="lg" variant="outline">
+                Stüdyoları Keşfet
+              </ButtonLink>
             </div>
+            <p className="mt-4 text-sm text-muted-foreground">
+              <strong className="text-foreground">Kart bilgisi gerekmez.</strong>
+            </p>
+          </div>
+
+          {/* Hero görseli — başlığın yanında/arkasında taşan faset obje;
+              projede gerçek ürün fotoğrafı bulunmadığı için (bkz. brief)
+              soyut kompozisyon + süzülen rozetler kullanıldı. */}
+          <div className="relative mx-auto flex h-[360px] w-full max-w-md items-center justify-center sm:h-[440px] lg:mx-0 lg:h-[520px] lg:max-w-none lg:justify-end">
+            <FacetedGem className="h-56 w-56 sm:h-72 sm:w-72 lg:h-96 lg:w-96 lg:translate-x-10" />
 
             <FloatingBadge
               icon={<Sparkles className="size-3.5" />}
               label="AI destekli"
-              className="left-[6%] top-[16%] -rotate-3"
+              className="left-[2%] top-[10%] -rotate-3 sm:left-[8%]"
             />
             <FloatingBadge
               icon={<Zap className="size-3.5" />}
               label="60 saniye"
-              className="right-[8%] top-[22%] rotate-2"
+              className="right-[4%] top-[6%] rotate-2 lg:right-[14%]"
             />
             <FloatingBadge
               icon={<ShieldCheck className="size-3.5" />}
               label="DokuKilidi"
-              className="bottom-[14%] left-[12%] rotate-2"
+              className="bottom-[8%] left-[6%] rotate-2 sm:left-[10%]"
             />
           </div>
         </div>

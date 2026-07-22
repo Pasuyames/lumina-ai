@@ -72,5 +72,7 @@ export async function adjustCreditsAction(
   }
 
   revalidatePath("/admin");
+  revalidatePath("/admin/users");
+  revalidatePath(`/admin/users/${targetUserId}`);
   return { success: "Kredi bakiyesi güncellendi." };
 }

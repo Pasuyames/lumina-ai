@@ -134,19 +134,7 @@ export default async function LandingPage() {
               className="absolute inset-0 bg-[radial-gradient(60%_60%_at_50%_38%,#fff,transparent)]"
             />
             <div className="absolute inset-0 grid place-items-center">
-              <div className="relative">
-                <div
-                  aria-hidden
-                  className="coral-gradient-bg absolute -inset-8 rounded-full opacity-20 blur-2xl"
-                />
-                <span className="relative grid size-28 place-items-center rounded-full bg-card text-primary shadow-[0_20px_50px_-15px_rgba(201,77,44,0.35)] ring-1 ring-border sm:size-40">
-                  <Gem className="size-14 sm:size-20" strokeWidth={1.25} />
-                </span>
-                <div
-                  aria-hidden
-                  className="absolute -bottom-5 left-1/2 h-4 w-24 -translate-x-1/2 rounded-full bg-foreground/10 blur-md sm:-bottom-6 sm:w-32"
-                />
-              </div>
+              <FacetedGem className="h-48 w-48 sm:h-64 sm:w-64" />
             </div>
 
             <FloatingBadge
@@ -391,5 +379,38 @@ function FloatingBadge({
       <span className="text-primary">{icon}</span>
       {label}
     </span>
+  );
+}
+
+/**
+ * Hero'nun merkezindeki çok yüzeyli (faceted) mercan-turuncu obje — Lumina'nın
+ * "ışığı yakalayan yüzey" fikrini (DokuKilidi: ürünün dokusu/parlaklığı
+ * korunur) somutlaştıran orijinal bir SVG kompozisyon. Altıgen bir gövdeyi
+ * merkezden 6 üçgen faseta bölüp her birine ayrı bir ton vererek, tek bir
+ * ışık kaynağının (sağ üst) yüzeylere farklı düştüğü izlenimi verir —
+ * mücevher kesimindeki faset mantığının soyutlanmış hali.
+ */
+function FacetedGem({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 300 300"
+      className={className}
+      role="img"
+      aria-label="Çok yüzeyli mercan-turuncu obje"
+    >
+      <polygon points="150,150 215,37.4 280,150" fill="#FBAA8E" />
+      <polygon points="150,150 85,37.4 215,37.4" fill="#F4785F" />
+      <polygon points="150,150 20,150 85,37.4" fill="#EE6D53" />
+      <polygon points="150,150 85,262.6 20,150" fill="#E85A3C" />
+      <polygon points="150,150 215,262.6 85,262.6" fill="#D14E33" />
+      <polygon points="150,150 280,150 215,262.6" fill="#C94D2C" />
+      <polygon
+        points="150,150 215,37.4 280,150 215,262.6 85,262.6 20,150 85,37.4"
+        fill="none"
+        stroke="#ffffff"
+        strokeOpacity="0.25"
+        strokeWidth="1.5"
+      />
+    </svg>
   );
 }

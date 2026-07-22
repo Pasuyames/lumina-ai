@@ -520,7 +520,7 @@ export default async function LandingPage() {
                 <ButtonLink
                   href={ROUTES.register}
                   className="w-full"
-                  variant={pkg.is_popular ? "default" : "outline"}
+                  variant={pkg.is_popular ? "secondary" : "outline"}
                 >
                   Başla
                 </ButtonLink>

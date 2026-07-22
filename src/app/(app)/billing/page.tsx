@@ -52,7 +52,7 @@ export default async function BillingPage() {
                 <input type="hidden" name="package_id" value={pkg.id} />
                 <PurchaseButton
                   className="w-full"
-                  variant={pkg.is_popular ? "default" : "outline"}
+                  variant={pkg.is_popular ? "secondary" : "outline"}
                 >
                   Satın al
                 </PurchaseButton>

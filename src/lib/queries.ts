@@ -1,6 +1,6 @@
 import "server-only";
 import { createClient } from "@/lib/supabase/server";
-import type { Credits, Generation, Package } from "@/lib/supabase/types";
+import type { Credits, Generation, Package, Profile } from "@/lib/supabase/types";
 
 /** Oturumdaki kullanıcıyı döndürür (yoksa null). */
 export async function getCurrentUser() {
@@ -9,6 +9,17 @@ export async function getCurrentUser() {
     data: { user },
   } = await supabase.auth.getUser();
   return user;
+}
+
+/** Kullanıcının profil kaydını döndürür. */
+export async function getProfile(userId: string): Promise<Profile | null> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", userId)
+    .maybeSingle();
+  return data;
 }
 
 /** Kullanıcının kredi bakiyesini döndürür. */

@@ -10,6 +10,7 @@ import {
   LayoutDashboard,
   User as UserIcon,
   LogOut,
+  Settings,
 } from "lucide-react";
 import {
   Dialog,
@@ -94,6 +95,12 @@ export function MobileNav({
                 icon={<UserIcon className="size-4" />}
               >
                 Kredi & Paketler
+              </MobileNavLink>
+              <MobileNavLink
+                href={ROUTES.settings}
+                icon={<Settings className="size-4" />}
+              >
+                Ayarlar
               </MobileNavLink>
             </>
           )}

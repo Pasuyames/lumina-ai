@@ -5,6 +5,7 @@ import {
   Sparkles,
   LogOut,
   User as UserIcon,
+  Settings,
 } from "lucide-react";
 import { Logo } from "@/components/site/logo";
 import { NavLink } from "@/components/site/nav-link";
@@ -79,6 +80,9 @@ export async function Navbar() {
                   </DropdownMenuItem>
                   <DropdownMenuItem render={<Link href={ROUTES.billing} />}>
                     <UserIcon className="size-4" /> Kredi & Paketler
+                  </DropdownMenuItem>
+                  <DropdownMenuItem render={<Link href={ROUTES.settings} />}>
+                    <Settings className="size-4" /> Ayarlar
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <form action={signOutAction} className="w-full">

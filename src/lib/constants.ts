@@ -42,6 +42,7 @@ export const ROUTES = {
   gallery: "/studios",
   billing: "/billing",
   settings: "/settings",
+  admin: "/admin",
   terms: "/terms",
   privacy: "/privacy",
   refund: "/refund",

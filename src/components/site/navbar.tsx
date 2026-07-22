@@ -6,6 +6,7 @@ import {
   LogOut,
   User as UserIcon,
   Settings,
+  ShieldCheck,
 } from "lucide-react";
 import { Logo } from "@/components/site/logo";
 import { NavLink } from "@/components/site/nav-link";
@@ -22,12 +23,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ROUTES } from "@/lib/constants";
-import { getCurrentUser, getCredits } from "@/lib/queries";
+import { getCurrentUser, getCredits, getProfile } from "@/lib/queries";
 import { signOutAction } from "@/app/(auth)/actions";
 
 export async function Navbar() {
   const user = await getCurrentUser();
   const credits = user ? await getCredits(user.id) : null;
+  const profile = user ? await getProfile(user.id) : null;
   const initial =
     (user?.user_metadata?.full_name?.[0] as string | undefined) ??
     user?.email?.[0]?.toUpperCase() ??
@@ -84,9 +86,15 @@ export async function Navbar() {
                   <DropdownMenuItem render={<Link href={ROUTES.settings} />}>
                     <Settings className="size-4" /> Ayarlar
                   </DropdownMenuItem>
+                  {profile?.is_admin && (
+                    <DropdownMenuItem render={<Link href={ROUTES.admin} />}>
+                      <ShieldCheck className="size-4" /> Admin
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuSeparator />
                   <form action={signOutAction} className="w-full">
                     <DropdownMenuItem
+                      nativeButton
                       render={<button type="submit" className="w-full" />}
                     >
                       <LogOut className="size-4" /> Çıkış yap

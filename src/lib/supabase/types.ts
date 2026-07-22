@@ -21,6 +21,7 @@ export interface Database {
           email: string | null;
           full_name: string | null;
           avatar_url: string | null;
+          is_admin: boolean;
           created_at: string;
           updated_at: string;
         };
@@ -29,6 +30,7 @@ export interface Database {
           email?: string | null;
           full_name?: string | null;
           avatar_url?: string | null;
+          is_admin?: boolean;
         };
         Update: Partial<Database["public"]["Tables"]["profiles"]["Insert"]>;
         Relationships: [];

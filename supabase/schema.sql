@@ -252,6 +252,36 @@ end;
 $$;
 
 -- ══════════════════════════════════════════════════════════════
+-- 8.5 ADMIN YETKİLENDİRME
+-- ══════════════════════════════════════════════════════════════
+alter table public.profiles add column if not exists is_admin boolean not null default false;
+
+-- profiles_update_own (aşağıda) satır bazlı korur, kolon bazlı değil —
+-- kullanıcı kendi is_admin'ini client'tan true yapabilir. Bu trigger,
+-- service_role dışından gelen is_admin değişikliğini sessizce eski
+-- değerine sıfırlar. İlk admin SADECE Supabase Studio SQL editöründen
+-- manuel atanır (`update profiles set is_admin = true where email = '...'`);
+-- self-servis admin oluşturma yoktur.
+create or replace function public.prevent_is_admin_self_escalation()
+returns trigger
+language plpgsql
+set search_path = public
+as $$
+begin
+  if new.is_admin is distinct from old.is_admin and auth.role() <> 'service_role' then
+    new.is_admin := old.is_admin;
+  end if;
+  return new;
+end;
+$$;
+
+drop trigger if exists profiles_prevent_admin_escalation on public.profiles;
+create trigger profiles_prevent_admin_escalation
+  before update on public.profiles
+  for each row
+  execute function public.prevent_is_admin_self_escalation();
+
+-- ══════════════════════════════════════════════════════════════
 -- 9. ROW LEVEL SECURITY
 -- ══════════════════════════════════════════════════════════════
 alter table public.profiles            enable row level security;

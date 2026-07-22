@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { env } from "@/lib/env";
 
 /** Korumalı alanlar — oturum yoksa /login'e yönlendirilir. */
-const PROTECTED_PREFIXES = ["/dashboard", "/studio", "/generations", "/billing", "/settings"];
+const PROTECTED_PREFIXES = ["/dashboard", "/studio", "/generations", "/billing", "/settings", "/admin"];
 
 /**
  * Her istekte Supabase oturum çerezlerini tazeler ve korumalı

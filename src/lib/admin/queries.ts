@@ -42,3 +42,27 @@ export async function listUsersWithCredits(limit = 100): Promise<AdminUserRow[]>
     balance: balanceByUser.get(p.id) ?? 0,
   }));
 }
+
+export interface AdminStats {
+  userCount: number;
+  totalBalance: number;
+  revenueCents: number;
+}
+
+/** Panel üstündeki özet kartları için toplu istatistikler. */
+export async function getAdminStats(): Promise<AdminStats> {
+  const admin = createAdminClient();
+
+  const [{ count: userCount }, { data: credits }, { data: purchases }] =
+    await Promise.all([
+      admin.from("profiles").select("*", { count: "exact", head: true }),
+      admin.from("credits").select("balance"),
+      admin.from("purchases").select("amount_cents").eq("status", "paid"),
+    ]);
+
+  return {
+    userCount: userCount ?? 0,
+    totalBalance: (credits ?? []).reduce((sum, c) => sum + c.balance, 0),
+    revenueCents: (purchases ?? []).reduce((sum, p) => sum + p.amount_cents, 0),
+  };
+}

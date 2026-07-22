@@ -344,6 +344,109 @@ export default async function LandingPage() {
         </div>
       </section>
 
+      {/* ── NASIL ÇALIŞTIĞIMIZ (koyu bento) ── */}
+      <section className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6">
+        <div className="mb-10 max-w-xl">
+          <p className="text-sm font-semibold text-primary">Perde arkası</p>
+          <h2 className="font-heading mt-2 text-2xl font-semibold sm:text-3xl">
+            Tek akış, tek ekran.
+          </h2>
+        </div>
+
+        <div className="rounded-[2.25rem] bg-[#171512] p-4 sm:p-5">
+          <div className="grid gap-4 lg:grid-cols-3">
+            {/* Büyük panel 1: tek akış */}
+            <div className="relative overflow-hidden rounded-[1.75rem] border border-white/5 bg-[#1f1c17] p-8 sm:p-10 lg:col-span-2">
+              <h3 className="text-2xl font-semibold text-white sm:text-3xl">
+                Tek ekranda <span className="text-white/50">baştan sona</span>
+              </h3>
+              <p className="mt-3 max-w-md text-base leading-relaxed text-white/55">
+                Yükleyin, sahneyi seçin, indirin — ayrı bir düzenleme aracına ya
+                da tasarımcıya gerek kalmadan hepsi Stüdyo&apos;da.
+              </p>
+              <div className="mt-10 flex items-center justify-center gap-3">
+                <div className="flex items-center">
+                  <div className="h-24 w-16 -rotate-6 rounded-2xl border border-white/5 bg-[#26221c]" />
+                  <div className="-ml-8 h-28 w-20 -rotate-3 rounded-2xl border border-white/10 bg-[#2c2820]" />
+                  <div className="relative z-10 -ml-8 flex h-32 w-24 items-center justify-center rounded-2xl border border-white/15 bg-gradient-to-b from-[#332d24] to-[#211d17] shadow-[0_20px_40px_-14px_rgba(0,0,0,0.7)]">
+                    <Upload className="size-7 text-white/70" strokeWidth={1.5} />
+                  </div>
+                </div>
+                <span className="z-10 flex size-9 shrink-0 items-center justify-center rounded-full border border-primary/40 bg-[#171512] text-primary">
+                  <ArrowRight className="size-4" />
+                </span>
+                <div className="relative flex h-32 w-24 items-center justify-center rounded-2xl border border-primary/25 bg-gradient-to-b from-[#3a2018] to-[#2a150f]">
+                  <Sparkles className="size-7 text-primary" strokeWidth={1.5} />
+                  <span className="absolute -bottom-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-primary px-3 py-1 text-xs font-medium text-primary-foreground shadow-lg">
+                    Hazır
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Küçük panel: kredi verimliliği */}
+            <div className="flex flex-col items-center justify-center rounded-[1.75rem] border border-white/5 bg-[#1f1c17] p-8">
+              <span className="rounded-full bg-primary px-3.5 py-1.5 text-xs font-semibold text-primary-foreground shadow-[0_12px_24px_-8px_rgba(232,90,60,0.6)]">
+                1 kredi&apos;den başlar
+              </span>
+              <div className="mt-6 flex items-end gap-2.5">
+                <span className="h-8 w-5 rounded-full bg-white/10" />
+                <span className="h-14 w-5 rounded-full bg-gradient-to-b from-primary to-[#c94d2c]" />
+                <span className="h-10 w-5 rounded-full bg-white/10" />
+                <span className="h-20 w-5 rounded-full bg-white/15" />
+                <span className="h-6 w-5 rounded-full bg-white/10" />
+              </div>
+              <p className="mt-6 text-center text-sm text-white/50">
+                2K bir görsel 1, 4K bir görsel 2 kredi tutar
+              </p>
+            </div>
+
+            {/* Küçük panel: kullanım hakkı */}
+            <div className="rounded-[1.75rem] border border-white/5 bg-[#1f1c17] p-8">
+              <span className="grid size-12 place-items-center rounded-full border border-primary/30 bg-[#2a150f] text-primary">
+                <ShieldCheck className="size-5" strokeWidth={1.5} />
+              </span>
+              <h3 className="mt-5 text-2xl font-semibold text-white">
+                Sınırsız <span className="text-white/50">kullanım hakkı</span>
+              </h3>
+              <p className="mt-2 text-base leading-relaxed text-white/55">
+                Ürettiğiniz her görsel size ait — ürün sayfası, sosyal medya ya
+                da reklamda dilediğinizce kullanın.
+              </p>
+            </div>
+
+            {/* Büyük panel 2: stüdyo ihtiyacını ortadan kaldırma */}
+            <div className="relative overflow-hidden rounded-[1.75rem] border border-white/5 bg-[#1f1c17] p-8 sm:p-10 lg:col-span-2">
+              <div className="flex flex-col gap-8 sm:flex-row sm:items-center">
+                <div className="relative shrink-0">
+                  <span
+                    aria-hidden
+                    className="pointer-events-none absolute -left-5 -top-5 h-3 w-3 rounded-full bg-primary/70"
+                  />
+                  <span
+                    aria-hidden
+                    className="pointer-events-none absolute -bottom-4 left-16 h-2 w-2 rounded-full bg-primary/40"
+                  />
+                  <span className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-[0_14px_28px_-10px_rgba(232,90,60,0.8)]">
+                    <Gem className="size-4" strokeWidth={1.5} />
+                    Telefon → Vitrin
+                  </span>
+                </div>
+                <div>
+                  <h3 className="text-2xl font-semibold text-white">
+                    Stüdyo <span className="text-white/50">kirası yok</span>
+                  </h3>
+                  <p className="mt-2 max-w-md text-base leading-relaxed text-white/55">
+                    Fotoğrafçı randevusu, ekipman ya da stüdyo kirası olmadan —
+                    telefonunuzdaki fotoğraf yeterli başlangıç noktası.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ── HAZIR STÜDYOLAR ÖNİZLEME ── */}
       <section className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6">
         <div className="mb-8 flex items-end justify-between">

@@ -41,4 +41,7 @@ export const ROUTES = {
   generations: "/generations",
   gallery: "/studios",
   billing: "/billing",
+  terms: "/terms",
+  privacy: "/privacy",
+  refund: "/refund",
 } as const;

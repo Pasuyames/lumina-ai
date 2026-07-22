@@ -392,25 +392,41 @@ function FloatingBadge({
  */
 function FacetedGem({ className }: { className?: string }) {
   return (
-    <svg
-      viewBox="0 0 300 300"
-      className={className}
-      role="img"
-      aria-label="Çok yüzeyli mercan-turuncu obje"
-    >
-      <polygon points="150,150 215,37.4 280,150" fill="#FBAA8E" />
-      <polygon points="150,150 85,37.4 215,37.4" fill="#F4785F" />
-      <polygon points="150,150 20,150 85,37.4" fill="#EE6D53" />
-      <polygon points="150,150 85,262.6 20,150" fill="#E85A3C" />
-      <polygon points="150,150 215,262.6 85,262.6" fill="#D14E33" />
-      <polygon points="150,150 280,150 215,262.6" fill="#C94D2C" />
-      <polygon
-        points="150,150 215,37.4 280,150 215,262.6 85,262.6 20,150 85,37.4"
-        fill="none"
-        stroke="#ffffff"
-        strokeOpacity="0.25"
-        strokeWidth="1.5"
+    <div className={cn("gem-stage relative", className)}>
+      {/* Zemine oturan yumuşak gölge — objenin havada değil, bir yüzeyde
+          durduğu hissini verir (perspective ile birlikte "vitrin" etkisi). */}
+      <div
+        aria-hidden
+        className="absolute inset-x-[15%] bottom-[6%] h-[10%] rounded-[50%] bg-foreground/15 blur-md"
       />
-    </svg>
+      <svg
+        viewBox="0 0 300 300"
+        className="gem-showcase relative h-full w-full drop-shadow-[0_25px_35px_rgba(201,77,44,0.35)]"
+        role="img"
+        aria-label="Çok yüzeyli mercan-turuncu obje"
+      >
+        <polygon points="150,150 215,37.4 280,150" fill="#FDC3AE" />
+        <polygon points="150,150 85,37.4 215,37.4" fill="#F4785F" />
+        <polygon points="150,150 20,150 85,37.4" fill="#EE6D53" />
+        <polygon points="150,150 85,262.6 20,150" fill="#E85A3C" />
+        <polygon points="150,150 215,262.6 85,262.6" fill="#D14E33" />
+        <polygon points="150,150 280,150 215,262.6" fill="#C94D2C" />
+        {/* İnce iç çizgiler — her faseti ayrı bir yüzey gibi vurgular. */}
+        <polygon
+          points="150,150 215,37.4 280,150 215,262.6 85,262.6 20,150 85,37.4"
+          fill="none"
+          stroke="#ffffff"
+          strokeOpacity="0.3"
+          strokeWidth="1.5"
+          strokeLinejoin="round"
+        />
+        {/* Üst fasette küçük bir parıltı — ışığın direkt vurduğu izlenimi. */}
+        <polygon
+          points="150,150 215,37.4 245,93.7"
+          fill="#ffffff"
+          fillOpacity="0.35"
+        />
+      </svg>
+    </div>
   );
 }

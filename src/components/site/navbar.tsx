@@ -37,7 +37,7 @@ export async function Navbar() {
 
   return (
     <header className="sticky top-3 z-40 w-full px-3 sm:top-4 sm:px-6">
-      <div className="relative mx-auto flex h-14 max-w-5xl items-center justify-between gap-4 rounded-full border border-border bg-card/95 px-3 shadow-sm backdrop-blur-md sm:px-5">
+      <div className="relative mx-auto flex h-14 max-w-6xl items-center justify-between gap-4 rounded-full border border-border bg-card/95 px-3 shadow-sm backdrop-blur-md sm:px-5">
         <Logo />
 
         <nav className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-1 md:flex">

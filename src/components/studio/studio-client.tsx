@@ -13,6 +13,7 @@ import { TemplateGallery } from "@/components/studio/template-gallery";
 import { ResultStep } from "@/components/studio/result-step";
 import { SalesSetPanel } from "@/components/studio/sales-set-panel";
 import { SalesSetResult } from "@/components/studio/sales-set-result";
+import { RecentGenerationsStrip } from "@/components/studio/recent-generations-strip";
 import type { AspectRatioValue } from "@/components/studio/render-options";
 import type { StudioTemplate } from "@/lib/templates";
 import type { RenderQuality } from "@/lib/credits";
@@ -21,9 +22,11 @@ import { useStudioGeneration } from "@/hooks/use-studio-generation";
 export function StudioClient({
   initialBalance,
   initialTemplate,
+  recentGenerations = [],
 }: {
   initialBalance: number;
   initialTemplate: StudioTemplate | null;
+  recentGenerations?: { id: string; title: string | null; imageUrl: string }[];
 }) {
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -127,7 +130,15 @@ export function StudioClient({
   }
 
   // ── ÇALIŞMA EKRANI ──
+  const showingStartPanel =
+    !concepts &&
+    !template &&
+    !writingPrompt &&
+    !browsingTemplates &&
+    !browsingSalesSet;
+
   return (
+    <div>
     <div className="grid gap-8 lg:grid-cols-2">
       {/* SOL: yükleme + kategori */}
       <UploadStep
@@ -245,6 +256,10 @@ export function StudioClient({
           />
         )}
       </div>
+    </div>
+    {showingStartPanel && (
+      <RecentGenerationsStrip items={recentGenerations} />
+    )}
     </div>
   );
 }

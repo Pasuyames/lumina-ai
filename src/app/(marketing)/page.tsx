@@ -29,24 +29,6 @@ import { cn } from "@/lib/utils";
 
 const HERO_CATEGORIES = ["Takı", "Saat", "Çanta", "Aksesuar", "Parfüm"];
 
-const STEPS = [
-  {
-    icon: Upload,
-    title: "Yükle",
-    desc: "Telefonla çekilmiş sade bir ürün fotoğrafı yeterli.",
-  },
-  {
-    icon: Wand2,
-    title: "Konsept Seç",
-    desc: "Yapay zekâ ürünü analiz eder, lüks stüdyo konseptleri önerir.",
-  },
-  {
-    icon: Sparkles,
-    title: "İndir",
-    desc: "Ürünün şekli korunur; arka plan, ışık ve yansıma yeniden üretilir.",
-  },
-];
-
 const CAPABILITIES = [
   {
     icon: LayoutGrid,
@@ -211,31 +193,6 @@ export default async function LandingPage() {
               </span>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* ── NASIL ÇALIŞIR ── */}
-      <section className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6">
-        <div className="mb-10 text-center">
-          <h2 className="font-heading text-2xl font-semibold sm:text-3xl">
-            Nasıl çalışır
-          </h2>
-        </div>
-        <div className="grid gap-6 md:grid-cols-3">
-          {STEPS.map((s, i) => (
-            <Card key={s.title} className="relative p-6">
-              <span className="font-heading absolute right-5 top-4 text-4xl font-semibold text-muted/40">
-                0{i + 1}
-              </span>
-              <span className="grid size-11 place-items-center rounded-lg bg-primary/10 text-primary ring-1 ring-primary/20">
-                <s.icon className="size-5" />
-              </span>
-              <h3 className="font-heading mt-4 text-lg font-medium">
-                {s.title}
-              </h3>
-              <p className="mt-1.5 text-sm text-muted-foreground">{s.desc}</p>
-            </Card>
-          ))}
         </div>
       </section>
 

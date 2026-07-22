@@ -4,10 +4,12 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { ROUTES } from "@/lib/constants";
+import { env } from "@/lib/env";
 import { checkRateLimit, getClientIp } from "@/lib/security/rate-limit";
 import { safeInternalPath } from "@/lib/security/redirect";
 
 export type AuthState = { error: string } | null;
+export type ResetRequestState = { error: string } | { success: string } | null;
 
 /** E-posta + parola ile giriş. */
 export async function signInAction(
@@ -86,6 +88,77 @@ export async function signUpAction(
 
   revalidatePath("/", "layout");
   redirect(ROUTES.dashboard);
+}
+
+/** Şifre sıfırlama e-postası talebi — kayıtlı e-posta olup olmadığını sızdırmaz. */
+export async function requestPasswordResetAction(
+  _prev: ResetRequestState,
+  formData: FormData,
+): Promise<ResetRequestState> {
+  const email = String(formData.get("email") ?? "").trim().toLowerCase();
+  const neutralSuccess = {
+    success:
+      "Bu e-posta adresi kayıtlıysa, şifre sıfırlama bağlantısını içeren bir e-posta gönderdik.",
+  };
+
+  if (!email) {
+    return { error: "E-posta gereklidir." };
+  }
+
+  // Brute-force / e-posta bombalama koruması: IP+e-posta başına 15 dakikada 3 deneme.
+  const ip = await getClientIp();
+  const rl = checkRateLimit(`reset-request:${ip}:${email}`, 3, 15 * 60 * 1000);
+  if (!rl.ok) {
+    // Rate limit aşımında bile nötr mesajı döndürüyoruz — enumeration riski.
+    return neutralSuccess;
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${env.siteUrl}/auth/callback?next=${encodeURIComponent(ROUTES.resetPassword)}`,
+  });
+  if (error) {
+    console.error("[auth/reset-request] beklenmeyen hata:", error);
+  }
+
+  // Hata olsa da olmasa da aynı nötr mesaj — kayıtlı e-posta var/yok bilgisini sızdırmaz.
+  return neutralSuccess;
+}
+
+/** Recovery linkiyle gelen kullanıcının yeni şifre belirlemesi. */
+export async function updatePasswordAction(
+  _prev: AuthState,
+  formData: FormData,
+): Promise<AuthState> {
+  const password = String(formData.get("password") ?? "");
+  const confirmPassword = String(formData.get("confirm_password") ?? "");
+
+  if (password.length < 6) {
+    return { error: "Parola en az 6 karakter olmalıdır." };
+  }
+  if (password !== confirmPassword) {
+    return { error: "Parolalar eşleşmiyor." };
+  }
+
+  const supabase = await createClient();
+
+  // Bu action yalnızca recovery linkiyle açılan (exchangeCodeForSession
+  // sonrası geçici oturumlu) tarayıcıda anlamlıdır — oturum yoksa reddet.
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    return { error: "Bağlantının süresi dolmuş. Lütfen tekrar deneyin." };
+  }
+
+  const { error } = await supabase.auth.updateUser({ password });
+  if (error) {
+    console.error("[auth/update-password] beklenmeyen hata:", error);
+    return { error: "Parola güncellenemedi. Lütfen tekrar deneyin." };
+  }
+
+  revalidatePath("/", "layout");
+  redirect(ROUTES.login);
 }
 
 /** Çıkış. */

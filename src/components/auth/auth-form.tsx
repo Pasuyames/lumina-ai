@@ -72,7 +72,17 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
             />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="password">Parola</Label>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="password">Parola</Label>
+              {isLogin && (
+                <Link
+                  href={ROUTES.forgotPassword}
+                  className="text-xs font-medium text-primary hover:underline"
+                >
+                  Şifremi unuttum
+                </Link>
+              )}
+            </div>
             <Input
               id="password"
               name="password"

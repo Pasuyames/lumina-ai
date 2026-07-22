@@ -191,6 +191,12 @@ as $$
 declare
   new_balance integer;
 begin
+  -- security definer RLS'i bypass eder; çağıran kendi kredisi dışında
+  -- birini hedefleyemesin diye burada açıkça kontrol ediyoruz.
+  if auth.uid() is distinct from p_user_id and auth.role() <> 'service_role' then
+    raise exception 'Yetkisiz' using errcode = '42501';
+  end if;
+
   if p_amount <= 0 then
     raise exception 'Harcama tutarı pozitif olmalı';
   end if;
@@ -270,6 +276,17 @@ alter default privileges in schema public
   grant all on sequences to anon, authenticated, service_role;
 alter default privileges in schema public
   grant execute on functions to anon, authenticated, service_role;
+
+-- grant_credits normal kullanıcıya asla açık olmamalı: içinde çağıranın
+-- p_user_id ile eşleştiğine dair kontrol yok (satın alma/iade/admin kredi
+-- yüklemesi her zaman admin client/service_role üzerinden yapılır,
+-- billing/actions.ts ve admin panel bunu zaten böyle kullanıyor). Yukarıdaki
+-- "grant execute on all functions" ifadesinden SONRA çalışmalı, aksi halde
+-- o satır bu revoke'u geçersiz kılar. PUBLIC'ten de revoke ediyoruz çünkü
+-- Postgres yeni fonksiyonlara varsayılan olarak PUBLIC'e execute veriyor ve
+-- anon/authenticated bunu PUBLIC üzerinden miras alabiliyor.
+revoke execute on function public.grant_credits(uuid, integer, text)
+  from public, anon, authenticated;
 
 -- PROFILES: kullanıcı yalnızca kendi profilini görür/günceller
 drop policy if exists "profiles_select_own" on public.profiles;

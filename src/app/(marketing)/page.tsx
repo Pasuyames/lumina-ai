@@ -503,30 +503,42 @@ export default async function LandingPage() {
 
       {/* ── FİYATLANDIRMA ── */}
       <section className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6">
-        <div className="mb-10 text-center">
-          <h2 className="font-heading text-2xl font-semibold sm:text-3xl">
-            Basit, kredili fiyatlandırma
-          </h2>
-          <p className="mt-2 text-muted-foreground">
-            2K görsel 1 kredi, 4K görsel 2 kredi. Kullandıkça öde, abonelik yok.
+        <div className="relative overflow-hidden rounded-[2.25rem] border border-border bg-accent/30 px-6 py-14 sm:px-12 sm:py-16">
+          <div
+            aria-hidden
+            className="coral-glow pointer-events-none absolute -top-24 left-1/2 h-72 w-[600px] -translate-x-1/2 opacity-50"
+          />
+          <div className="relative mb-10 text-center">
+            <p className="text-sm font-semibold text-primary">Fiyatlandırma</p>
+            <h2 className="font-heading mt-2 text-2xl font-semibold sm:text-3xl">
+              Basit, kredili fiyatlandırma
+            </h2>
+            <p className="mx-auto mt-2 max-w-md text-muted-foreground">
+              2K görsel 1 kredi, 4K görsel 2 kredi. Kullandıkça öde, abonelik
+              yok.
+            </p>
+          </div>
+          <div className="relative grid gap-6 md:grid-cols-3 md:items-center">
+            {packages.map((pkg) => (
+              <PackageCard
+                key={pkg.id}
+                pkg={pkg}
+                action={
+                  <ButtonLink
+                    href={ROUTES.register}
+                    className="w-full gap-2"
+                    variant={pkg.is_popular ? "secondary" : "outline"}
+                  >
+                    Başla
+                    {pkg.is_popular && <ArrowRight className="size-4" />}
+                  </ButtonLink>
+                }
+              />
+            ))}
+          </div>
+          <p className="relative mt-8 text-center text-xs text-muted-foreground">
+            Fiyatlar KDV dahildir; kredi yalnızca başarılı üretimde düşer.
           </p>
-        </div>
-        <div className="grid gap-6 md:grid-cols-3">
-          {packages.map((pkg) => (
-            <PackageCard
-              key={pkg.id}
-              pkg={pkg}
-              action={
-                <ButtonLink
-                  href={ROUTES.register}
-                  className="w-full"
-                  variant={pkg.is_popular ? "secondary" : "outline"}
-                >
-                  Başla
-                </ButtonLink>
-              }
-            />
-          ))}
         </div>
       </section>
 

@@ -12,7 +12,10 @@ import {
 } from "lucide-react";
 import { ButtonLink } from "@/components/ui/button-link";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { BeforeAfterSlider } from "@/components/ui/before-after-slider";
 import { PackageCard } from "@/components/billing/package-card";
 import { ROUTES } from "@/lib/constants";
@@ -341,18 +344,43 @@ export default async function LandingPage() {
         </div>
       </section>
 
-      {/* ── CTA ── */}
-      <section className="mx-auto w-full max-w-6xl px-4 pb-24 sm:px-6">
-        <Card className="overflow-hidden border-primary/20 bg-gradient-to-br from-accent/50 to-card p-10 text-center sm:p-16">
-          <h2 className="font-heading mx-auto max-w-xl text-2xl font-semibold sm:text-4xl">
-            İlk 3 görseliniz bizden
+      {/* ── KAPANIŞ CTA ── */}
+      <section className="mx-auto w-full max-w-6xl px-4 pb-4 sm:px-6">
+        <Card className="relative overflow-hidden border-border p-10 text-center sm:p-16">
+          <div
+            aria-hidden
+            className="coral-glow pointer-events-none absolute -left-32 -top-24 h-72 w-72 opacity-60"
+          />
+          <h2 className="font-heading relative mx-auto max-w-2xl text-3xl font-extrabold leading-tight text-balance sm:text-5xl">
+            Ürününüzü <span className="font-accent text-primary">bugün</span>{" "}
+            stüdyo kalitesinde görün.
           </h2>
-          <p className="mx-auto mt-3 max-w-md text-muted-foreground">
-            Saniyeler içinde markanızın hak ettiği görselleri üretmeye başlayın.
+          <p className="relative mx-auto mt-4 max-w-md text-pretty text-muted-foreground">
+            E-postanızı bırakın, hesabınız hazır olsun — ilk 3 görsel bizden.
           </p>
-          <ButtonLink href={ROUTES.register} size="lg" className="mt-8 gap-2">
-            Ücretsiz hesap oluştur <ArrowRight className="size-4" />
-          </ButtonLink>
+
+          <form
+            action={ROUTES.register}
+            method="GET"
+            className="relative mx-auto mt-8 flex max-w-lg flex-col gap-3 sm:flex-row"
+          >
+            <Label htmlFor="cta-email" className="sr-only">
+              E-posta adresiniz
+            </Label>
+            <Input
+              id="cta-email"
+              name="email"
+              type="email"
+              placeholder="siz@markaniz.com"
+              className="h-12 flex-1 rounded-full bg-card px-6"
+            />
+            <Button type="submit" size="lg" className="gap-2">
+              Ücretsiz Başla <ArrowRight className="size-4" />
+            </Button>
+          </form>
+          <p className="relative mt-4 text-sm text-muted-foreground">
+            Kart bilgisi gerekmez · 60 saniyede ilk göseliniz hazır
+          </p>
         </Card>
       </section>
     </div>

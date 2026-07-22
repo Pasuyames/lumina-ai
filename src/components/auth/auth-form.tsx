@@ -66,6 +66,7 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
               required
               autoComplete="email"
               placeholder="ornek@marka.com"
+              defaultValue={searchParams.get("email") ?? undefined}
               aria-describedby={state?.error ? "auth-form-error" : undefined}
               aria-invalid={state?.error ? true : undefined}
             />

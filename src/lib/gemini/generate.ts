@@ -20,7 +20,7 @@ const PRESERVE_INSTRUCTION =
   "in focus as the hero of a premium e-commerce photograph.";
 
 /**
- * Her render'a kod tarafında zorlanan lüks kampanya estetiği — Lumina'nın imza
+ * Her render'a kod tarafında zorlanan lüks kampanya estetiği — Renza'nın imza
  * görünümü. Sahne İÇERİĞİNİ değiştirmez; ışık/renk/doku işleme kalitesini
  * yukarı çeker (REALISM_ANCHOR ile aynı desen: prompta güvenme, kodla zorla).
  */

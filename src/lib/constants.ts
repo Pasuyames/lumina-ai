@@ -1,6 +1,6 @@
 /** Uygulama geneli sabitler. */
 
-export const APP_NAME = "Lumina";
+export const APP_NAME = "Renza";
 export const APP_TAGLINE = "Yapay zekâ destekli ürün fotoğrafçılığı";
 
 /**

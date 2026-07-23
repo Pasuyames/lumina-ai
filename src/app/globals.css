@@ -48,13 +48,12 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-/* Lumina Warm Native — krem/beyaz zemin + tek mercan-turuncu vurgu.
-   Marka gradyanı (bkz. .coral-glow / .coral-badge-ring altında) tam olarak
-   #F4785F → #E85A3C hex değerlerini kullanır (brief'te sabitlendi). Metin/
-   ikon/link gibi TEXT bağlamlarında kullanılan --primary ise aynı ailenin
-   WCAG AA (4.5:1) kontrastı sağlayan biraz koyultulmuş tonu (#C94D2C) —
-   böylece gradyanın marka kimliği korunurken okunabilirlik ödün vermiyor.
-   bkz. docs/tasks/lumina-warm-native-brief.md */
+/* Renza — krem/beyaz zemin + tek kızıl-kırmızı vurgu (#FF2A00).
+   Marka gradyanı (bkz. .coral-glow / .coral-gradient-bg altında) tam olarak
+   #FF2A00 → #D62300 hex değerlerini kullanır. Metin/ikon/link gibi TEXT
+   bağlamlarında kullanılan --primary ise aynı ailenin WCAG AA (4.5:1)
+   kontrastı sağlayan koyultulmuş tonu (#D62300) — böylece marka kimliği
+   korunurken okunabilirlik ödün vermiyor. */
 :root {
   --background: #faf8f4;
   --foreground: #18181b;
@@ -62,7 +61,7 @@
   --card-foreground: #18181b;
   --popover: #ffffff;
   --popover-foreground: #18181b;
-  --primary: #c94d2c;
+  --primary: #D62300;
   --primary-foreground: #ffffff;
   --secondary: #f1ede6;
   --secondary-foreground: #18181b;
@@ -73,8 +72,8 @@
   --destructive: oklch(0.577 0.245 27.325);
   --border: #e7e1d6;
   --input: #e7e1d6;
-  --ring: #c94d2c;
-  --chart-1: #c94d2c;
+  --ring: #D62300;
+  --chart-1: #D62300;
   --chart-2: #e0895f;
   --chart-3: #8c8577;
   --chart-4: #b8b0a0;
@@ -82,12 +81,12 @@
   --radius: 0.625rem;
   --sidebar: #ffffff;
   --sidebar-foreground: #18181b;
-  --sidebar-primary: #c94d2c;
+  --sidebar-primary: #D62300;
   --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: #efeae1;
   --sidebar-accent-foreground: #18181b;
   --sidebar-border: #e7e1d6;
-  --sidebar-ring: #c94d2c;
+  --sidebar-ring: #D62300;
 }
 
 /* Uygulamada aktif bir dark-mode toggle'ı yok (tek tema) — .dark aynı
@@ -100,7 +99,7 @@
   --card-foreground: #f5f1ea;
   --popover: #1f1c17;
   --popover-foreground: #f5f1ea;
-  --primary: #ef8262;
+  --primary: #FF765B;
   --primary-foreground: #1f1108;
   --secondary: #292420;
   --secondary-foreground: #f5f1ea;
@@ -111,20 +110,20 @@
   --destructive: oklch(0.704 0.191 22.216);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 14%);
-  --ring: #ef8262;
-  --chart-1: #ef8262;
-  --chart-2: #c94d2c;
+  --ring: #FF765B;
+  --chart-1: #FF765B;
+  --chart-2: #D62300;
   --chart-3: #a8a096;
   --chart-4: #706a5f;
   --chart-5: #4a4540;
   --sidebar: #1f1c17;
   --sidebar-foreground: #f5f1ea;
-  --sidebar-primary: #ef8262;
+  --sidebar-primary: #FF765B;
   --sidebar-primary-foreground: #1f1108;
   --sidebar-accent: #332c25;
   --sidebar-accent-foreground: #f5f1ea;
   --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: #ef8262;
+  --sidebar-ring: #FF765B;
 }
 
 @layer base {
@@ -157,17 +156,17 @@
   }
 
   /* Marka gradyanı — SADECE dekoratif çerçeve/gölge/rozet aksanlarında
-     kullanılır (metin değil), brief'teki tam hex değerleriyle. */
+     kullanılır (metin değil). */
   .coral-gradient-bg {
-    background: linear-gradient(135deg, #f4785f, #e85a3c);
+    background: linear-gradient(135deg, #ff2a00, #d62300);
   }
 
-  /* Hero ürün görselinin arkasındaki yumuşak mercan parıltısı. */
+  /* Hero ürün görselinin arkasındaki yumuşak kızıl parıltı. */
   .coral-glow {
     background: radial-gradient(
       60% 60% at 50% 40%,
-      color-mix(in oklch, #f4785f 55%, transparent),
-      color-mix(in oklch, #e85a3c 35%, transparent) 60%,
+      color-mix(in oklch, #ff2a00 55%, transparent),
+      color-mix(in oklch, #d62300 35%, transparent) 60%,
       transparent 80%
     );
     filter: blur(40px);

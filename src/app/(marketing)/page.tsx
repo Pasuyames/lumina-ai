@@ -343,12 +343,12 @@ export default async function LandingPage() {
 
             {/* Küçük panel: kredi verimliliği */}
             <div className="flex flex-col items-center justify-center rounded-[1.75rem] border border-white/5 bg-[#1f1c17] p-8">
-              <span className="rounded-full bg-primary px-3.5 py-1.5 text-xs font-semibold text-primary-foreground shadow-[0_12px_24px_-8px_rgba(232,90,60,0.6)]">
+              <span className="rounded-full bg-primary px-3.5 py-1.5 text-xs font-semibold text-primary-foreground shadow-[0_12px_24px_-8px_rgba(214,35,0,0.6)]">
                 1 kredi&apos;den başlar
               </span>
               <div className="mt-6 flex items-end gap-2.5">
                 <span className="h-8 w-5 rounded-full bg-white/10" />
-                <span className="h-14 w-5 rounded-full bg-gradient-to-b from-primary to-[#c94d2c]" />
+                <span className="h-14 w-5 rounded-full bg-gradient-to-b from-primary to-[#D62300]" />
                 <span className="h-10 w-5 rounded-full bg-white/10" />
                 <span className="h-20 w-5 rounded-full bg-white/15" />
                 <span className="h-6 w-5 rounded-full bg-white/10" />
@@ -589,7 +589,7 @@ function FloatingBadge({
 }
 
 /**
- * Hero'nun merkezindeki çok yüzeyli (faceted) mercan-turuncu obje — Lumina'nın
+ * Hero'nun merkezindeki çok yüzeyli (faceted) kızıl-kırmızı obje — Renza'nın
  * "ışığı yakalayan yüzey" fikrini (DokuKilidi: ürünün dokusu/parlaklığı
  * korunur) somutlaştıran orijinal bir SVG kompozisyon. Altıgen bir gövdeyi
  * merkezden 6 üçgen faseta bölüp her birine ayrı bir ton vererek, tek bir
@@ -607,16 +607,16 @@ function FacetedGem({ className }: { className?: string }) {
       />
       <svg
         viewBox="0 0 300 300"
-        className="gem-showcase relative h-full w-full drop-shadow-[0_25px_35px_rgba(201,77,44,0.35)]"
+        className="gem-showcase relative h-full w-full drop-shadow-[0_25px_35px_rgba(214,35,0,0.35)]"
         role="img"
-        aria-label="Çok yüzeyli mercan-turuncu obje"
+        aria-label="Çok yüzeyli kızıl-kırmızı obje"
       >
-        <polygon points="150,150 215,37.4 280,150" fill="#FDC3AE" />
-        <polygon points="150,150 85,37.4 215,37.4" fill="#F4785F" />
-        <polygon points="150,150 20,150 85,37.4" fill="#EE6D53" />
-        <polygon points="150,150 85,262.6 20,150" fill="#E85A3C" />
-        <polygon points="150,150 215,262.6 85,262.6" fill="#D14E33" />
-        <polygon points="150,150 280,150 215,262.6" fill="#C94D2C" />
+        <polygon points="150,150 215,37.4 280,150" fill="#FEC3B7" />
+        <polygon points="150,150 85,37.4 215,37.4" fill="#FF765B" />
+        <polygon points="150,150 20,150 85,37.4" fill="#FF5432" />
+        <polygon points="150,150 85,262.6 20,150" fill="#FF2900" />
+        <polygon points="150,150 215,262.6 85,262.6" fill="#D62300" />
+        <polygon points="150,150 280,150 215,262.6" fill="#AD1C00" />
         {/* İnce iç çizgiler — her faseti ayrı bir yüzey gibi vurgular. */}
         <polygon
           points="150,150 215,37.4 280,150 215,262.6 85,262.6 20,150 85,37.4"

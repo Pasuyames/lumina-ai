@@ -4,7 +4,7 @@ import { LegalDisclaimer } from "@/components/site/legal-disclaimer";
 
 export const metadata: Metadata = {
   title: "İptal & İade Politikası",
-  description: "Lumina kredi paketleri için iptal ve iade koşulları.",
+  description: "Renza kredi paketleri için iptal ve iade koşulları.",
 };
 
 export default function RefundPage() {
@@ -34,7 +34,7 @@ export default function RefundPage() {
           </h2>
           <p className="text-muted-foreground">
             Satın aldığınız bir paketten hiç kredi harcamadıysanız, satın
-            alma tarihinden itibaren 14 gün içinde destek@lumina.app
+            alma tarihinden itibaren 14 gün içinde destek@renza.app
             adresinden talepte bulunarak tam iade alabilirsiniz. Paketten
             kısmen kredi harcandıysa, iade talepleri destek ekibimiz
             tarafından değerlendirilir.
@@ -54,7 +54,7 @@ export default function RefundPage() {
         <section className="space-y-2">
           <h2 className="font-heading text-lg font-medium">4. Krediler sona ermez</h2>
           <p className="text-muted-foreground">
-            Lumina bir abonelik değildir — satın aldığınız krediler otomatik
+            Renza bir abonelik değildir — satın aldığınız krediler otomatik
             yenilenmez ve kullanmadığınız krediler bir sonraki döneme aynen
             taşınır, süre sonu nedeniyle silinmez.
           </p>
@@ -72,7 +72,7 @@ export default function RefundPage() {
         <section className="space-y-2">
           <h2 className="font-heading text-lg font-medium">6. İletişim</h2>
           <p className="text-muted-foreground">
-            İade talepleriniz için destek@lumina.app adresinden bize
+            İade talepleriniz için destek@renza.app adresinden bize
             ulaşabilirsiniz.
           </p>
         </section>

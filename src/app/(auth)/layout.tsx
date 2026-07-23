@@ -9,7 +9,7 @@ export default function AuthLayout({
     <div className="flex min-h-screen flex-col items-center justify-center px-4 py-12">
       <div
         aria-hidden
-        className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(50%_40%_at_50%_0%,color-mix(in_oklch,#F4785F_16%,transparent),transparent)]"
+        className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(50%_40%_at_50%_0%,color-mix(in_oklch,#FF2A00_16%,transparent),transparent)]"
       />
       <div className="mb-8">
         <Logo />

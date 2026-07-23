@@ -5,7 +5,7 @@ import { LegalDisclaimer } from "@/components/site/legal-disclaimer";
 export const metadata: Metadata = {
   title: "Gizlilik Politikası & KVKK Aydınlatma Metni",
   description:
-    "Lumina'nın kişisel verilerinizi nasıl işlediğine dair gizlilik politikası ve KVKK aydınlatma metni.",
+    "Renza'nın kişisel verilerinizi nasıl işlediğine dair gizlilik politikası ve KVKK aydınlatma metni.",
 };
 
 export default function PrivacyPage() {
@@ -22,7 +22,7 @@ export default function PrivacyPage() {
           <h2 className="font-heading text-lg font-medium">1. Veri sorumlusu</h2>
           <p className="text-muted-foreground">
             6698 sayılı Kişisel Verilerin Korunması Kanunu (&quot;KVKK&quot;)
-            uyarınca, Lumina hizmetini işleten şirket, veri sorumlusu
+            uyarınca, Renza hizmetini işleten şirket, veri sorumlusu
             sıfatıyla kişisel verilerinizi aşağıda açıklanan şekilde işler.
           </p>
         </section>
@@ -110,7 +110,7 @@ export default function PrivacyPage() {
         <section className="space-y-2">
           <h2 className="font-heading text-lg font-medium">8. İletişim</h2>
           <p className="text-muted-foreground">
-            Haklarınızı kullanmak veya sorularınız için kvkk@lumina.app
+            Haklarınızı kullanmak veya sorularınız için kvkk@renza.app
             adresinden bize ulaşabilirsiniz.
           </p>
         </section>

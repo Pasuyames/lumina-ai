@@ -22,8 +22,8 @@ const playfair = Playfair_Display({
 
 export const metadata: Metadata = {
   title: {
-    default: "Lumina — Yapay Zekâ Destekli Ürün Fotoğrafçılığı",
-    template: "%s · Lumina",
+    default: "Renza — Yapay Zekâ Destekli Ürün Fotoğrafçılığı",
+    template: "%s · Renza",
   },
   description:
     "Takı, saat ve çanta markaları için stüdyo kalitesinde ürün görselleri. Ham fotoğrafını yükle, lüks konsepti seç, saniyeler içinde 2K görsele dönüştür.",

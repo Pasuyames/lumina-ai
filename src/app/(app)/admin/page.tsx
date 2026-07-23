@@ -37,7 +37,7 @@ export default async function AdminOverviewPage() {
   return (
     <PageHeader
       title="Admin"
-      description="Lumina'nın genel durumuna bakın."
+      description="Renza'nın genel durumuna bakın."
       width="wide"
     >
       <AdminNav />

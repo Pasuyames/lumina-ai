@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Gem } from "lucide-react";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { APP_NAME } from "@/lib/constants";
 
@@ -7,14 +7,16 @@ export function Logo({ className }: { className?: string }) {
   return (
     <Link
       href="/"
-      className={cn("group inline-flex items-center gap-2", className)}
+      className={cn("group inline-flex items-center", className)}
     >
-      <span className="grid size-8 place-items-center rounded-full bg-primary/10 text-primary ring-1 ring-primary/20 transition-colors group-hover:bg-primary/15">
-        <Gem className="size-4" />
-      </span>
-      <span className="font-heading text-lg font-semibold tracking-tight">
-        {APP_NAME}
-      </span>
+      <Image
+        src="/renza-logo.png"
+        alt={APP_NAME}
+        width={318}
+        height={109}
+        priority
+        className="h-6 w-auto sm:h-7"
+      />
     </Link>
   );
 }

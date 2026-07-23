@@ -29,7 +29,7 @@ export function Footer() {
             ))}
           </nav>
           <p className="text-xs text-muted-foreground">
-            © {new Date().getFullYear()} Lumina. Tüm hakları saklıdır.
+            © {new Date().getFullYear()} Renza. Tüm hakları saklıdır.
           </p>
         </div>
       </div>

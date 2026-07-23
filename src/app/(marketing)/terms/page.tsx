@@ -4,7 +4,7 @@ import { LegalDisclaimer } from "@/components/site/legal-disclaimer";
 
 export const metadata: Metadata = {
   title: "Kullanım Şartları",
-  description: "Lumina hizmetini kullanırken geçerli olan kullanım şartları.",
+  description: "Renza hizmetini kullanırken geçerli olan kullanım şartları.",
 };
 
 export default function TermsPage() {
@@ -20,7 +20,7 @@ export default function TermsPage() {
         <section className="space-y-2">
           <h2 className="font-heading text-lg font-medium">1. Hizmetin kapsamı</h2>
           <p className="text-muted-foreground">
-            Lumina, kullanıcıların yüklediği ürün fotoğraflarını yapay zekâ
+            Renza, kullanıcıların yüklediği ürün fotoğraflarını yapay zekâ
             ile işleyerek profesyonel stüdyo görselleri üreten bir hizmettir.
             Hizmet kredi bazlıdır: her üretim, seçilen kaliteye göre hesabınızdan
             kredi düşer. Üretim teknik bir hatayla başarısız olursa, o üretim
@@ -101,7 +101,7 @@ export default function TermsPage() {
         <section className="space-y-2">
           <h2 className="font-heading text-lg font-medium">8. İletişim</h2>
           <p className="text-muted-foreground">
-            Sorularınız için destek@lumina.app adresinden bize ulaşabilirsiniz.
+            Sorularınız için destek@renza.app adresinden bize ulaşabilirsiniz.
           </p>
         </section>
       </div>

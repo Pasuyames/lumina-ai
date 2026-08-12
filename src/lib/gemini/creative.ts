@@ -3,6 +3,14 @@ import { Type } from "@google/genai";
 import { getGemini } from "@/lib/gemini/client";
 import { serverEnv } from "@/lib/env";
 import { withTimeout } from "@/lib/security/timeout";
+import {
+  FORBIDDEN_CHEAP_SURFACES,
+  PRESERVE_PRODUCT_INTEGRITY,
+  CALIBRATION_EXAMPLES,
+  SECTOR_EXPERTISE_INSTRUCTION,
+  MULTI_ANGLE_INSTRUCTION,
+  type ProductImage,
+} from "@/lib/gemini/prompt-kit";
 
 /** Vision analizi için üst sınır — askıda kalan istek kullanıcıyı kilitlemesin. */
 const ANALYZE_TIMEOUT_MS = 60_000;
@@ -23,23 +31,30 @@ Kurallar:
   beklenmedik bir ortam, cesur bir renk paleti, sürreal ama zevkli bir kompozisyon, çarpıcı bir
   ışık oyunu ya da alışılmadık bir kamera açısı kullan. Amaç: "bunu hiç böyle görmemiştim" hissi.
 - Yine de bu bir ÜRÜN FOTOĞRAFI kalır — sahne ürünü gölgede bırakmaz, ona hizmet eder.
-- Ürünün ORİJİNAL şeklini, rengini, yapısını ve dokusunu KORUMASI gerektiğini vurgula; yalnızca
-  arka plan, ışık, zemin, yansıma ve atmosfer değişebilir.
-- Ucuzlatan sahnelerden kaçın: sıradan/rustik ahşap masa üstü, dağınık ev ortamı, mutfak tezgâhı
-  YASAK. Cüretkarlık asla ucuzluk demek değil — her zaman yüksek bütçeli bir kampanya çekimi gibi
+- ${PRESERVE_PRODUCT_INTEGRITY} Arka plan, ışık, zemin, yansıma ve atmosfer tamamen
+  serbest — cüretkar sahnenin ruhu budur.
+- ${FORBIDDEN_CHEAP_SURFACES}
+- Cüretkarlık asla ucuzluk demek değil — her zaman yüksek bütçeli bir kampanya çekimi gibi
   hissettirmeli.
+- "observations" alanına önce ürünü incele: materyalini, rengini, yüzey özelliğini
+  (parlak/mat/şeffaf/dokulu) ve oranlarını kısaca not et; "prompt" alanını bu nota göre yaz.
 - "title" TÜRKÇE, kısa ve çarpıcı (kullanıcıya gösterilecek, ör. "Mor Dumanın İçinde").
 - "prompt" İNGİLİZCE ve detaylı olmalı: zemin/materyal, ışık yönü ve sıcaklığı, gölge ve yansıma,
-  atmosfer, kompozisyon ve kamera açısı içermeli.`;
+  atmosfer, kompozisyon ve kamera açısı içermeli.
+
+${CALIBRATION_EXAMPLES}
+
+${SECTOR_EXPERTISE_INSTRUCTION}`;
 
 const RESPONSE_SCHEMA = {
   type: Type.OBJECT,
   properties: {
+    observations: { type: Type.STRING },
     title: { type: Type.STRING },
     prompt: { type: Type.STRING },
   },
-  required: ["title", "prompt"],
-  propertyOrdering: ["title", "prompt"],
+  required: ["observations", "title", "prompt"],
+  propertyOrdering: ["observations", "title", "prompt"],
 };
 
 /**
@@ -48,15 +63,16 @@ const RESPONSE_SCHEMA = {
  * kredi düşmez; çağıran taraf sonucu doğrudan render'a gönderir.
  */
 export async function analyzeForCreative(
-  imageBase64: string,
-  mimeType: string,
+  images: ProductImage[],
   categoryHint?: string,
 ): Promise<CreativeConcept> {
   const ai = getGemini();
 
-  const userText = categoryHint
+  const baseUserText = categoryHint
     ? `Kullanıcının belirttiği kategori ipucu: "${categoryHint}". Bu ürün için tek bir cüretkar kampanya sahnesi tasarla.`
     : `Bu ürün için tek bir cüretkar kampanya sahnesi tasarla.`;
+  const userText =
+    images.length > 1 ? `${baseUserText}\n\n${MULTI_ANGLE_INSTRUCTION}` : baseUserText;
 
   let response;
   try {
@@ -68,7 +84,7 @@ export async function analyzeForCreative(
             role: "user",
             parts: [
               { text: `${SYSTEM_PROMPT}\n\n${userText}` },
-              { inlineData: { mimeType, data: imageBase64 } },
+              ...images.map((img) => ({ inlineData: { mimeType: img.mimeType, data: img.data } })),
             ],
           },
         ],

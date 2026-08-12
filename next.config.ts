@@ -34,7 +34,7 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       // Yerel Supabase Storage (Docker).
-      { protocol: "http", hostname: "127.0.0.1", port: "54321" },
+      { protocol: "http", hostname: "127.0.0.1", port: "61321" },
       // Supabase Cloud Storage.
       { protocol: "https", hostname: "*.supabase.co" },
     ],

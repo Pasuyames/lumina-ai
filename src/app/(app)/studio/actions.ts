@@ -8,11 +8,12 @@ import { enrichTemplatePrompt, enrichCustomPrompt } from "@/lib/gemini/architect
 import { generateProductImage } from "@/lib/gemini/generate";
 import {
   analyzeForSalesSet,
-  REALISM_ANCHOR,
+  regenerateSalesSetShot,
   SHOT_ASPECT_RATIOS,
   type SalesShot,
   type SalesShotType,
 } from "@/lib/gemini/sales-set";
+import { SALES_SET_SHOT_TYPES } from "@/lib/sales-set-shots";
 import { validateImageUpload } from "@/lib/security/image";
 import { checkRateLimit } from "@/lib/security/rate-limit";
 import {
@@ -20,11 +21,43 @@ import {
   salesSetCreditCost,
   type RenderQuality,
 } from "@/lib/credits";
+import { MAX_ADDITIONAL_ANGLES } from "@/lib/constants";
+import type { ProductImage } from "@/lib/gemini/prompt-kit";
 
 /** `createClient()` sonucunun tip kısayolu — Satış Seti iç yardımcısına parametre olarak geçilir. */
 type SupabaseServerClient = Awaited<ReturnType<typeof createClient>>;
 
 const BUCKET = "product-images";
+
+/** Bir storage path'ini indirip base64'e çevirir — tek/çoklu görsel akışında tekrar kullanılır. */
+async function downloadAsProductImage(
+  supabase: SupabaseServerClient,
+  path: string,
+  mimeType: string,
+): Promise<ProductImage> {
+  const { data: blob, error } = await supabase.storage.from(BUCKET).download(path);
+  if (error || !blob) throw new Error("Kaynak görsel okunamadı.");
+  return { data: Buffer.from(await blob.arrayBuffer()).toString("base64"), mimeType };
+}
+
+/** İstemciden gelen ek açı görsel path'lerinin sahiplik/uzunluk doğrulaması. */
+function validateAdditionalSources(
+  userId: string,
+  additionalSources: { sourcePath: string; mimeType: string }[] | undefined,
+): { ok: true } | { ok: false; error: string } {
+  if ((additionalSources?.length ?? 0) > MAX_ADDITIONAL_ANGLES) {
+    return {
+      ok: false,
+      error: `En fazla ${MAX_ADDITIONAL_ANGLES} ek açı fotoğrafı eklenebilir.`,
+    };
+  }
+  for (const s of additionalSources ?? []) {
+    if (!s.sourcePath.startsWith(`${userId}/sources/`) || s.sourcePath.includes("..")) {
+      return { ok: false, error: "Geçersiz ek açı görseli." };
+    }
+  }
+  return { ok: true };
+}
 
 /** Kötüye kullanım sınırları (kullanıcı başına, saatlik pencere). */
 const HOUR_MS = 60 * 60 * 1000;
@@ -62,6 +95,7 @@ export type AnalyzeResult =
       sourcePath: string;
       sourceUrl: string;
       mimeType: string;
+      additionalSources?: { sourcePath: string; mimeType: string }[];
     }
   | { ok: false; error: string };
 
@@ -86,6 +120,16 @@ export async function analyzeProductAction(
   if (!image.ok) return { ok: false, error: image.error };
   const category = String(formData.get("category") ?? "").slice(0, 40);
 
+  // Ek açı fotoğrafları (opsiyonel, max MAX_ADDITIONAL_ANGLES) — aynı `image`
+  // alanıyla AYNI doğrulama kuralları geçerli.
+  const rawAdditional = formData.getAll("additionalImages").slice(0, MAX_ADDITIONAL_ANGLES);
+  const additionalImages: { ext: string; mimeType: string; bytes: Buffer }[] = [];
+  for (const raw of rawAdditional) {
+    const validated = await validateImageUpload(raw);
+    if (!validated.ok) return { ok: false, error: validated.error };
+    additionalImages.push(validated);
+  }
+
   // Kaynak görseli depola (sonraki render aşamasında kullanılacak).
   const sourcePath = `${user.id}/sources/${crypto.randomUUID()}.${image.ext}`;
   const { error: upErr } = await supabase.storage
@@ -102,18 +146,37 @@ export async function analyzeProductAction(
     data: { publicUrl },
   } = supabase.storage.from(BUCKET).getPublicUrl(sourcePath);
 
+  // Ek açı görsellerini depola — başarısız olursa analiz devam etmez (tümü
+  // ya da hiçbiri, kısmi/tutarsız bir kaynak seti bırakmamak için).
+  const additionalSources: { sourcePath: string; mimeType: string }[] = [];
+  for (const img of additionalImages) {
+    const path = `${user.id}/sources/${crypto.randomUUID()}.${img.ext}`;
+    const { error: addUpErr } = await supabase.storage
+      .from(BUCKET)
+      .upload(path, img.bytes, { contentType: img.mimeType, upsert: false });
+    if (addUpErr) {
+      console.error("[studio/analyze] ek açı upload hatası:", addUpErr);
+      return { ok: false, error: "Ek açı görseli yüklenemedi, lütfen tekrar deneyin." };
+    }
+    additionalSources.push({ sourcePath: path, mimeType: img.mimeType });
+  }
+
   try {
-    const analysis = await analyzeProduct(
-      image.bytes.toString("base64"),
-      image.mimeType,
-      category || undefined,
-    );
+    const images: ProductImage[] = [
+      { data: image.bytes.toString("base64"), mimeType: image.mimeType },
+      ...additionalImages.map((img) => ({
+        data: img.bytes.toString("base64"),
+        mimeType: img.mimeType,
+      })),
+    ];
+    const analysis = await analyzeProduct(images, category || undefined);
     return {
       ok: true,
       analysis,
       sourcePath,
       sourceUrl: publicUrl,
       mimeType: image.mimeType,
+      additionalSources: additionalSources.length > 0 ? additionalSources : undefined,
     };
   } catch (e) {
     // analyzeProduct kullanıcıya uygun (sanitize edilmiş) mesaj fırlatır.
@@ -191,6 +254,8 @@ export async function generateImageAction(input: {
    * önce enrichTemplatePrompt/enrichCustomPrompt ile ürüne özel zenginleştirilir.
    */
   promptSource?: "concept" | "template" | "custom";
+  /** Ana görsele ek olarak yüklenmiş açı fotoğrafları (opsiyonel, max MAX_ADDITIONAL_ANGLES). */
+  additionalSources?: { sourcePath: string; mimeType: string }[];
 }): Promise<GenerateResult> {
   const supabase = await createClient();
   const {
@@ -224,6 +289,8 @@ export async function generateImageAction(input: {
   ) {
     return { ok: false, error: "Geçersiz kaynak görsel." };
   }
+  const additionalCheck = validateAdditionalSources(user.id, input.additionalSources);
+  if (!additionalCheck.ok) return { ok: false, error: additionalCheck.error };
   const aspectRatio =
     input.aspectRatio && ALLOWED_ASPECT_RATIOS.has(input.aspectRatio)
       ? input.aspectRatio
@@ -252,33 +319,32 @@ export async function generateImageAction(input: {
   // yeniden zenginleştirmek çifte Vision maliyeti olur, atlanır.
   const promptSource = input.promptSource ?? "concept";
   let finalPrompt = prompt;
-  let srcBase64: string | undefined;
+  let images: ProductImage[] | undefined;
 
   if (promptSource === "template" || promptSource === "custom") {
-    const { data: blob, error: dlErr } = await supabase.storage
-      .from(BUCKET)
-      .download(input.sourcePath);
-    if (dlErr || !blob) {
+    try {
+      images = [
+        await downloadAsProductImage(supabase, input.sourcePath, input.mimeType),
+        ...(await Promise.all(
+          (input.additionalSources ?? []).map((s) =>
+            downloadAsProductImage(supabase, s.sourcePath, s.mimeType),
+          ),
+        )),
+      ];
+    } catch {
       return { ok: false, error: "Kaynak görsel okunamadı." };
     }
-    srcBase64 = Buffer.from(await blob.arrayBuffer()).toString("base64");
 
     try {
       const enriched =
         promptSource === "template"
           ? await enrichTemplatePrompt(
-              srcBase64,
-              input.mimeType,
+              images,
               conceptTitle,
               prompt,
               input.category,
             )
-          : await enrichCustomPrompt(
-              srcBase64,
-              input.mimeType,
-              prompt,
-              input.category,
-            );
+          : await enrichCustomPrompt(images, prompt, input.category);
       finalPrompt = enriched.prompt.slice(0, MAX_PROMPT_CHARS);
     } catch (e) {
       return {
@@ -295,6 +361,8 @@ export async function generateImageAction(input: {
       user_id: user.id,
       status: "processing",
       source_image_path: input.sourcePath,
+      additional_source_image_paths:
+        input.additionalSources?.map((s) => s.sourcePath) ?? null,
       category: input.category?.slice(0, 40) ?? null,
       concept_title: conceptTitle,
       prompt: finalPrompt,
@@ -310,19 +378,21 @@ export async function generateImageAction(input: {
   }
 
   try {
-    // 4) Kaynak görsel henüz indirilmediyse (promptSource "concept") indir.
-    if (!srcBase64) {
-      const { data: blob, error: dlErr } = await supabase.storage
-        .from(BUCKET)
-        .download(input.sourcePath);
-      if (dlErr || !blob) throw new Error("Kaynak görsel okunamadı.");
-      srcBase64 = Buffer.from(await blob.arrayBuffer()).toString("base64");
+    // 4) Kaynak görsel(ler) henüz indirilmediyse (promptSource "concept") indir.
+    if (!images) {
+      images = [
+        await downloadAsProductImage(supabase, input.sourcePath, input.mimeType),
+        ...(await Promise.all(
+          (input.additionalSources ?? []).map((s) =>
+            downloadAsProductImage(supabase, s.sourcePath, s.mimeType),
+          ),
+        )),
+      ];
     }
 
     // 5) Nano Banana 2 ile render.
     const image = await generateProductImage(
-      srcBase64,
-      input.mimeType,
+      images,
       finalPrompt,
       aspectRatio,
       quality,
@@ -424,16 +494,15 @@ async function renderSalesSetShot(params: {
   userId: string;
   setId: string;
   shot: SalesShot;
-  srcBase64: string;
-  mimeType: string;
+  images: ProductImage[];
   category?: string;
   quality: RenderQuality;
 }): Promise<SalesSetShotResult> {
-  const { supabase, userId, setId, shot, srcBase64, mimeType, category, quality } =
+  const { supabase, userId, setId, shot, images, category, quality } =
     params;
   const creditCost = creditCostFor(quality);
   const aspectRatio = SHOT_ASPECT_RATIOS[shot.type];
-  const finalPrompt = `${shot.prompt}\n\n${REALISM_ANCHOR}`;
+  const finalPrompt = shot.prompt;
 
   // 1) Üretim kaydını 'processing' olarak aç.
   const { data: gen, error: genErr } = await supabase
@@ -463,8 +532,7 @@ async function renderSalesSetShot(params: {
   try {
     // 2) Nano Banana 2 ile render.
     const image = await generateProductImage(
-      srcBase64,
-      mimeType,
+      images,
       finalPrompt,
       aspectRatio,
       quality,
@@ -539,6 +607,7 @@ export async function generateSalesSetAction(input: {
   mimeType: string;
   category?: string;
   quality?: string;
+  additionalSources?: { sourcePath: string; mimeType: string }[];
 }): Promise<SalesSetResult> {
   const supabase = await createClient();
   const {
@@ -561,6 +630,8 @@ export async function generateSalesSetAction(input: {
   ) {
     return { ok: false, error: "Geçersiz kaynak görsel." };
   }
+  const additionalCheck = validateAdditionalSources(user.id, input.additionalSources);
+  if (!additionalCheck.ok) return { ok: false, error: additionalCheck.error };
   const quality = resolveQuality(input.quality);
   const totalCost = salesSetCreditCost(quality);
 
@@ -578,23 +649,25 @@ export async function generateSalesSetAction(input: {
     };
   }
 
-  // 2) Kaynak görseli depodan indir.
-  const { data: blob, error: dlErr } = await supabase.storage
-    .from(BUCKET)
-    .download(input.sourcePath);
-  if (dlErr || !blob) {
+  // 2) Kaynak görseli (+ ek açı görselleri varsa) depodan indir.
+  let images: ProductImage[];
+  try {
+    images = [
+      await downloadAsProductImage(supabase, input.sourcePath, input.mimeType),
+      ...(await Promise.all(
+        (input.additionalSources ?? []).map((s) =>
+          downloadAsProductImage(supabase, s.sourcePath, s.mimeType),
+        ),
+      )),
+    ];
+  } catch {
     return { ok: false, error: "Kaynak görsel okunamadı." };
   }
-  const srcBase64 = Buffer.from(await blob.arrayBuffer()).toString("base64");
 
   // 3) Vision analizi — 4 kare için promptlar (kredi düşmez).
   let shots: SalesShot[];
   try {
-    const analysis = await analyzeForSalesSet(
-      srcBase64,
-      input.mimeType,
-      input.category,
-    );
+    const analysis = await analyzeForSalesSet(images, input.category);
     shots = analysis.shots;
   } catch (e) {
     return {
@@ -613,8 +686,7 @@ export async function generateSalesSetAction(input: {
         userId: user.id,
         setId,
         shot,
-        srcBase64,
-        mimeType: input.mimeType,
+        images,
         category: input.category,
         quality,
       }),
@@ -658,6 +730,141 @@ export async function generateSalesSetAction(input: {
 }
 
 // ─────────────────────────────────────────────────────────────
+// SATIŞ SETİ — TEK KARE YENİDEN ÜRETİMİ: kullanıcı 4'ün tamamını değil,
+// sadece beğenmediği bir kareyi (isteğe bağlı kendi briefiyle) yeniden
+// üretir. Mevcut renderSalesSetShot() AYNEN yeniden kullanılır — sadece
+// ona geçirilecek doğru SalesShot'u hazırlamak bu action'ın işi.
+// ─────────────────────────────────────────────────────────────
+export type RegenerateSalesSetShotResult =
+  | { ok: true; result: SalesSetShotResult; balance: number }
+  | { ok: false; error: string; needCredits?: boolean };
+
+export async function regenerateSalesSetShotAction(input: {
+  sourcePath: string;
+  mimeType: string;
+  setId: string;
+  shotType: SalesShotType;
+  category?: string;
+  quality?: string;
+  brief?: string;
+  additionalSources?: { sourcePath: string; mimeType: string }[];
+}): Promise<RegenerateSalesSetShotResult> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, error: "Oturum bulunamadı." };
+
+  const rl = checkRateLimit(`generate:${user.id}`, GENERATE_LIMIT, HOUR_MS);
+  if (!rl.ok) {
+    return {
+      ok: false,
+      error: `Çok sık üretim istediniz. Lütfen ${Math.ceil(rl.retryAfterSec / 60)} dakika sonra tekrar deneyin.`,
+    };
+  }
+
+  if (!SALES_SET_SHOT_TYPES.includes(input.shotType)) {
+    return { ok: false, error: "Geçersiz kare türü." };
+  }
+
+  // Kaynak görsel yalnızca kullanıcının kendi klasöründen okunabilir.
+  if (
+    !input.sourcePath.startsWith(`${user.id}/sources/`) ||
+    input.sourcePath.includes("..")
+  ) {
+    return { ok: false, error: "Geçersiz kaynak görsel." };
+  }
+  const additionalCheck = validateAdditionalSources(user.id, input.additionalSources);
+  if (!additionalCheck.ok) return { ok: false, error: additionalCheck.error };
+
+  const quality = resolveQuality(input.quality);
+  const creditCost = creditCostFor(quality);
+  const brief = input.brief?.trim().slice(0, MAX_PROMPT_CHARS) || undefined;
+
+  // 1) Kredi ön kontrolü — bu TEK karenin maliyeti kadar (4'ün tamamı değil,
+  // bu özelliğin bütün amacı).
+  const { data: credits } = await supabase
+    .from("credits")
+    .select("balance")
+    .eq("user_id", user.id)
+    .maybeSingle();
+  if (!credits || credits.balance < creditCost) {
+    return {
+      ok: false,
+      error: "Krediniz yetersiz. Devam etmek için paket satın alın.",
+      needCredits: true,
+    };
+  }
+
+  // 2) Kaynak görseli (+ ek açı görselleri varsa) depodan indir.
+  let images: ProductImage[];
+  try {
+    images = [
+      await downloadAsProductImage(supabase, input.sourcePath, input.mimeType),
+      ...(await Promise.all(
+        (input.additionalSources ?? []).map((s) =>
+          downloadAsProductImage(supabase, s.sourcePath, s.mimeType),
+        ),
+      )),
+    ];
+  } catch {
+    return { ok: false, error: "Kaynak görsel okunamadı." };
+  }
+
+  // 3) Vision — sadece bu kare için yeni prompt (kredi düşmez).
+  let shot: SalesShot;
+  try {
+    const regenerated = await regenerateSalesSetShot(
+      images,
+      input.shotType,
+      input.category,
+      brief,
+    );
+    shot = {
+      type: input.shotType,
+      title: regenerated.title.slice(0, MAX_TITLE_CHARS),
+      prompt: regenerated.prompt,
+    };
+  } catch (e) {
+    return {
+      ok: false,
+      error: e instanceof Error ? e.message : "Analiz başarısız oldu.",
+    };
+  }
+
+  // 4) Render — mevcut renderSalesSetShot() aynen kullanılır (INSERT/render/
+  // upload/spend_credits/complete zaten orada var).
+  const result = await renderSalesSetShot({
+    supabase,
+    userId: user.id,
+    setId: input.setId,
+    shot,
+    images,
+    category: input.category,
+    quality,
+  });
+
+  const { data: freshCredits } = await supabase
+    .from("credits")
+    .select("balance")
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  if (result.status === "failed") {
+    return { ok: false, error: result.error ?? "Kare üretilemedi." };
+  }
+
+  revalidatePath("/generations");
+  revalidatePath("/dashboard");
+
+  return {
+    ok: true,
+    result,
+    balance: freshCredits?.balance ?? credits.balance,
+  };
+}
+
+// ─────────────────────────────────────────────────────────────
 // KREATİF ÜRET — tek tık: Vision cüretkar TEK sahne tasarlar,
 // doğrudan render edilir (konsept seçim adımı yok).
 // ─────────────────────────────────────────────────────────────
@@ -677,6 +884,7 @@ export async function generateCreativeAction(input: {
   category?: string;
   aspectRatio?: string;
   quality?: string;
+  additionalSources?: { sourcePath: string; mimeType: string }[];
 }): Promise<CreativeResult> {
   const supabase = await createClient();
   const {
@@ -699,6 +907,8 @@ export async function generateCreativeAction(input: {
   ) {
     return { ok: false, error: "Geçersiz kaynak görsel." };
   }
+  const additionalCheck = validateAdditionalSources(user.id, input.additionalSources);
+  if (!additionalCheck.ok) return { ok: false, error: additionalCheck.error };
   const aspectRatio =
     input.aspectRatio && ALLOWED_ASPECT_RATIOS.has(input.aspectRatio)
       ? input.aspectRatio
@@ -720,19 +930,25 @@ export async function generateCreativeAction(input: {
     };
   }
 
-  // 2) Kaynak görseli depodan indir.
-  const { data: blob, error: dlErr } = await supabase.storage
-    .from(BUCKET)
-    .download(input.sourcePath);
-  if (dlErr || !blob) {
+  // 2) Kaynak görseli (+ ek açı görselleri varsa) depodan indir.
+  let images: ProductImage[];
+  try {
+    images = [
+      await downloadAsProductImage(supabase, input.sourcePath, input.mimeType),
+      ...(await Promise.all(
+        (input.additionalSources ?? []).map((s) =>
+          downloadAsProductImage(supabase, s.sourcePath, s.mimeType),
+        ),
+      )),
+    ];
+  } catch {
     return { ok: false, error: "Kaynak görsel okunamadı." };
   }
-  const srcBase64 = Buffer.from(await blob.arrayBuffer()).toString("base64");
 
   // 3) Vision — cüretkar tek sahne tasarımı (kredi düşmez).
   let concept: { title: string; prompt: string };
   try {
-    concept = await analyzeForCreative(srcBase64, input.mimeType, input.category);
+    concept = await analyzeForCreative(images, input.category);
   } catch (e) {
     return {
       ok: false,
@@ -749,6 +965,8 @@ export async function generateCreativeAction(input: {
       user_id: user.id,
       status: "processing",
       source_image_path: input.sourcePath,
+      additional_source_image_paths:
+        input.additionalSources?.map((s) => s.sourcePath) ?? null,
       category: input.category?.slice(0, 40) ?? null,
       concept_title: conceptTitle,
       prompt,
@@ -765,8 +983,7 @@ export async function generateCreativeAction(input: {
   try {
     // 5) Nano Banana 2 ile render.
     const image = await generateProductImage(
-      srcBase64,
-      input.mimeType,
+      images,
       prompt,
       aspectRatio,
       quality,

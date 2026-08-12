@@ -3,6 +3,16 @@ import { Type } from "@google/genai";
 import { getGemini } from "@/lib/gemini/client";
 import { serverEnv } from "@/lib/env";
 import { withTimeout } from "@/lib/security/timeout";
+import {
+  ART_DIRECTOR_ROLE,
+  FORBIDDEN_CHEAP_SURFACES,
+  LUXURY_CAMPAIGN_BAR,
+  PRESERVE_PRODUCT_INTEGRITY,
+  CALIBRATION_EXAMPLES,
+  SECTOR_EXPERTISE_INSTRUCTION,
+  MULTI_ANGLE_INSTRUCTION,
+  type ProductImage,
+} from "@/lib/gemini/prompt-kit";
 
 /** Vision analizi için üst sınır — askıda kalan istek kullanıcıyı kilitlemesin. */
 const ANALYZE_TIMEOUT_MS = 60_000;
@@ -23,7 +33,7 @@ export interface ProductAnalysis {
   concepts: Concept[];
 }
 
-const SYSTEM_PROMPT = `Sen lüks e-ticaret markaları için çalışan deneyimli bir sanat yönetmenisin.
+const SYSTEM_PROMPT = `${ART_DIRECTOR_ROLE}
 Sana verilen ürün fotoğrafını incele: kategorisini, materyalini ve pazar segmentini belirle.
 Ardından bu ürünün satışını artıracak, birbirinden FARKLI en lüks 3 fotoğraf stüdyosu konsepti üret.
 
@@ -31,16 +41,14 @@ Kurallar:
 - "title" ve "description" alanları TÜRKÇE olmalı (kullanıcıya gösterilecek).
 - "prompt" alanı İNGİLİZCE ve detaylı olmalı (görsel üretim modeline gidecek): zemin/materyal,
   ışık yönü ve sıcaklığı, gölge ve yansıma, atmosfer, kompozisyon ve kamera açısı içermeli.
-- Her prompt, ürünün ORİJİNAL şeklini, yapısını ve dokusunu KORUMASI gerektiğini vurgulamalı;
-  yalnızca arka plan, ışık, zemin ve yansıma değişmeli.
+- ${PRESERVE_PRODUCT_INTEGRITY} Yalnızca arka plan, ışık, zemin ve yansıma değişebilir.
 - 3 konsept belirgin şekilde farklı olmalı (ör. mermer lüks, sıcak doğal, dramatik stüdyo).
-- Ürün algısını UCUZLATAN sahnelerden kaçın: sıradan/rustik ahşap masa üstü, dağınık ev
-  ortamı, mutfak tezgâhı, ucuz plastik yüzeyler YASAK. Zemin daima premium olmalı:
-  mermer, doğal taş, kadife, saten, cam, lake veya fırçalanmış metal. Ahşap yalnızca
-  lüks bağlamda kabul edilebilir (koyu ceviz, yüksek cila, butik vitrin sunumu).
-- Her promptu LÜKS MARKA KAMPANYASI diliyle yaz: high-end editorial/advertising estetiği,
-  kontrollü stüdyo ışığı, zengin gölge-parlaklık dengesi, rafine renk paleti. Referans
-  çıta: Cartier/Rolex/Hermès kampanya fotoğrafçılığı — asla stok fotoğraf sıradanlığı.`;
+- ${FORBIDDEN_CHEAP_SURFACES}
+- ${LUXURY_CAMPAIGN_BAR}
+
+${CALIBRATION_EXAMPLES}
+
+${SECTOR_EXPERTISE_INSTRUCTION}`;
 
 const RESPONSE_SCHEMA = {
   type: Type.OBJECT,
@@ -71,15 +79,16 @@ const RESPONSE_SCHEMA = {
  * Maliyet: sadece metin/vision (görsel üretim YOK), kredi düşmez.
  */
 export async function analyzeProduct(
-  imageBase64: string,
-  mimeType: string,
+  images: ProductImage[],
   categoryHint?: string,
 ): Promise<ProductAnalysis> {
   const ai = getGemini();
 
-  const userText = categoryHint
+  const baseUserText = categoryHint
     ? `Kullanıcının belirttiği kategori ipucu: "${categoryHint}". Bu ürünü analiz et ve 3 lüks konsept öner.`
     : `Bu ürünü analiz et ve 3 lüks konsept öner.`;
+  const userText =
+    images.length > 1 ? `${baseUserText}\n\n${MULTI_ANGLE_INSTRUCTION}` : baseUserText;
 
   let response;
   try {
@@ -91,7 +100,7 @@ export async function analyzeProduct(
             role: "user",
             parts: [
               { text: `${SYSTEM_PROMPT}\n\n${userText}` },
-              { inlineData: { mimeType, data: imageBase64 } },
+              ...images.map((img) => ({ inlineData: { mimeType: img.mimeType, data: img.data } })),
             ],
           },
         ],

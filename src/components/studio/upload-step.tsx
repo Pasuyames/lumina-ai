@@ -2,7 +2,8 @@
 
 import { Label } from "@/components/ui/label";
 import { ImageDropzone } from "@/components/studio/image-dropzone";
-import { PRODUCT_CATEGORIES } from "@/lib/constants";
+import { AdditionalAngles } from "@/components/studio/additional-angles";
+import { PRODUCT_CATEGORIES, MAX_ADDITIONAL_ANGLES } from "@/lib/constants";
 
 /** SOL panel: görsel yükleme + kategori seçimi. */
 export function UploadStep({
@@ -12,6 +13,9 @@ export function UploadStep({
   category,
   onCategoryChange,
   disabled,
+  additionalPreviewUrls,
+  onAddAdditional,
+  onRemoveAdditional,
 }: {
   previewUrl: string | null;
   onSelect: (file: File) => void;
@@ -19,6 +23,9 @@ export function UploadStep({
   category: string;
   onCategoryChange: (value: string) => void;
   disabled: boolean;
+  additionalPreviewUrls: string[];
+  onAddAdditional: (file: File) => void;
+  onRemoveAdditional: (index: number) => void;
 }) {
   return (
     <div className="space-y-4">
@@ -28,6 +35,15 @@ export function UploadStep({
         onClear={onClear}
         disabled={disabled}
       />
+      {previewUrl && (
+        <AdditionalAngles
+          previewUrls={additionalPreviewUrls}
+          onAdd={onAddAdditional}
+          onRemove={onRemoveAdditional}
+          disabled={disabled}
+          max={MAX_ADDITIONAL_ANGLES}
+        />
+      )}
       <div className="space-y-1.5">
         <Label htmlFor="category">Kategori (opsiyonel)</Label>
         <select

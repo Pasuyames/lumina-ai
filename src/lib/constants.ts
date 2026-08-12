@@ -30,6 +30,9 @@ export const ACCEPTED_IMAGE_TYPES = [
 ];
 export const MAX_UPLOAD_BYTES = 10 * 1024 * 1024; // 10 MB
 
+/** Ana fotoğrafa ek olarak yüklenebilecek maksimum açı fotoğrafı (yan/arka vb). */
+export const MAX_ADDITIONAL_ANGLES = 3;
+
 export const ROUTES = {
   home: "/",
   login: "/login",

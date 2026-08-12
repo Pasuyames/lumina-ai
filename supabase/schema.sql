@@ -77,6 +77,10 @@ alter table public.generations add column if not exists set_id uuid;
 create index if not exists generations_set_idx
   on public.generations (set_id) where set_id is not null;
 
+-- Çoklu açı referans görseli (opsiyonel) — ana source_image_path'e ek olarak
+-- kullanıcının yüklediği ek açı fotoğraflarının storage path'leri.
+alter table public.generations add column if not exists additional_source_image_paths text[];
+
 -- ──────────────────────────────────────────────────────────────
 -- 5. PACKAGES — satın alınabilir kredi paketleri
 -- ──────────────────────────────────────────────────────────────

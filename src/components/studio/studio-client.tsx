@@ -17,6 +17,7 @@ import { RecentGenerationsStrip } from "@/components/studio/recent-generations-s
 import type { AspectRatioValue } from "@/components/studio/render-options";
 import type { StudioTemplate } from "@/lib/templates";
 import type { RenderQuality } from "@/lib/credits";
+import { MAX_ADDITIONAL_ANGLES } from "@/lib/constants";
 import { useStudioGeneration } from "@/hooks/use-studio-generation";
 
 export function StudioClient({
@@ -30,6 +31,10 @@ export function StudioClient({
 }) {
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [additionalFiles, setAdditionalFiles] = useState<File[]>([]);
+  const [additionalPreviewUrls, setAdditionalPreviewUrls] = useState<string[]>(
+    [],
+  );
   const [category, setCategory] = useState("");
   const [template, setTemplate] = useState<StudioTemplate | null>(
     initialTemplate,
@@ -49,16 +54,19 @@ export function StudioClient({
     result,
     concepts,
     salesSetResult,
+    regeneratingType,
     balance,
     busy,
     runGenerate,
     runGenerateSalesSet,
+    runRegenerateSalesSetShot,
     runGenerateCreative,
     handleAnalyze,
     resetResults,
     clearSalesSetResult,
   } = useStudioGeneration({
     file,
+    additionalFiles,
     category,
     setCategory,
     quality,
@@ -87,11 +95,32 @@ export function StudioClient({
     if (previewUrl) URL.revokeObjectURL(previewUrl);
     setFile(null);
     setPreviewUrl(null);
+    // Ek açılar aynı ürün yüklemesine ait — ana görsel tamamen kaldırılınca
+    // (resetDownstream'in aksine, o sadece konsept/şablon/custom paneli
+    // değiştirir) onlar da temizlenir.
+    additionalPreviewUrls.forEach((url) => URL.revokeObjectURL(url));
+    setAdditionalFiles([]);
+    setAdditionalPreviewUrls([]);
     resetDownstream();
   }
 
   function fullReset() {
     handleClear();
+  }
+
+  function handleAddAdditional(f: File) {
+    if (additionalFiles.length >= MAX_ADDITIONAL_ANGLES) return;
+    setAdditionalFiles((prev) => [...prev, f]);
+    setAdditionalPreviewUrls((prev) => [...prev, URL.createObjectURL(f)]);
+  }
+
+  function handleRemoveAdditional(index: number) {
+    setAdditionalPreviewUrls((prev) => {
+      const url = prev[index];
+      if (url) URL.revokeObjectURL(url);
+      return prev.filter((_, i) => i !== index);
+    });
+    setAdditionalFiles((prev) => prev.filter((_, i) => i !== index));
   }
 
   /** StartPanel + TemplatePanel'in "AI konsept önersin" tetikleyicileri —
@@ -120,7 +149,10 @@ export function StudioClient({
     return (
       <SalesSetResult
         results={salesSetResult.results}
-        balance={salesSetResult.balance}
+        balance={balance}
+        quality={quality}
+        regeneratingType={regeneratingType}
+        onRegenerate={runRegenerateSalesSetShot}
         onReset={fullReset}
         onBackToStudio={() => {
           clearSalesSetResult();
@@ -152,6 +184,9 @@ export function StudioClient({
         category={category}
         onCategoryChange={setCategory}
         disabled={busy}
+        additionalPreviewUrls={additionalPreviewUrls}
+        onAddAdditional={handleAddAdditional}
+        onRemoveAdditional={handleRemoveAdditional}
       />
 
       {/* SAĞ: akışa göre değişen panel */}

@@ -79,6 +79,8 @@ export interface Database {
           status: GenerationStatus;
           source_image_path: string | null;
           source_image_url: string | null;
+          /** Ana görsele ek, kullanıcının yüklediği açı fotoğraflarının storage path'leri (opsiyonel). */
+          additional_source_image_paths: string[] | null;
           category: string | null;
           concept_title: string | null;
           prompt: string | null;
@@ -98,6 +100,7 @@ export interface Database {
           status?: GenerationStatus;
           source_image_path?: string | null;
           source_image_url?: string | null;
+          additional_source_image_paths?: string[] | null;
           category?: string | null;
           concept_title?: string | null;
           prompt?: string | null;

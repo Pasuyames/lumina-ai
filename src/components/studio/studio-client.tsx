@@ -175,8 +175,8 @@ export function StudioClient({
 
   return (
     <div>
-    <div className="grid gap-8 lg:grid-cols-2">
-      {/* SOL: yükleme + kategori */}
+    <div className="grid gap-8 lg:grid-cols-2 lg:gap-y-4">
+      {/* SOL: yükleme + kategori (lg'de `contents` ile ızgaraya açılır) */}
       <UploadStep
         previewUrl={previewUrl}
         onSelect={handleSelect}
@@ -189,8 +189,9 @@ export function StudioClient({
         onRemoveAdditional={handleRemoveAdditional}
       />
 
-      {/* SAĞ: akışa göre değişen panel */}
-      <div className="flex flex-col">
+      {/* SAĞ: akışa göre değişen panel — her zaman 1. satırda, yükleme
+          alanının tam karşısında durur ve onunla aynı hizada biter. */}
+      <div className="flex flex-col lg:col-start-2 lg:row-start-1">
         {concepts ? (
           <ConceptPanel
             concepts={concepts}

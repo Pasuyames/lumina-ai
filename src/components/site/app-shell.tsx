@@ -1,18 +1,18 @@
-import { Navbar } from "@/components/site/navbar";
-import { Footer } from "@/components/site/footer";
+import { SiteHeader } from "@/components/site/site-header";
+import { SiteFooter } from "@/components/site/site-footer";
 
 /**
- * `(app)` ve `(marketing)` layout'larında tekrarlanan görsel iskelet
- * (Navbar + main + Footer). Yetkilendirme mantığı burada YOK — sadece
- * ortak görsel çerçeve; auth redirect'i çağıran layout kendi sorumluluğunda
- * tutar.
+ * `(app)` ve `(marketing)` layout'larının paylaştığı görsel iskelet — tüm
+ * sitede TEK bir başlık/altbilgi teması olsun diye ikisi de burayı kullanır.
+ * Yetkilendirme mantığı burada YOK; auth redirect'i çağıran layout kendi
+ * sorumluluğunda tutar.
  */
 export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <>
-      <Navbar />
+      <SiteHeader />
       <main className="flex-1">{children}</main>
-      <Footer />
+      <SiteFooter />
     </>
   );
 }

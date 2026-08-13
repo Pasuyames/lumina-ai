@@ -39,7 +39,11 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const { pathname } = request.nextUrl;
-  const isProtected = PROTECTED_PREFIXES.some((p) => pathname.startsWith(p));
+  // Segment sınırına dikkat: düz `startsWith` kullanılırsa "/studio" öneki
+  // herkese açık pazarlama sayfası "/studios"u da kilitliyor.
+  const isProtected = PROTECTED_PREFIXES.some(
+    (p) => pathname === p || pathname.startsWith(`${p}/`),
+  );
 
   if (isProtected && !user) {
     const url = request.nextUrl.clone();

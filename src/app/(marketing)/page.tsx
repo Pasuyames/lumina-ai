@@ -1,70 +1,177 @@
+import Image from "next/image";
 import {
   ArrowRight,
-  Upload,
-  Wand2,
-  Sparkles,
-  Gem,
+  BadgeCheck,
+  Camera,
   Check,
-  ShieldCheck,
-  Infinity as InfinityIcon,
   EyeOff,
-  Zap,
+  Gem,
+  Image as ImageIcon,
+  Infinity as InfinityIcon,
   LayoutGrid,
-  Shuffle,
-  ImageIcon,
   PencilLine,
+  ShieldCheck,
+  Shuffle,
+  Sparkles,
+  TrendingUp,
+  Wand2,
 } from "lucide-react";
-import { ButtonLink } from "@/components/ui/button-link";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { PillLink } from "@/components/marketing/pill-link";
+import { SectionEyebrow } from "@/components/marketing/section-eyebrow";
+import { CardWheel, type WheelGroup } from "@/components/marketing/card-wheel";
+import { AnimatedNumber } from "@/components/marketing/animated-number";
+import { AnimatedProgressBar } from "@/components/marketing/animated-progress-bar";
+import { GrowBarChart } from "@/components/marketing/grow-bar-chart";
+import { OrbitDiagram } from "@/components/marketing/orbit-diagram";
+import { FadeUp } from "@/components/motion/fade-up";
+import { Marquee } from "@/components/motion/marquee";
 import { BeforeAfterSlider } from "@/components/ui/before-after-slider";
-import { PackageCard } from "@/components/billing/package-card";
 import { ROUTES } from "@/lib/constants";
 import { STUDIO_TEMPLATES } from "@/lib/templates";
 import { getActivePackages } from "@/lib/queries";
+import { formatPrice } from "@/lib/utils/format";
 import { cn } from "@/lib/utils";
 
-const HERO_CATEGORIES = ["Takı", "Saat", "Çanta", "Aksesuar", "Parfüm"];
+/**
+ * Hero'daki dönen üç kart çarkı. Görsellerin hepsi Renza Stüdyo'nun
+ * ürettiği gerçek karelerden — stok fotoğraf veya temsili görsel yok.
+ */
+const WHEEL_GROUPS: WheelGroup[] = [
+  {
+    images: ["/showcase/hero-1.webp", "/showcase/hero-4.webp", "/showcase/hero-7.webp"],
+    baseRotate: -15,
+  },
+  {
+    images: ["/showcase/hero-2.webp", "/showcase/hero-5.webp", "/showcase/hero-8.webp"],
+    baseRotate: -30,
+  },
+  {
+    images: ["/showcase/hero-3.webp", "/showcase/hero-6.webp", "/showcase/hero-9.webp"],
+    baseRotate: 0,
+  },
+];
+
+const HERO_PROOF = [
+  "Krediler sona ermez",
+  "Abonelik yok",
+  "Gizli ücret yok",
+];
+
+const CATEGORIES = [
+  "Takı",
+  "Saat",
+  "Çanta",
+  "Aksesuar",
+  "Parfüm",
+  "Kozmetik",
+  "Ayakkabı",
+  "Gözlük",
+];
 
 const CAPABILITIES = [
   {
     icon: LayoutGrid,
     title: "Satış Seti",
-    desc: "Pazaryeri ana görseli, model üstünde, detay ve vitrin karesi — tek tıkla 4 görsel.",
-    badge: "4 kredi",
+    desc: "Pazaryeri ana görseli, model üstünde, detay ve vitrin karesi — tek tıkla dört görsel.",
+    badge: "4-8 kredi",
+    image: "/showcase/svc-detay.webp",
   },
   {
     icon: Wand2,
     title: "AI Konsept Öner",
-    desc: "Ürününüzü analiz eder, birbirinden farklı 3 lüks stüdyo konsepti sunar.",
+    desc: "Ürününüzü analiz eder, birbirinden farklı üç lüks stüdyo konsepti sunar.",
     badge: "Ücretsiz",
+    image: "/showcase/svc-konsept.webp",
   },
   {
     icon: Shuffle,
     title: "Kreatif Üret",
     desc: "Hiçbir şey seçmeden tek tıkla cüretkâr, sürpriz bir sahne üretilir.",
     badge: "1 kredi",
+    image: "/showcase/svc-kreatif.webp",
   },
   {
     icon: ImageIcon,
     title: "Hazır Stüdyolar",
-    desc: "30'dan fazla küratörlü sahneden birini seçin, ürününüz anında oraya taşınsın.",
+    desc: `${STUDIO_TEMPLATES.length} küratörlü sahneden birini seçin, ürününüz anında oraya taşınsın.`,
     badge: "1 kredi",
+    image: "/showcase/svc-hazir.webp",
   },
   {
     icon: PencilLine,
     title: "Kendi Promptunuz",
     desc: "Hayalinizdeki sahneyi birkaç cümleyle anlatın, ürününüz o sahneye taşınsın.",
     badge: "1 kredi",
+    image: "/showcase/svc-prompt.webp",
   },
   {
     icon: Sparkles,
     title: "2K / 4K Kalite",
-    desc: "İhtiyacınıza göre standart veya yüksek çözünürlükte üretim yapın.",
+    desc: "İhtiyacınıza göre standart veya yüksek çözünürlükte üretim yapın; 4K, yakın çekim detaylarını taşır.",
     badge: "1-2 kredi",
+    image: "/showcase/svc-makro.webp",
+  },
+];
+
+/**
+ * "Üretim başına kredi" sütun grafiği. Değerler `src/lib/credits.ts`teki
+ * gerçek maliyetlerden geliyor (2K=1, 4K=2, Satış Seti = 4 kare × kare
+ * maliyeti) ve en pahalı adım olan 8 krediye göre normalize edildi.
+ */
+const CREDIT_BARS = [
+  { label: "Öneri", value: 0 },
+  { label: "2K", value: 1 / 8 },
+  { label: "4K", value: 2 / 8 },
+  { label: "Set 2K", value: 4 / 8 },
+  { label: "Set 4K", value: 1, highlighted: true },
+];
+
+/** Satış Seti'nin ürettiği dört kare — Stüdyo'daki gerçek kare adları. */
+const SHOT_TYPES = [
+  { label: "Ana Görsel", thumb: "/showcase/thumb-ana.webp" },
+  { label: "Model Üstünde", thumb: "/showcase/thumb-model.webp" },
+  { label: "Detay Çekimi", thumb: "/showcase/thumb-detay.webp" },
+  { label: "Vitrin Sahnesi", thumb: "/showcase/thumb-vitrin.webp" },
+];
+
+const SHOWCASE = [
+  {
+    src: "/showcase/case-gozluk-model.webp",
+    shot: "Model Üstünde",
+    caption: "Güneş gözlüğü, doğal ışıkta editoryal bir portre karesine taşındı.",
+  },
+  {
+    src: "/showcase/case-bileklik-model.webp",
+    shot: "Model Üstünde",
+    caption: "Taşlı bileklik, bilek üzerinde yumuşak stüdyo ışığıyla çekildi.",
+  },
+  {
+    src: "/showcase/case-kolye-model.webp",
+    shot: "Kullanım Anı",
+    caption: "Altın kolye, sıcak tonlu bir moda çekimi kurgusunda.",
+  },
+  {
+    src: "/showcase/case-ayakkabi-vitrin.webp",
+    shot: "Vitrin Sahnesi",
+    caption: "Ayakkabı, traverten bir podyum üzerinde vitrin sahnesine taşındı.",
+  },
+];
+
+const USE_CASES = [
+  {
+    image: "/showcase/use-pazaryeri.webp",
+    title: "Pazaryeri ilanları",
+    desc: "Trendyol, Hepsiburada ve kendi mağazanız için tek tip, temiz ana görseller.",
+  },
+  {
+    image: "/showcase/use-sosyal.webp",
+    title: "Sosyal medya içeriği",
+    desc: "Instagram ve TikTok akışına uygun, sahne kurgusu güçlü kareler.",
+  },
+  {
+    image: "/showcase/use-reklam.webp",
+    title: "Reklam görselleri",
+    desc: "Kampanya ve katalog için model üstünde çekilmiş editoryal görseller.",
   },
 ];
 
@@ -115,524 +222,821 @@ const FAQ = [
 
 export default async function LandingPage() {
   const packages = await getActivePackages();
+  const maxCredits = Math.max(1, ...packages.map((p) => p.credits));
 
+  // NOT: kök sarmalayıcı blok akışında kalmalı — `flex flex-col` verilirse
+  // bölümlerdeki `mx-auto`, flex öğesinde stretch yerine shrink-to-fit
+  // davranışı tetikleyip dar içerikli bölümleri (SSS gibi) daraltıyor.
   return (
-    <div className="flex flex-col">
-      {/* ── HERO ── */}
-      <section className="relative overflow-hidden pb-8 pt-20 sm:pt-28">
-        <div
-          aria-hidden
-          className="coral-glow pointer-events-none absolute -right-2 top-16 -z-10 h-[560px] w-[560px]"
+    <div className="bg-card">
+      {/* ── HERO ─────────────────────────────────────────────────────────
+          Tam ekran mavi gökyüzü kapağı; ortada başlık/CTA, altında sürekli
+          dönen üç kart çarkı (içindeki her kare gerçek bir Renza üretimi). */}
+      <section className="relative h-screen min-h-[850px] overflow-hidden">
+        <Image
+          src="/hero-sky.avif"
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover"
         />
 
-        <div className="relative mx-auto grid max-w-6xl items-center gap-10 px-4 sm:px-6 lg:grid-cols-[1.1fr_1fr] lg:gap-4">
-          {/* Metin — masaüstünde sola yaslı, mobilde ortalanmış */}
-          <div className="text-center lg:text-left">
-            <Badge
-              variant="outline"
-              className="mb-6 gap-1.5 border-border bg-card px-3 py-1 shadow-sm"
-            >
-              <Gem className="size-3.5 text-primary" />
-              Takı · Saat · Çanta için tasarlandı
-            </Badge>
-            <h1 className="font-heading text-balance text-5xl font-extrabold leading-[1.05] text-foreground sm:text-6xl lg:text-7xl">
-              Telefon çekiminden
-              <br />
-              <span className="font-accent text-primary">stüdyo kalitesine</span>
+        <div className="absolute inset-x-0 top-24 bottom-0 z-10 mx-auto flex max-w-3xl flex-col items-center justify-center px-6 text-center">
+          <FadeUp immediate>
+            <h1 className="text-[38px] font-medium leading-[1.15] tracking-[-0.06em] text-white sm:text-[52px] sm:leading-[1.1] lg:text-[60px] lg:leading-[1.2]">
+              Telefon çekiminden{" "}
+              <span className="text-white/70">stüdyo kalitesine</span>
             </h1>
-            <p className="mx-auto mt-6 max-w-xl text-pretty text-lg text-muted-foreground lg:mx-0">
-              60 saniyede, tek fotoğraftan profesyonel ürün çekimi.
+          </FadeUp>
+
+          <FadeUp immediate delay={0.12}>
+            <p className="mt-6 max-w-xl text-base text-white/90 sm:text-lg">
+              Ürününüzün tek bir fotoğrafını yükleyin; saniyeler içinde satışa
+              hazır, profesyonel bir ürün çekimine dönüşsün.
             </p>
-            <div className="mt-10 flex flex-wrap items-center justify-center gap-3 lg:justify-start">
-              <ButtonLink href={ROUTES.register} size="lg" className="gap-2">
-                Ücretsiz Dene — 3 görsel hediye <ArrowRight className="size-4" />
-              </ButtonLink>
-              <ButtonLink href={ROUTES.gallery} size="lg" variant="outline">
+          </FadeUp>
+
+          <FadeUp immediate delay={0.24}>
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+              <PillLink href={ROUTES.gallery} variant="translucent" withArrow={false}>
                 Stüdyoları Keşfet
-              </ButtonLink>
+              </PillLink>
+              <PillLink href={ROUTES.register}>Ücretsiz Başla</PillLink>
             </div>
-            <p className="mt-4 text-sm text-muted-foreground">
-              <strong className="text-foreground">Kart bilgisi gerekmez.</strong>
-            </p>
-          </div>
+          </FadeUp>
 
-          {/* Hero görseli — başlığın yanında/arkasında taşan faset obje;
-              projede gerçek ürün fotoğrafı bulunmadığı için (bkz. brief)
-              soyut kompozisyon + süzülen rozetler kullanıldı. */}
-          <div className="relative mx-auto flex h-[360px] w-full max-w-md items-center justify-center sm:h-[440px] lg:mx-0 lg:h-[520px] lg:max-w-none lg:justify-end">
-            <FacetedGem className="h-56 w-56 sm:h-72 sm:w-72 lg:h-96 lg:w-96 lg:translate-x-10" />
+          <FadeUp
+            immediate
+            delay={0.3}
+            className="relative z-10 mt-28 h-[190px] w-full sm:h-[230px]"
+          >
+            <CardWheel groups={WHEEL_GROUPS} />
+          </FadeUp>
 
-            <FloatingBadge
-              icon={<Sparkles className="size-3.5" />}
-              label="AI destekli"
-              className="left-[2%] top-[10%] -rotate-3 sm:left-[8%]"
-            />
-            <FloatingBadge
-              icon={<Zap className="size-3.5" />}
-              label="60 saniye"
-              className="right-[4%] top-[6%] rotate-2 lg:right-[14%]"
-            />
-            <FloatingBadge
-              icon={<ShieldCheck className="size-3.5" />}
-              label="DokuKilidi"
-              className="bottom-[8%] left-[6%] rotate-2 sm:left-[10%]"
-            />
-          </div>
-        </div>
-
-        {/* Kategori şeridi — sahte marka/logo yok, sadece desteklenen kategoriler */}
-        <div className="mx-auto mt-14 max-w-3xl px-4 text-center sm:px-6">
-          <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
-            Şunlar için tasarlandı
-          </p>
-          <div className="mt-3 flex flex-wrap items-center justify-center gap-x-2 gap-y-2 text-sm font-medium text-muted-foreground/80">
-            {HERO_CATEGORIES.map((c, i) => (
-              <span key={c} className="flex items-center gap-x-2">
-                {i > 0 && <span aria-hidden>·</span>}
-                <span>{c}</span>
-              </span>
-            ))}
-          </div>
+          <FadeUp immediate delay={0.7}>
+            <div className="mt-14 flex flex-col items-center gap-2 sm:mt-6">
+              <p className="text-sm text-white/90">
+                Kart bilgisi gerekmez · İlk 3 görsel hediye
+              </p>
+              <ul className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1">
+                {HERO_PROOF.map((item) => (
+                  <li
+                    key={item}
+                    className="flex items-center gap-1.5 text-xs text-white/70"
+                  >
+                    <Check className="size-3.5 text-secondary" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </FadeUp>
         </div>
       </section>
 
-      {/* ── YETENEKLER ── */}
-      <section className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6">
-        <div className="mb-10 max-w-xl">
-          <p className="text-sm font-semibold text-primary">Stüdyoda neler var</p>
-          <h2 className="font-heading mt-2 text-2xl font-semibold sm:text-3xl">
-            Tek bir fotoğraftan altı farklı yol.
-          </h2>
-          <p className="mt-3 text-muted-foreground">
-            Her üretim yalnızca başarılı olduğunda kredi harcar; hangi yolu
-            seçerseniz seçin ürününüzün gerçekliği DokuKilidi ile korunur.
-          </p>
-        </div>
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {CAPABILITIES.map((c) => (
-            <Card key={c.title} className="p-6">
-              <span className="grid size-11 place-items-center rounded-lg bg-primary/10 text-primary ring-1 ring-primary/20">
-                <c.icon className="size-5" />
+      {/* ── KATEGORİ ŞERİDİ ─────────────────────────────────────────────── */}
+      <section className="overflow-hidden pt-8 pb-20 sm:pb-28">
+        <div className="border-b border-black/5 pb-8">
+          <Marquee durationSeconds={28} gapClassName="gap-x-16">
+            {CATEGORIES.map((category) => (
+              <span
+                key={category}
+                className="flex shrink-0 items-center gap-2 font-mono text-sm uppercase tracking-[0.2em] text-foreground/40"
+              >
+                <Gem className="size-3.5" />
+                {category}
               </span>
-              <h3 className="font-heading mt-4 text-base font-medium">
-                {c.title}
-              </h3>
-              <p className="mt-1.5 text-sm text-muted-foreground">{c.desc}</p>
-              <Badge variant="secondary" className="mt-4 text-xs">
-                {c.badge}
-              </Badge>
-            </Card>
+            ))}
+          </Marquee>
+        </div>
+      </section>
+
+      {/* ── HAKKIMIZDA ──────────────────────────────────────────────────── */}
+      <section
+        id="hakkimizda"
+        className="mx-auto max-w-[1200px] px-6 pb-20 sm:pb-28"
+      >
+        <FadeUp className="flex flex-col items-center">
+          <SectionEyebrow>Hakkımızda</SectionEyebrow>
+          <h2 className="mx-auto mt-6 max-w-3xl text-center text-[32px] font-medium leading-[1.15] tracking-[-0.04em] text-foreground sm:text-[42px] lg:text-[48px]">
+            Telefonunuzdaki kareyi{" "}
+            <InlineIcon icon={Camera} tone="bg-primary text-primary-foreground" />{" "}
+            dakikalar içinde{" "}
+            <span className="text-foreground/35">
+              stüdyo{" "}
+              <InlineIcon icon={Gem} tone="bg-secondary text-secondary-foreground" />{" "}
+              kalitesine taşıyoruz
+            </span>
+          </h2>
+        </FadeUp>
+
+        <div className="mt-20 grid grid-cols-1 gap-4 sm:mt-28 lg:grid-cols-[1.1fr_1fr_0.8fr]">
+          <FadeUp className="relative flex min-h-[360px] flex-col justify-end overflow-hidden rounded-3xl p-3 pt-16">
+            <Image
+              src="/showcase/about-cover.webp"
+              alt="Renza ile üretilmiş bir vitrin karesi"
+              fill
+              sizes="(min-width: 1024px) 34vw, 90vw"
+              className="object-cover"
+            />
+            <span className="absolute left-6 top-6 rounded-full bg-white/15 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.2em] text-white backdrop-blur-sm">
+              Renza üretimi
+            </span>
+            <span className="absolute right-6 top-6 grid size-10 place-items-center rounded-full bg-card text-foreground">
+              <Camera className="size-5" />
+            </span>
+            <div className="relative rounded-2xl bg-card p-6">
+              <p className="text-4xl font-medium tracking-[-0.03em] text-foreground">
+                <AnimatedNumber end={STUDIO_TEMPLATES.length} suffix="+" />
+              </p>
+              <p className="mt-2 text-sm text-foreground/60">
+                küratörlü stüdyo sahnesi — takı, saat, çanta ve aksesuar için
+                ayrı ayrı kalibre edildi.
+              </p>
+            </div>
+          </FadeUp>
+
+          <FadeUp
+            delay={0.12}
+            className="flex flex-col justify-between rounded-3xl bg-muted p-6"
+          >
+            <p className="text-sm text-foreground/60">DokuKilidi sadakati</p>
+            <p className="mt-2 text-5xl font-medium tracking-[-0.03em] text-foreground">
+              <AnimatedNumber end={100} suffix="%" />
+            </p>
+            <div className="mt-8 flex -space-x-3">
+              {SHOT_TYPES.map((shot) => (
+                <Image
+                  key={shot.label}
+                  src={shot.thumb}
+                  alt={shot.label}
+                  width={160}
+                  height={160}
+                  className="size-9 rounded-full object-cover ring-2 ring-muted"
+                />
+              ))}
+            </div>
+            <p className="mt-6 text-sm leading-relaxed text-foreground/80">
+              Ürün geometrisi, rengi ve dokusu piksel piksel korunur — yalnızca
+              arka plan, ışık ve yansımalar yeniden üretilir.
+            </p>
+          </FadeUp>
+
+          <FadeUp delay={0.24} className="flex flex-col gap-4">
+            <div className="flex-1 rounded-3xl bg-secondary p-6 text-secondary-foreground">
+              <p className="text-sm text-secondary-foreground/70">Üretim yolu</p>
+              <p className="mt-2 text-4xl font-medium tracking-[-0.03em]">
+                {CAPABILITIES.length}
+              </p>
+              <p className="mt-2 text-sm text-secondary-foreground/70">
+                Satış setinden kendi promptunuza kadar, aynı ekranda.
+              </p>
+            </div>
+            <div className="flex-1 rounded-3xl bg-foreground p-6 text-background">
+              <p className="text-sm text-background/60">Çözünürlük</p>
+              <p className="mt-2 text-4xl font-medium tracking-[-0.03em]">
+                2K / 4K
+              </p>
+            </div>
+          </FadeUp>
+        </div>
+      </section>
+
+      {/* ── STÜDYODA NELER VAR ──────────────────────────────────────────── */}
+      <section
+        id="neler-var"
+        className="mx-auto max-w-[1200px] px-6 pb-20 sm:pb-28"
+      >
+        <FadeUp className="flex flex-col items-center">
+          <SectionEyebrow>Stüdyoda neler var</SectionEyebrow>
+          <h2 className="mx-auto mt-6 max-w-2xl text-center text-[32px] font-medium leading-[1.15] tracking-[-0.04em] text-foreground sm:text-[42px] lg:text-[48px]">
+            Tek bir fotoğraftan altı farklı yol
+          </h2>
+          <p className="mx-auto mt-5 max-w-xl text-center text-foreground/60">
+            Hangi yolu seçerseniz seçin ürününüzün gerçekliği DokuKilidi ile
+            korunur ve kredi yalnızca üretim başarılı olduğunda düşer.
+          </p>
+          <div className="mt-8 flex justify-center">
+            <PillLink href={ROUTES.studio} variant="dark">
+              Stüdyo&apos;yu aç
+            </PillLink>
+          </div>
+        </FadeUp>
+
+        <div className="mt-20 grid grid-cols-1 gap-4 rounded-[32px] bg-muted p-3 sm:mt-28 md:grid-cols-3">
+          {CAPABILITIES.map((capability, i) => (
+            <FadeUp
+              key={capability.title}
+              delay={i * 0.08}
+              // justify-between YOK: kartların açıklama uzunlukları farklı
+              // olduğu için serbest boşluk dağıtılırsa görseller/başlıklar
+              // satır içinde birbirinden kayıyor.
+              className="flex min-h-[320px] flex-col rounded-3xl bg-muted p-6"
+            >
+              <div className="flex items-center justify-between">
+                <span className="grid size-9 place-items-center rounded-lg bg-secondary text-secondary-foreground">
+                  <capability.icon className="size-4" />
+                </span>
+                <span className="rounded-full bg-card px-3 py-1 font-mono text-[10px] uppercase tracking-[0.15em] text-foreground/70">
+                  {capability.badge}
+                </span>
+              </div>
+
+              <Image
+                src={capability.image}
+                alt=""
+                width={720}
+                height={450}
+                sizes="(min-width: 768px) 30vw, 90vw"
+                className="my-4 h-40 w-full rounded-2xl object-cover"
+              />
+
+              <div>
+                <h3 className="text-xl font-medium tracking-[-0.02em] text-foreground">
+                  {capability.title}
+                </h3>
+                <p className="mt-2 text-sm leading-relaxed text-foreground/60">
+                  {capability.desc}
+                </p>
+              </div>
+            </FadeUp>
           ))}
         </div>
       </section>
 
-      {/* ── RAKAMLARLA ── */}
-      <section className="mx-auto w-full max-w-6xl px-4 sm:px-6">
-        <div className="relative overflow-hidden rounded-[2rem] border border-border bg-accent/40 p-8 sm:p-12">
-          <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-center sm:-space-x-4">
-            <div className="flex-1 rounded-full border border-border bg-card px-8 py-6 text-center shadow-sm sm:rotate-[-1deg]">
-              <p className="font-heading text-4xl font-semibold sm:text-5xl">
-                60 <span className="text-primary">saniye</span>
-              </p>
-              <p className="mt-1.5 text-sm text-muted-foreground">
-                ortalama üretim süresi
-              </p>
-            </div>
-            <div className="flex-1 rounded-full border border-border bg-card px-8 py-6 text-center shadow-md sm:z-10 sm:scale-105">
-              <p className="font-heading text-4xl font-semibold sm:text-5xl">
-                3 <span className="text-primary">görsel</span>
-              </p>
-              <p className="mt-1.5 text-sm text-muted-foreground">
-                kayıt olunca hediye
-              </p>
-            </div>
-            <div className="flex-1 rounded-full border border-border bg-card px-8 py-6 text-center shadow-sm sm:rotate-[1deg]">
-              <p className="font-heading text-4xl font-semibold sm:text-5xl">
-                6 <span className="text-primary">yol</span>
-              </p>
-              <p className="mt-1.5 text-sm text-muted-foreground">
-                her ürüne uygun üretim seçeneği
-              </p>
-            </div>
-          </div>
-          <p className="relative mt-8 text-center text-xs text-muted-foreground">
-            Ortalama süre yoğun saatlerde uzayabilir; kredi yalnızca başarılı
-            üretimde düşer.
-          </p>
-        </div>
-      </section>
-
-      {/* ── DOKUKİLİDİ ── */}
-      <section className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6">
-        <div className="grid items-center gap-10 lg:grid-cols-2">
-          <div>
-            <Badge variant="secondary" className="mb-4 gap-1.5">
-              <ShieldCheck className="size-3.5 text-primary" /> DokuKilidi
-              Teknolojisi
-            </Badge>
-            <h2 className="font-heading text-2xl font-semibold sm:text-3xl">
-              DokuKilidi Teknolojisi
-            </h2>
-            <p className="mt-3 text-muted-foreground">
-              Ürününüzün şekli, rengi ve dokusu piksel piksel korunur; yalnızca
-              sahne değişir.
-            </p>
-            <ul className="mt-6 space-y-3 text-sm">
-              <li className="flex items-start gap-2">
-                <Check className="mt-0.5 size-4 shrink-0 text-primary" />
-                Ürün geometrisi ve orantıları bozulmadan kalır
-              </li>
-              <li className="flex items-start gap-2">
-                <Check className="mt-0.5 size-4 shrink-0 text-primary" />
-                Malzeme, renk ve doku aynen korunur
-              </li>
-              <li className="flex items-start gap-2">
-                <Check className="mt-0.5 size-4 shrink-0 text-primary" />
-                Yalnızca arka plan, ışık ve yansımalar yeniden üretilir
-              </li>
-            </ul>
-          </div>
-          <BeforeAfterSlider
-            beforeSrc="/examples/dokukilidi-before.jpg"
-            afterSrc="/examples/dokukilidi-after.jpg"
-            beforeAlt="Ham telefon çekimi"
-            afterAlt="DokuKilidi ile stüdyo görseli"
-          />
-        </div>
-      </section>
-
-      {/* ── NASIL ÇALIŞTIĞIMIZ (koyu bento) ── */}
-      <section className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6">
-        <div className="mb-10 max-w-xl">
-          <p className="text-sm font-semibold text-primary">Perde arkası</p>
-          <h2 className="font-heading mt-2 text-2xl font-semibold sm:text-3xl">
-            Tek akış, tek ekran.
+      {/* ── PERDE ARKASI ────────────────────────────────────────────────── */}
+      <section className="mx-auto max-w-[1200px] px-6 pb-20 sm:pb-28">
+        <FadeUp className="flex flex-col items-center">
+          <SectionEyebrow>Perde arkası</SectionEyebrow>
+          <h2 className="mx-auto mt-6 max-w-2xl text-center text-[32px] font-medium leading-[1.15] tracking-[-0.04em] text-foreground sm:text-[42px] lg:text-[48px]">
+            Fotoğrafçı randevusu yerine tek ekran
           </h2>
-        </div>
+          <p className="mx-auto mt-5 max-w-xl text-center text-foreground/60">
+            Yükleyin, sahneyi seçin, indirin. Stüdyo kirası, ekipman ya da
+            ayrı bir düzenleme aracı olmadan.
+          </p>
+        </FadeUp>
 
-        <div className="rounded-[2.25rem] bg-[#171512] p-4 sm:p-5">
-          <div className="grid gap-4 lg:grid-cols-3">
-            {/* Büyük panel 1: tek akış */}
-            <div className="relative overflow-hidden rounded-[1.75rem] border border-white/5 bg-[#1f1c17] p-8 sm:p-10 lg:col-span-2">
-              <h3 className="text-2xl font-semibold text-white sm:text-3xl">
-                Tek ekranda <span className="text-white/50">baştan sona</span>
-              </h3>
-              <p className="mt-3 max-w-md text-base leading-relaxed text-white/55">
-                Yükleyin, sahneyi seçin, indirin — ayrı bir düzenleme aracına ya
-                da tasarımcıya gerek kalmadan hepsi Stüdyo&apos;da.
-              </p>
-              <div className="mt-10 flex items-center justify-center gap-3">
-                <div className="flex items-center">
-                  <div className="h-24 w-16 -rotate-6 rounded-2xl border border-white/5 bg-[#26221c]" />
-                  <div className="-ml-8 h-28 w-20 -rotate-3 rounded-2xl border border-white/10 bg-[#2c2820]" />
-                  <div className="relative z-10 -ml-8 flex h-32 w-24 items-center justify-center rounded-2xl border border-white/15 bg-gradient-to-b from-[#332d24] to-[#211d17] shadow-[0_20px_40px_-14px_rgba(0,0,0,0.7)]">
-                    <Upload className="size-7 text-white/70" strokeWidth={1.5} />
+        <div className="mt-20 grid grid-cols-1 gap-4 sm:mt-28 md:grid-cols-2">
+          {/* Kart 1 — kredi modeli */}
+          <FadeUp className="flex flex-col rounded-3xl border border-black/5 bg-card p-8">
+            <div className="grid flex-1 grid-cols-2 gap-3">
+              <div className="rounded-2xl bg-muted p-4">
+                <p className="text-xs text-foreground/60">Paket başına görsel</p>
+                <div className="mt-4 space-y-3.5">
+                  {packages.map((pkg) => (
+                    <div key={pkg.id}>
+                      <div className="flex items-baseline justify-between text-xs">
+                        <p className="font-medium text-foreground">{pkg.name}</p>
+                        <p className="text-foreground/50">{pkg.credits} kredi</p>
+                      </div>
+                      <AnimatedProgressBar
+                        percent={Math.round((pkg.credits / maxCredits) * 100)}
+                        className="mt-1.5 h-1.5"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="flex flex-col justify-between rounded-2xl bg-foreground p-4 text-background">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <p className="text-xs font-medium">Kredi</p>
+                    <p className="text-[10px] text-background/50">
+                      Görsel başına
+                    </p>
                   </div>
-                </div>
-                <span className="z-10 flex size-9 shrink-0 items-center justify-center rounded-full border border-primary/40 bg-[#171512] text-primary">
-                  <ArrowRight className="size-4" />
-                </span>
-                <div className="relative flex h-32 w-24 items-center justify-center rounded-2xl border border-primary/25 bg-gradient-to-b from-[#3a2018] to-[#2a150f]">
-                  <Sparkles className="size-7 text-primary" strokeWidth={1.5} />
-                  <span className="absolute -bottom-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-primary px-3 py-1 text-xs font-medium text-primary-foreground shadow-lg">
-                    Hazır
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* Küçük panel: kredi verimliliği */}
-            <div className="flex flex-col items-center justify-center rounded-[1.75rem] border border-white/5 bg-[#1f1c17] p-8">
-              <span className="rounded-full bg-primary px-3.5 py-1.5 text-xs font-semibold text-primary-foreground shadow-[0_12px_24px_-8px_rgba(214,35,0,0.6)]">
-                1 kredi&apos;den başlar
-              </span>
-              <div className="mt-6 flex items-end gap-2.5">
-                <span className="h-8 w-5 rounded-full bg-white/10" />
-                <span className="h-14 w-5 rounded-full bg-gradient-to-b from-primary to-[#D62300]" />
-                <span className="h-10 w-5 rounded-full bg-white/10" />
-                <span className="h-20 w-5 rounded-full bg-white/15" />
-                <span className="h-6 w-5 rounded-full bg-white/10" />
-              </div>
-              <p className="mt-6 text-center text-sm text-white/50">
-                2K bir görsel 1, 4K bir görsel 2 kredi tutar
-              </p>
-            </div>
-
-            {/* Küçük panel: kullanım hakkı */}
-            <div className="rounded-[1.75rem] border border-white/5 bg-[#1f1c17] p-8">
-              <span className="grid size-12 place-items-center rounded-full border border-primary/30 bg-[#2a150f] text-primary">
-                <ShieldCheck className="size-5" strokeWidth={1.5} />
-              </span>
-              <h3 className="mt-5 text-2xl font-semibold text-white">
-                Sınırsız <span className="text-white/50">kullanım hakkı</span>
-              </h3>
-              <p className="mt-2 text-base leading-relaxed text-white/55">
-                Ürettiğiniz her görsel size ait — ürün sayfası, sosyal medya ya
-                da reklamda dilediğinizce kullanın.
-              </p>
-            </div>
-
-            {/* Büyük panel 2: stüdyo ihtiyacını ortadan kaldırma */}
-            <div className="relative overflow-hidden rounded-[1.75rem] border border-white/5 bg-[#1f1c17] p-8 sm:p-10 lg:col-span-2">
-              <div className="flex flex-col gap-8 sm:flex-row sm:items-center">
-                <div className="relative shrink-0">
-                  <span
-                    aria-hidden
-                    className="pointer-events-none absolute -left-5 -top-5 h-3 w-3 rounded-full bg-primary/70"
-                  />
-                  <span
-                    aria-hidden
-                    className="pointer-events-none absolute -bottom-4 left-16 h-2 w-2 rounded-full bg-primary/40"
-                  />
-                  <span className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-[0_14px_28px_-10px_rgba(232,90,60,0.8)]">
-                    <Gem className="size-4" strokeWidth={1.5} />
-                    Telefon → Vitrin
-                  </span>
+                  <TrendingUp className="size-4" />
                 </div>
                 <div>
-                  <h3 className="text-2xl font-semibold text-white">
-                    Stüdyo <span className="text-white/50">kirası yok</span>
-                  </h3>
-                  <p className="mt-2 max-w-md text-base leading-relaxed text-white/55">
-                    Fotoğrafçı randevusu, ekipman ya da stüdyo kirası olmadan —
-                    telefonunuzdaki fotoğraf yeterli başlangıç noktası.
+                  <p className="text-3xl font-medium">1–2</p>
+                  <p className="text-[10px] text-background/50">
+                    2K = 1 kredi · 4K = 2 kredi
                   </p>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── HAZIR STÜDYOLAR ÖNİZLEME ── */}
-      <section className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6">
-        <div className="mb-8 flex items-end justify-between">
-          <div>
-            <h2 className="font-heading text-2xl font-semibold sm:text-3xl">
-              İlham Galerisi
-            </h2>
-            <p className="mt-1 text-muted-foreground">
-              Hazır stüdyo şablonlarından birini seçin, ürününüz anında o sahneye
-              taşınsın.
+            <h3 className="mt-6 text-xl font-medium tracking-[-0.02em] text-foreground">
+              Kullandıkça öde
+            </h3>
+            <p className="mt-2 max-w-md text-sm leading-relaxed text-foreground/60">
+              Abonelik yok, otomatik yenileme yok. Krediniz sona ermez ve
+              başarısız bir üretimde bakiyenizden düşülmez.
             </p>
-          </div>
-          <ButtonLink
-            href={ROUTES.gallery}
-            variant="ghost"
-            className="hidden gap-1 sm:flex"
-          >
-            Tümü <ArrowRight className="size-4" />
-          </ButtonLink>
-        </div>
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
-          {STUDIO_TEMPLATES.slice(0, 12).map((t) => (
-            <div
-              key={t.id}
-              className="group relative aspect-[3/4] overflow-hidden rounded-xl border border-border bg-gradient-to-br from-accent/60 to-muted"
-            >
-              <div className="absolute inset-0 grid place-items-center text-primary/30">
-                <Gem className="size-8" />
+          </FadeUp>
+
+          {/* Kart 2 — üretim başına kredi maliyeti */}
+          <FadeUp delay={0.12} className="flex flex-col rounded-3xl border border-black/5 bg-card p-8">
+            <div className="grid flex-1 grid-cols-2 gap-3">
+              <div className="rounded-2xl bg-muted p-4">
+                <p className="text-xs font-medium text-foreground">
+                  Üretim başına kredi
+                </p>
+                <div className="mt-3">
+                  <GrowBarChart bars={CREDIT_BARS} />
+                </div>
               </div>
-              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-background/90 to-transparent p-3">
-                <p className="font-heading text-sm font-medium">{t.title}</p>
+              <div className="flex flex-col justify-center gap-1 rounded-2xl bg-foreground p-4 text-background">
+                <p className="text-lg font-medium leading-tight">
+                  Konsept{" "}
+                  <span className="mx-0.5 inline-flex size-4 items-center justify-center rounded-full bg-secondary align-middle text-secondary-foreground">
+                    <Check className="size-3" />
+                  </span>{" "}
+                  <span className="text-background/40">önerisi</span>
+                  <br />
+                  <span className="text-background/40">ücretsiz,</span> üretim
+                  <br />
+                  <span className="text-background/40">yalnızca</span> başarılı
+                  <br />
+                  <span className="text-background/40">olursa</span> düşer
+                </p>
               </div>
             </div>
-          ))}
+            <h3 className="mt-6 text-xl font-medium tracking-[-0.02em] text-foreground">
+              Her adımın maliyeti belli
+            </h3>
+            <p className="mt-2 max-w-md text-sm leading-relaxed text-foreground/60">
+              AI konsept önerisi ücretsiz; 2K bir görsel 1, 4K bir görsel 2
+              kredi. Dört kareli Satış Seti seçtiğiniz kaliteye göre 4 ya da 8
+              kredi tutar — sürpriz kalem yok.
+            </p>
+          </FadeUp>
+
+          {/* Kart 3 — Satış Seti */}
+          <FadeUp className="flex flex-col rounded-3xl border border-black/5 bg-card p-8">
+            <div className="grid flex-1 grid-cols-2 gap-3">
+              <div className="flex flex-col justify-between rounded-2xl bg-foreground p-4 text-background">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <p className="text-xs font-medium">Satış Seti</p>
+                    <p className="text-[10px] text-background/50">Tek tıkla</p>
+                  </div>
+                  <LayoutGrid className="size-4" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <p className="text-2xl font-medium">
+                      <AnimatedNumber end={4} duration={1200} />
+                    </p>
+                    <span className="rounded-full bg-secondary px-2 py-0.5 text-[10px] font-medium text-secondary-foreground">
+                      4-8 kredi
+                    </span>
+                  </div>
+                  <p className="text-[10px] text-background/50">
+                    farklı satış karesi
+                  </p>
+                </div>
+                <div className="mt-3 space-y-1.5">
+                  <Marquee durationSeconds={26} gapClassName="gap-x-2">
+                    {SHOT_TYPES.map((shot) => (
+                      <span
+                        key={shot.label}
+                        className="shrink-0 rounded-full bg-white/10 px-3 py-1.5 text-[10px] text-background/70"
+                      >
+                        {shot.label}
+                      </span>
+                    ))}
+                  </Marquee>
+                  <Marquee durationSeconds={22} reverse gapClassName="gap-x-2">
+                    {["Pazaryeri", "Sosyal medya", "Reklam", "Katalog"].map(
+                      (tag) => (
+                        <span
+                          key={tag}
+                          className="shrink-0 rounded-full bg-white/10 px-3 py-1.5 text-[10px] text-background/70"
+                        >
+                          {tag}
+                        </span>
+                      ),
+                    )}
+                  </Marquee>
+                </div>
+              </div>
+              <div className="flex flex-col justify-between rounded-2xl bg-muted p-4">
+                <div>
+                  <div className="flex -space-x-2">
+                    {SHOT_TYPES.map((shot) => (
+                      <Image
+                        key={shot.label}
+                        src={shot.thumb}
+                        alt={shot.label}
+                        width={160}
+                        height={160}
+                        className="size-7 rounded-full object-cover ring-2 ring-muted"
+                      />
+                    ))}
+                  </div>
+                  <p className="mt-2 text-[10px] text-foreground/50">
+                    Aynı üründen dört farklı kare
+                  </p>
+                </div>
+                <p className="text-lg font-medium leading-tight text-foreground">
+                  <span className="text-foreground/30">Ana görsel.</span>
+                  <br />
+                  <span className="text-foreground/30">Model üstünde.</span>
+                  <br />
+                  Detay. Vitrin.
+                </p>
+              </div>
+            </div>
+            <h3 className="mt-6 text-xl font-medium tracking-[-0.02em] text-foreground">
+              Ürün sayfasının tamamı
+            </h3>
+            <p className="mt-2 max-w-md text-sm leading-relaxed text-foreground/60">
+              Tek yüklemeden bir ilanı baştan sona dolduracak dört kare çıkar —
+              her biri farklı bir kompozisyon kuralına göre kurgulanır.
+            </p>
+          </FadeUp>
+
+          {/* Kart 4 — hazır stüdyolar */}
+          <FadeUp delay={0.12} className="flex flex-col rounded-3xl border border-black/5 bg-card p-8">
+            {/* overflow-hidden şart: yörüngedeki rozetler kart dışına
+                savrulup dar ekranlarda yatay kaydırma yaratıyor. */}
+            <div className="flex flex-1 items-center justify-center overflow-hidden rounded-2xl bg-muted py-8">
+              <OrbitDiagram
+                center={
+                  <div className="grid size-14 place-items-center rounded-2xl bg-foreground text-secondary shadow-lg">
+                    <Camera className="size-6" />
+                  </div>
+                }
+                pills={[
+                  {
+                    thumb: "/showcase/thumb-ana.webp",
+                    label: "Ana Görsel",
+                    badge: "1 kredi",
+                    startAngle: -30,
+                    duration: 22,
+                    radius: 128,
+                  },
+                  {
+                    thumb: "/showcase/thumb-model.webp",
+                    label: "Model Üstünde",
+                    badge: "1 kredi",
+                    startAngle: 150,
+                    duration: 26,
+                    radius: 104,
+                  },
+                  {
+                    thumb: "/showcase/thumb-vitrin.webp",
+                    label: "Vitrin Sahnesi",
+                    badge: "1 kredi",
+                    startAngle: 260,
+                    duration: 30,
+                    radius: 80,
+                  },
+                ]}
+              />
+            </div>
+            <h3 className="mt-6 text-xl font-medium tracking-[-0.02em] text-foreground">
+              Her kare için ayrı sahne
+            </h3>
+            <p className="mt-2 max-w-md text-sm leading-relaxed text-foreground/60">
+              Kare türü değiştiğinde ışık, kadraj ve zemin de değişir; aynı
+              sahne her ürüne tekrar edilmez.
+            </p>
+          </FadeUp>
         </div>
       </section>
 
-      {/* ── GÜVEN BLOĞU ── */}
-      <section className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6">
-        <div className="grid gap-6 sm:grid-cols-3">
-          {TRUST_POINTS.map((t) => (
-            <Card key={t.title} className="p-6">
-              <span className="grid size-11 place-items-center rounded-lg bg-primary/10 text-primary ring-1 ring-primary/20">
-                <t.icon className="size-5" />
-              </span>
-              <h3 className="font-heading mt-4 text-base font-medium">
-                {t.title}
-              </h3>
-              <p className="mt-1.5 text-sm text-muted-foreground">{t.desc}</p>
-            </Card>
-          ))}
+      {/* ── DOKUKİLİDİ ──────────────────────────────────────────────────── */}
+      <section
+        id="dokukilidi"
+        className="mx-auto max-w-[1200px] px-6 pb-20 sm:pb-28"
+      >
+        <div className="rounded-[32px] bg-muted p-4 sm:p-8">
+          <FadeUp className="grid items-center gap-10 lg:grid-cols-2 lg:p-6">
+            <div>
+              <SectionEyebrow align="left">DokuKilidi</SectionEyebrow>
+              <h2 className="mt-6 text-[32px] font-medium leading-[1.15] tracking-[-0.04em] text-foreground sm:text-[42px]">
+                Ürününüz aynı kalır, sahne değişir
+              </h2>
+              <p className="mt-5 text-foreground/60">
+                Soldaki ham telefon çekimi ile sağdaki vitrin karesi aynı
+                çantaya ait. Ayracı sürükleyerek karşılaştırın.
+              </p>
+              <ul className="mt-6 space-y-3 text-sm text-foreground/80">
+                {[
+                  "Ürün geometrisi ve orantıları bozulmadan kalır",
+                  "Malzeme, renk ve doku aynen korunur",
+                  "Yalnızca arka plan, ışık ve yansımalar yeniden üretilir",
+                ].map((item) => (
+                  <li key={item} className="flex items-start gap-3">
+                    <BadgeCheck className="mt-0.5 size-4 shrink-0 text-primary" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <BeforeAfterSlider
+              beforeSrc="/showcase/dokukilidi-before-3.webp"
+              afterSrc="/showcase/dokukilidi-after-2.webp"
+              beforeAlt="Ham telefon çekimi"
+              afterAlt="DokuKilidi ile üretilmiş vitrin karesi"
+              className="aspect-square"
+            />
+          </FadeUp>
         </div>
       </section>
 
-      {/* ── FİYATLANDIRMA ── */}
-      <section className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6">
-        <div className="relative overflow-hidden rounded-[2.25rem] border border-border bg-accent/30 px-6 py-14 sm:px-12 sm:py-16">
-          <div
-            aria-hidden
-            className="coral-glow pointer-events-none absolute -top-24 left-1/2 h-72 w-[600px] -translate-x-1/2 opacity-50"
-          />
-          <div className="relative mb-10 text-center">
-            <p className="text-sm font-semibold text-primary">Fiyatlandırma</p>
-            <h2 className="font-heading mt-2 text-2xl font-semibold sm:text-3xl">
-              Basit, kredili fiyatlandırma
+      {/* ── ÜRETİM ÖRNEKLERİ ────────────────────────────────────────────── */}
+      <section id="ornekler" className="mx-auto max-w-[1200px] px-6 pb-20 sm:pb-28">
+        <FadeUp className="flex flex-wrap items-end justify-between gap-6">
+          <div>
+            <SectionEyebrow align="left">Üretim örnekleri</SectionEyebrow>
+            <h2 className="mt-6 text-[32px] font-medium leading-[1.15] tracking-[-0.04em] text-foreground sm:text-[42px]">
+              Renza&apos;dan çıkan gerçek kareler
             </h2>
-            <p className="mx-auto mt-2 max-w-md text-muted-foreground">
-              2K görsel 1 kredi, 4K görsel 2 kredi. Kullandıkça öde, abonelik
-              yok.
+            <p className="mt-5 max-w-md text-foreground/60">
+              Hepsi Stüdyo&apos;da, kullanıcıların yüklediği tek bir ürün
+              fotoğrafından üretildi.
             </p>
           </div>
-          <div className="relative grid gap-6 md:grid-cols-3 md:items-center">
-            {packages.map((pkg) => (
-              <PackageCard
-                key={pkg.id}
-                pkg={pkg}
-                action={
-                  <ButtonLink
-                    href={ROUTES.register}
-                    className="w-full gap-2"
-                    variant={pkg.is_popular ? "secondary" : "outline"}
-                  >
-                    Başla
-                    {pkg.is_popular && <ArrowRight className="size-4" />}
-                  </ButtonLink>
-                }
-              />
-            ))}
-          </div>
-          <p className="relative mt-8 text-center text-xs text-muted-foreground">
-            Fiyatlar KDV dahildir; kredi yalnızca başarılı üretimde düşer.
-          </p>
-        </div>
-      </section>
+          <PillLink href={ROUTES.gallery} variant="dark">
+            Hazır stüdyolar
+          </PillLink>
+        </FadeUp>
 
-      {/* ── SSS ── */}
-      <section className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6">
-        <div className="mb-10 text-center">
-          <h2 className="font-heading text-2xl font-semibold sm:text-3xl">
-            Sıkça sorulan sorular
-          </h2>
-        </div>
-        <div className="mx-auto max-w-2xl divide-y divide-border rounded-2xl border border-border">
-          {FAQ.map((item) => (
-            <details key={item.q} className="group p-5 open:bg-accent/20">
-              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-heading text-base font-medium">
-                {item.q}
-                <ArrowRight
-                  aria-hidden
-                  className="size-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-90"
-                />
-              </summary>
-              <p className="mt-3 text-sm text-muted-foreground">{item.a}</p>
-            </details>
+        <div className="mt-20 grid grid-cols-1 gap-4 sm:mt-28 sm:grid-cols-2 lg:grid-cols-4">
+          {SHOWCASE.map((item, i) => (
+            <FadeUp
+              key={item.src}
+              delay={i * 0.08}
+              className="group relative flex min-h-[420px] flex-col justify-end overflow-hidden rounded-3xl"
+            >
+              <Image
+                src={item.src}
+                alt={item.caption}
+                fill
+                sizes="(min-width: 1024px) 24vw, (min-width: 640px) 45vw, 90vw"
+                className="object-cover transition-transform duration-500 group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
+              <span className="relative z-10 m-6 w-fit rounded-full bg-black/45 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.2em] text-white backdrop-blur-sm">
+                {item.shot}
+              </span>
+              <div className="relative z-10 mt-auto p-6 pt-16 text-white">
+                <p className="text-sm leading-relaxed">{item.caption}</p>
+              </div>
+            </FadeUp>
           ))}
         </div>
       </section>
 
-      {/* ── KAPANIŞ CTA ── */}
-      <section className="mx-auto w-full max-w-6xl px-4 pb-4 sm:px-6">
-        <Card className="relative overflow-hidden border-border p-10 text-center sm:p-16">
-          <div
-            aria-hidden
-            className="coral-glow pointer-events-none absolute -left-32 -top-24 h-72 w-72 opacity-60"
-          />
-          <h2 className="font-heading relative mx-auto max-w-2xl text-3xl font-extrabold leading-tight text-balance sm:text-5xl">
-            Ürününüzü <span className="font-accent text-primary">bugün</span>{" "}
-            stüdyo kalitesinde görün.
+      {/* ── FİYATLANDIRMA ───────────────────────────────────────────────── */}
+      <section
+        id="fiyatlandirma"
+        className="mx-auto max-w-[1200px] px-6 pb-20 sm:pb-28"
+      >
+        <FadeUp className="flex flex-col items-center">
+          <SectionEyebrow>Fiyatlandırma</SectionEyebrow>
+          <h2 className="mx-auto mt-6 max-w-2xl text-center text-[32px] font-medium leading-[1.15] tracking-[-0.04em] text-foreground sm:text-[42px] lg:text-[48px]">
+            Basit, kredili fiyatlandırma
           </h2>
-          <p className="relative mx-auto mt-4 max-w-md text-pretty text-muted-foreground">
-            E-postanızı bırakın, hesabınız hazır olsun — ilk 3 görsel bizden.
+          <p className="mx-auto mt-5 max-w-xl text-center text-foreground/60">
+            2K görsel 1 kredi, 4K görsel 2 kredi. Kullandıkça öde, abonelik
+            yok.
           </p>
+        </FadeUp>
 
-          <form
-            action={ROUTES.register}
-            method="GET"
-            className="relative mx-auto mt-8 flex max-w-lg flex-col gap-3 sm:flex-row"
-          >
-            <Label htmlFor="cta-email" className="sr-only">
-              E-posta adresiniz
-            </Label>
-            <Input
-              id="cta-email"
-              name="email"
-              type="email"
-              placeholder="siz@markaniz.com"
-              className="h-12 flex-1 rounded-full bg-card px-6"
-            />
-            <Button type="submit" size="lg" className="gap-2">
-              Ücretsiz Başla <ArrowRight className="size-4" />
-            </Button>
-          </form>
-          <p className="relative mt-4 text-sm text-muted-foreground">
-            Kart bilgisi gerekmez · 60 saniyede ilk göseliniz hazır
-          </p>
-        </Card>
+        <div className="mt-20 grid grid-cols-1 gap-4 rounded-[32px] bg-muted p-3 sm:mt-28 md:grid-cols-3">
+          {packages.map((pkg, i) => {
+            const perImage = Math.round(pkg.price_cents / pkg.credits);
+            const features = [
+              pkg.description ?? `${pkg.credits} profesyonel görsel hakkı`,
+              `Görsel başı ≈ ${formatPrice(perImage, pkg.currency)}`,
+              "2K = 1 kredi · 4K = 2 kredi",
+              "Ticari kullanım hakkı, süresiz krediler",
+            ];
+            return (
+              <FadeUp
+                key={pkg.id}
+                delay={i * 0.1}
+                className={cn(
+                  "flex flex-col rounded-3xl p-7",
+                  pkg.is_popular ? "bg-secondary" : "bg-muted",
+                )}
+              >
+                <div className="flex items-center gap-2 font-mono text-xs uppercase tracking-[0.15em] text-foreground">
+                  <span
+                    className={cn(
+                      "grid size-7 place-items-center rounded-full",
+                      pkg.is_popular
+                        ? "bg-foreground text-secondary"
+                        : "bg-card text-foreground",
+                    )}
+                  >
+                    <Gem className="size-3.5" />
+                  </span>
+                  {pkg.name}
+                </div>
+
+                <p className="mt-4 text-sm text-foreground/60">
+                  {pkg.credits} görsel hakkı
+                </p>
+                <p className="mt-6 flex items-baseline gap-1 text-4xl font-medium tracking-[-0.03em] text-foreground">
+                  {formatPrice(pkg.price_cents, pkg.currency)}
+                  <span className="text-base font-normal text-foreground/50">
+                    / paket
+                  </span>
+                </p>
+
+                <ul className="mt-8 flex-1 space-y-4">
+                  {features.map((feature) => (
+                    <li
+                      key={feature}
+                      className="flex items-start gap-3 text-sm text-foreground/80"
+                    >
+                      <BadgeCheck className="mt-0.5 size-5 shrink-0 text-foreground" />
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+
+                <PillLink
+                  href={ROUTES.register}
+                  variant="dark"
+                  withArrow={false}
+                  className="mt-8 justify-center"
+                >
+                  Başla
+                </PillLink>
+              </FadeUp>
+            );
+          })}
+        </div>
+
+        <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
+          {TRUST_POINTS.map((point, i) => (
+            <FadeUp
+              key={point.title}
+              delay={i * 0.08}
+              className="rounded-3xl border border-black/5 bg-card p-6"
+            >
+              <span className="grid size-9 place-items-center rounded-lg bg-secondary text-secondary-foreground">
+                <point.icon className="size-4" />
+              </span>
+              <h3 className="mt-4 text-base font-medium text-foreground">
+                {point.title}
+              </h3>
+              <p className="mt-1.5 text-sm text-foreground/60">{point.desc}</p>
+            </FadeUp>
+          ))}
+        </div>
+      </section>
+
+      {/* ── NEREDE KULLANILIR ───────────────────────────────────────────── */}
+      <section className="mx-auto max-w-[1200px] px-6 pb-20 sm:pb-28">
+        <FadeUp className="flex flex-wrap items-end justify-between gap-6">
+          <div>
+            <SectionEyebrow align="left">Nerede kullanılır</SectionEyebrow>
+            <h2 className="mt-6 text-[32px] font-medium leading-[1.15] tracking-[-0.04em] text-foreground sm:text-[42px]">
+              Ürettiğiniz görsel her yerde sizin
+            </h2>
+            <p className="mt-5 max-w-md text-foreground/60">
+              Ticari kullanım hakkı size ait; ilan, sosyal medya ve reklamda
+              sınırsız kullanabilirsiniz.
+            </p>
+          </div>
+          <PillLink href={ROUTES.register}>Ücretsiz Başla</PillLink>
+        </FadeUp>
+
+        <div className="mt-20 grid grid-cols-1 gap-4 sm:mt-28 sm:grid-cols-3">
+          {USE_CASES.map((useCase, i) => (
+            <FadeUp
+              key={useCase.title}
+              delay={i * 0.1}
+              className="group relative h-[280px] overflow-hidden rounded-3xl"
+            >
+              <Image
+                src={useCase.image}
+                alt=""
+                fill
+                sizes="(min-width: 640px) 32vw, 90vw"
+                className="object-cover transition-transform duration-500 group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/15 to-transparent" />
+              <div className="absolute inset-x-0 bottom-0 p-6 text-white">
+                <h3 className="text-xl font-medium leading-tight tracking-[-0.02em]">
+                  {useCase.title}
+                </h3>
+                <p className="mt-2 text-sm text-white/80">{useCase.desc}</p>
+              </div>
+            </FadeUp>
+          ))}
+        </div>
+      </section>
+
+      {/* ── SSS ─────────────────────────────────────────────────────────── */}
+      <section id="sss" className="mx-auto max-w-[1200px] px-6 pb-20 sm:pb-28">
+        <FadeUp className="flex flex-col items-center">
+          <SectionEyebrow>SSS</SectionEyebrow>
+          <h2 className="mx-auto mt-6 max-w-2xl text-center text-[32px] font-medium leading-[1.15] tracking-[-0.04em] text-foreground sm:text-[42px] lg:text-[48px]">
+            Sıkça sorulan sorular
+          </h2>
+        </FadeUp>
+
+        <FadeUp className="mx-auto mt-20 max-w-3xl divide-y divide-black/5 overflow-hidden rounded-[32px] bg-muted sm:mt-28">
+          {FAQ.map((item) => (
+            <details key={item.q} className="group p-6">
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-base font-medium text-foreground">
+                {item.q}
+                <span className="grid size-7 shrink-0 place-items-center rounded-full bg-card transition-transform group-open:rotate-90">
+                  <ArrowRight className="size-3.5" />
+                </span>
+              </summary>
+              <p className="mt-3 max-w-2xl text-sm leading-relaxed text-foreground/60">
+                {item.a}
+              </p>
+            </details>
+          ))}
+        </FadeUp>
+      </section>
+
+      {/* ── KAPANIŞ CTA ─────────────────────────────────────────────────── */}
+      <section className="px-4 pb-20 sm:px-6 sm:pb-28">
+        <div className="relative mx-auto max-w-[1200px] overflow-hidden rounded-[32px] px-8 py-16 sm:px-14 sm:py-20">
+          <Image
+            src="/showcase/cta-cover.webp"
+            alt=""
+            fill
+            sizes="(min-width: 1200px) 1200px, 100vw"
+            className="object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent" />
+
+          <FadeUp className="relative z-10 max-w-lg">
+            <div className="flex items-center gap-3">
+              <p className="text-sm text-white">
+                Takı · Saat · Çanta için kalibre edildi
+              </p>
+              <div className="flex -space-x-2">
+                {SHOT_TYPES.slice(0, 3).map((shot) => (
+                  <Image
+                    key={shot.label}
+                    src={shot.thumb}
+                    alt=""
+                    width={160}
+                    height={160}
+                    className="size-8 rounded-full object-cover ring-2 ring-white/80"
+                  />
+                ))}
+              </div>
+            </div>
+
+            <h2 className="mt-6 text-[32px] font-medium leading-[1.15] tracking-[-0.03em] text-white sm:text-[42px]">
+              Ürününüzü bugün stüdyo kalitesinde görün
+            </h2>
+            <p className="mt-5 text-sm leading-relaxed text-white/90">
+              E-postanızı bırakın, hesabınız hazır olsun — ilk üç görsel
+              bizden. Kart bilgisi istemiyoruz.
+            </p>
+
+            <form
+              action={ROUTES.register}
+              method="GET"
+              className="mt-8 flex max-w-md items-center gap-2 rounded-full bg-white/15 p-1.5 pl-5 backdrop-blur-sm"
+            >
+              <label htmlFor="cta-email" className="sr-only">
+                E-posta adresiniz
+              </label>
+              <input
+                id="cta-email"
+                name="email"
+                type="email"
+                placeholder="siz@markaniz.com"
+                className="w-full bg-transparent text-sm text-white placeholder:text-white/50 focus:outline-none"
+              />
+              <button
+                type="submit"
+                className="flex shrink-0 items-center gap-2 rounded-full bg-secondary px-4 py-2 font-mono text-xs uppercase tracking-[0.12em] text-secondary-foreground transition-transform hover:scale-[1.03]"
+              >
+                Başla
+                <ArrowRight className="size-3.5" />
+              </button>
+            </form>
+          </FadeUp>
+        </div>
       </section>
     </div>
   );
 }
 
-/** Hero görselinin etrafında süzülen küçük özellik rozeti. */
-function FloatingBadge({
-  icon,
-  label,
-  className,
+/** Başlık içinde geçen renkli, dairesel ikon vurgusu. */
+function InlineIcon({
+  icon: Icon,
+  tone,
 }: {
-  icon: React.ReactNode;
-  label: string;
-  className?: string;
+  icon: React.ComponentType<{ className?: string }>;
+  tone: string;
 }) {
   return (
     <span
       className={cn(
-        "absolute hidden items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-xs font-medium text-foreground shadow-md sm:inline-flex",
-        className,
+        "mx-1 inline-flex size-9 -translate-y-1 items-center justify-center rounded-full align-middle sm:size-11",
+        tone,
       )}
     >
-      <span className="text-primary">{icon}</span>
-      {label}
+      <Icon className="size-4 sm:size-5" />
     </span>
-  );
-}
-
-/**
- * Hero'nun merkezindeki çok yüzeyli (faceted) kızıl-kırmızı obje — Renza'nın
- * "ışığı yakalayan yüzey" fikrini (DokuKilidi: ürünün dokusu/parlaklığı
- * korunur) somutlaştıran orijinal bir SVG kompozisyon. Altıgen bir gövdeyi
- * merkezden 6 üçgen faseta bölüp her birine ayrı bir ton vererek, tek bir
- * ışık kaynağının (sağ üst) yüzeylere farklı düştüğü izlenimi verir —
- * mücevher kesimindeki faset mantığının soyutlanmış hali.
- */
-function FacetedGem({ className }: { className?: string }) {
-  return (
-    <div className={cn("gem-stage relative", className)}>
-      {/* Zemine oturan yumuşak gölge — objenin havada değil, bir yüzeyde
-          durduğu hissini verir (perspective ile birlikte "vitrin" etkisi). */}
-      <div
-        aria-hidden
-        className="absolute inset-x-[15%] bottom-[6%] h-[10%] rounded-[50%] bg-foreground/15 blur-md"
-      />
-      <svg
-        viewBox="0 0 300 300"
-        className="gem-showcase relative h-full w-full drop-shadow-[0_25px_35px_rgba(214,35,0,0.35)]"
-        role="img"
-        aria-label="Çok yüzeyli kızıl-kırmızı obje"
-      >
-        <polygon points="150,150 215,37.4 280,150" fill="#FEC3B7" />
-        <polygon points="150,150 85,37.4 215,37.4" fill="#FF765B" />
-        <polygon points="150,150 20,150 85,37.4" fill="#FF5432" />
-        <polygon points="150,150 85,262.6 20,150" fill="#FF2900" />
-        <polygon points="150,150 215,262.6 85,262.6" fill="#D62300" />
-        <polygon points="150,150 280,150 215,262.6" fill="#AD1C00" />
-        {/* İnce iç çizgiler — her faseti ayrı bir yüzey gibi vurgular. */}
-        <polygon
-          points="150,150 215,37.4 280,150 215,262.6 85,262.6 20,150 85,37.4"
-          fill="none"
-          stroke="#ffffff"
-          strokeOpacity="0.3"
-          strokeWidth="1.5"
-          strokeLinejoin="round"
-        />
-        {/* Üst fasette küçük bir parıltı — ışığın direkt vurduğu izlenimi. */}
-        <polygon
-          points="150,150 215,37.4 245,93.7"
-          fill="#ffffff"
-          fillOpacity="0.35"
-        />
-      </svg>
-    </div>
   );
 }

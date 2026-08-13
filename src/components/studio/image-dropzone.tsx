@@ -6,16 +6,24 @@ import { UploadCloud, X, Camera } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ACCEPTED_IMAGE_TYPES, MAX_UPLOAD_BYTES } from "@/lib/constants";
 
+/**
+ * Yükleme alanı. Masaüstünde (lg) kendi 4:5 oranı yerine kapsayıcısının
+ * yüksekliğini alır — böylece Stüdyo ızgarasında sağdaki panelle AYNI
+ * hizada biter; `lg:min-h-[28rem]` de sağdaki panel kısa kaldığında alanın
+ * ezilmesini engeller.
+ */
 export function ImageDropzone({
   previewUrl,
   onSelect,
   onClear,
   disabled,
+  className,
 }: {
   previewUrl: string | null;
   onSelect: (file: File) => void;
   onClear: () => void;
   disabled?: boolean;
+  className?: string;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
@@ -38,7 +46,12 @@ export function ImageDropzone({
 
   if (previewUrl) {
     return (
-      <div className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl border border-border bg-muted">
+      <div
+        className={cn(
+          "relative aspect-[4/5] w-full overflow-hidden rounded-2xl border border-border bg-muted lg:aspect-auto lg:h-full lg:min-h-[28rem]",
+          className,
+        )}
+      >
         <Image
           src={previewUrl}
           alt="Yüklenen ürün"
@@ -62,7 +75,7 @@ export function ImageDropzone({
   }
 
   return (
-    <div>
+    <div className={cn("flex flex-col lg:h-full", className)}>
       <button
         type="button"
         disabled={disabled}
@@ -78,7 +91,7 @@ export function ImageDropzone({
           validateAndSelect(e.dataTransfer.files?.[0]);
         }}
         className={cn(
-          "flex aspect-[4/5] w-full flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed bg-card text-center transition",
+          "flex aspect-[4/5] w-full flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed bg-card text-center transition lg:aspect-auto lg:min-h-[28rem] lg:flex-1",
           dragOver
             ? "border-primary bg-accent/40"
             : "border-border hover:border-primary/50 hover:bg-accent/20",

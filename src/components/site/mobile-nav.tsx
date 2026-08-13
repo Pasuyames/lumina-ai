@@ -11,6 +11,7 @@ import {
   User as UserIcon,
   LogOut,
   Settings,
+  Coins,
 } from "lucide-react";
 import {
   Dialog,
@@ -20,22 +21,25 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ButtonLink } from "@/components/ui/button-link";
-import { CreditBadge } from "@/components/billing/credit-badge";
 import { ROUTES } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { signOutAction } from "@/app/(auth)/actions";
-import type { getCurrentUser } from "@/lib/queries";
-import type { Credits } from "@/lib/supabase/types";
 
-type CurrentUser = Awaited<ReturnType<typeof getCurrentUser>>;
-
-/** Mobilde navbar linklerini gösteren hamburger menü (md ve üstünde gizli). */
+/**
+ * Mobilde başlık linklerini gösteren hamburger menü (md ve üstünde gizli).
+ * `solid=false` iken hero fotoğrafının üstünde durduğu için tetikleyici
+ * beyaza döner.
+ */
 export function MobileNav({
-  user,
-  credits,
+  loggedIn,
+  email,
+  balance,
+  solid = true,
 }: {
-  user: CurrentUser;
-  credits: Credits | null;
+  loggedIn: boolean;
+  email: string | null;
+  balance: number | null;
+  solid?: boolean;
 }) {
   const [open, setOpen] = React.useState(false);
   const pathname = usePathname();
@@ -56,15 +60,16 @@ export function MobileNav({
             variant="ghost"
             size="icon"
             aria-label="Menüyü aç"
-            className="md:hidden"
+            className={cn(
+              "md:hidden",
+              !solid && "text-white hover:bg-white/15 hover:text-white",
+            )}
           />
         }
       >
         <Menu className="size-5" />
       </DialogTrigger>
-      <DialogContent
-        className="top-0 left-0 grid h-dvh w-full max-w-none translate-x-0 translate-y-0 grid-rows-[auto_1fr_auto] gap-0 rounded-none p-0 sm:max-w-none"
-      >
+      <DialogContent className="top-0 left-0 grid h-dvh w-full max-w-none translate-x-0 translate-y-0 grid-rows-[auto_1fr_auto] gap-0 rounded-none p-0 sm:max-w-none">
         <DialogTitle className="border-b border-border px-4 py-4 text-left font-heading text-lg font-semibold">
           Menü
         </DialogTitle>
@@ -76,7 +81,7 @@ export function MobileNav({
           <MobileNavLink href={ROUTES.gallery} icon={<Images className="size-4" />}>
             Hazır Stüdyolar
           </MobileNavLink>
-          {user && (
+          {loggedIn ? (
             <>
               <MobileNavLink
                 href={ROUTES.generations}
@@ -103,17 +108,27 @@ export function MobileNav({
                 Ayarlar
               </MobileNavLink>
             </>
+          ) : (
+            <>
+              <MobileNavLink href="/#fiyatlandirma" icon={<Coins className="size-4" />}>
+                Fiyatlandırma
+              </MobileNavLink>
+              <MobileNavLink href="/#sss" icon={<UserIcon className="size-4" />}>
+                SSS
+              </MobileNavLink>
+            </>
           )}
         </nav>
 
         <div className="border-t border-border p-4">
-          {user ? (
+          {loggedIn ? (
             <div className="space-y-3">
               <div className="flex items-center justify-between gap-3">
-                <p className="truncate text-sm text-muted-foreground">
-                  {user.email}
-                </p>
-                <CreditBadge balance={credits?.balance ?? 0} />
+                <p className="truncate text-sm text-muted-foreground">{email}</p>
+                <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-muted px-3 py-1.5 text-xs font-medium">
+                  <Coins className="size-3.5" />
+                  {balance ?? 0} kredi
+                </span>
               </div>
               <form action={signOutAction}>
                 <button

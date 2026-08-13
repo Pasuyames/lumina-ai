@@ -4,8 +4,16 @@ import { Label } from "@/components/ui/label";
 import { ImageDropzone } from "@/components/studio/image-dropzone";
 import { AdditionalAngles } from "@/components/studio/additional-angles";
 import { PRODUCT_CATEGORIES, MAX_ADDITIONAL_ANGLES } from "@/lib/constants";
+import { cn } from "@/lib/utils";
 
-/** SOL panel: görsel yükleme + kategori seçimi. */
+/**
+ * SOL panel: görsel yükleme + kategori seçimi.
+ *
+ * Masaüstünde kök `lg:contents` ile ızgaradan çıkar; böylece yükleme alanı
+ * doğrudan ızgaranın 1. satırına oturur ve sağdaki panelle AYNI hizada
+ * biter. Ek açılar ve kategori seçimi ise 1. sütunun alt satırlarına
+ * yerleşir (sağ tarafta karşılığı yok).
+ */
 export function UploadStep({
   previewUrl,
   onSelect,
@@ -28,23 +36,31 @@ export function UploadStep({
   onRemoveAdditional: (index: number) => void;
 }) {
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 lg:contents">
       <ImageDropzone
         previewUrl={previewUrl}
         onSelect={onSelect}
         onClear={onClear}
         disabled={disabled}
+        className="lg:col-start-1 lg:row-start-1"
       />
       {previewUrl && (
-        <AdditionalAngles
-          previewUrls={additionalPreviewUrls}
-          onAdd={onAddAdditional}
-          onRemove={onRemoveAdditional}
-          disabled={disabled}
-          max={MAX_ADDITIONAL_ANGLES}
-        />
+        <div className="lg:col-start-1 lg:row-start-2">
+          <AdditionalAngles
+            previewUrls={additionalPreviewUrls}
+            onAdd={onAddAdditional}
+            onRemove={onRemoveAdditional}
+            disabled={disabled}
+            max={MAX_ADDITIONAL_ANGLES}
+          />
+        </div>
       )}
-      <div className="space-y-1.5">
+      <div
+        className={cn(
+          "space-y-1.5 lg:col-start-1",
+          previewUrl ? "lg:row-start-3" : "lg:row-start-2",
+        )}
+      >
         <Label htmlFor="category">Kategori (opsiyonel)</Label>
         <select
           id="category"

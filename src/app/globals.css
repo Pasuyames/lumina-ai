@@ -9,7 +9,7 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans);
   --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-heading);
+  --font-heading: var(--font-sans);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -48,82 +48,81 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-/* Renza — krem/beyaz zemin + tek kızıl-kırmızı vurgu (#FF2A00).
-   Marka gradyanı (bkz. .coral-glow / .coral-gradient-bg altında) tam olarak
-   #FF2A00 → #D62300 hex değerlerini kullanır. Metin/ikon/link gibi TEXT
-   bağlamlarında kullanılan --primary ise aynı ailenin WCAG AA (4.5:1)
-   kontrastı sağlayan koyultulmuş tonu (#D62300) — böylece marka kimliği
-   korunurken okunabilirlik ödün vermiyor. */
+/* Renza — Aeline referanslı tasarım dili: nötr açık gri zemin + elektrik
+   mavisi (#2453ff) birincil vurgu + lime-yeşil (#d6fd70) ikincil vurgu.
+   Metin/ikon/link gibi TEXT bağlamlarında kullanılan --primary WCAG AA
+   kontrastını sağlıyor; --secondary yalnızca rozet/aksan gibi dekoratif
+   yüzeylerde kullanılmalı (üzerine koyu metin bindirilir). */
 :root {
-  --background: #faf8f4;
-  --foreground: #18181b;
+  --background: #f2f2f2;
+  --foreground: #131313;
   --card: #ffffff;
-  --card-foreground: #18181b;
+  --card-foreground: #131313;
   --popover: #ffffff;
-  --popover-foreground: #18181b;
-  --primary: #D62300;
+  --popover-foreground: #131313;
+  --primary: #2453ff;
   --primary-foreground: #ffffff;
-  --secondary: #f1ede6;
-  --secondary-foreground: #18181b;
-  --muted: #f1ede6;
-  --muted-foreground: #6b6459;
-  --accent: #efeae1;
-  --accent-foreground: #18181b;
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: #e7e1d6;
-  --input: #e7e1d6;
-  --ring: #D62300;
-  --chart-1: #D62300;
-  --chart-2: #e0895f;
-  --chart-3: #8c8577;
-  --chart-4: #b8b0a0;
-  --chart-5: #4a4540;
+  --secondary: #d6fd70;
+  --secondary-foreground: #131313;
+  --muted: #ececec;
+  --muted-foreground: #585858;
+  --accent: #ececec;
+  --accent-foreground: #131313;
+  --destructive: #ff3336;
+  --border: #dcdcdc;
+  --input: #dcdcdc;
+  --ring: #2453ff;
+  --chart-1: #2453ff;
+  --chart-2: #d6fd70;
+  --chart-3: #585858;
+  --chart-4: #c7c7c7;
+  --chart-5: #131313;
   --radius: 0.625rem;
   --sidebar: #ffffff;
-  --sidebar-foreground: #18181b;
-  --sidebar-primary: #D62300;
+  --sidebar-foreground: #131313;
+  --sidebar-primary: #2453ff;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #efeae1;
-  --sidebar-accent-foreground: #18181b;
-  --sidebar-border: #e7e1d6;
-  --sidebar-ring: #D62300;
+  --sidebar-accent: #ececec;
+  --sidebar-accent-foreground: #131313;
+  --sidebar-border: #dcdcdc;
+  --sidebar-ring: #2453ff;
 }
 
 /* Uygulamada aktif bir dark-mode toggle'ı yok (tek tema) — .dark aynı
-   Warm Native dilini koyu yüzeyde yansıtır, ileride next-themes eklenirse
+   Aeline dilini koyu yüzeyde yansıtır, ileride next-themes eklenirse
    kırılma olmasın diye tutuluyor. */
 .dark {
-  --background: #171512;
-  --foreground: #f5f1ea;
-  --card: #1f1c17;
-  --card-foreground: #f5f1ea;
-  --popover: #1f1c17;
-  --popover-foreground: #f5f1ea;
-  --primary: #FF765B;
-  --primary-foreground: #1f1108;
-  --secondary: #292420;
-  --secondary-foreground: #f5f1ea;
-  --muted: #292420;
+  --background: #131313;
+  --foreground: #f5f5f5;
+  --card: #191815;
+  --card-foreground: #f5f5f5;
+  --popover: #191815;
+  --popover-foreground: #f5f5f5;
+  --primary: #2453ff;
+  --primary-foreground: #ffffff;
+  --secondary: #d6fd70;
+  --secondary-foreground: #131313;
+  --muted: #2f2f2f;
   --muted-foreground: #a8a096;
-  --accent: #332c25;
-  --accent-foreground: #f5f1ea;
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 14%);
-  --ring: #FF765B;
-  --chart-1: #FF765B;
-  --chart-2: #D62300;
+  --accent: #2f2f2f;
+  --accent-foreground: #f5f5f5;
+  --destructive: #ff3336;
+  --border: rgba(255, 255, 255, 0.1);
+  --input: rgba(255, 255, 255, 0.14);
+  --ring: #2453ff;
+  --chart-1: #2453ff;
+  --chart-2: #d6fd70;
   --chart-3: #a8a096;
-  --chart-4: #706a5f;
-  --chart-5: #4a4540;
-  --sidebar: #1f1c17;
-  --sidebar-foreground: #f5f1ea;
-  --sidebar-primary: #FF765B;
-  --sidebar-primary-foreground: #1f1108;
-  --sidebar-accent: #332c25;
-  --sidebar-accent-foreground: #f5f1ea;
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: #FF765B;
+  --chart-4: #585858;
+  --chart-5: #f5f5f5;
+  --sidebar: #191815;
+  --sidebar-foreground: #f5f5f5;
+  --sidebar-primary: #2453ff;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #2f2f2f;
+  --sidebar-accent-foreground: #f5f5f5;
+  --sidebar-border: rgba(255, 255, 255, 0.1);
+  --sidebar-ring: #2453ff;
 }
 
 @layer base {
@@ -139,34 +138,33 @@
 }
 
 @layer utilities {
-  /* Warm Native'de başlıklar kalın grotesk sans (Geist) — serif Playfair
-     artık genel başlık fontu değil, yalnızca .font-accent ile tek kelimelik
-     vurgularda kullanılıyor (aşağıda). */
+  /* Aeline referansında başlıklar sıkı harf aralıklı grotesk sans
+     (Plus Jakarta Sans) — ayrı bir serif başlık fontu artık yok. */
   .font-heading {
     font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
-    letter-spacing: -0.015em;
+    letter-spacing: -0.04em;
   }
 
-  /* İtalik serif vurgu — başlıklarda tek kelime/ifadeyi öne çıkarmak için
-     (Playfair Display italic, --font-heading değişkeni üzerinden). */
+  /* Vurgu — artık italik serif değil, aynı grotesk ailenin orta ağırlığı
+     (başlıklarda tek kelime/ifadeyi öne çıkarmak için). */
   .font-accent {
-    font-family: var(--font-heading), Georgia, "Times New Roman", serif;
-    font-style: italic;
-    letter-spacing: 0;
+    font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+    font-weight: 500;
+    font-style: normal;
   }
 
   /* Marka gradyanı — SADECE dekoratif çerçeve/gölge/rozet aksanlarında
      kullanılır (metin değil). */
   .coral-gradient-bg {
-    background: linear-gradient(135deg, #ff2a00, #d62300);
+    background: linear-gradient(135deg, #2453ff, #1a3fd6);
   }
 
-  /* Hero ürün görselinin arkasındaki yumuşak kızıl parıltı. */
+  /* Hero ürün görselinin arkasındaki yumuşak mavi parıltı. */
   .coral-glow {
     background: radial-gradient(
       60% 60% at 50% 40%,
-      color-mix(in oklch, #ff2a00 55%, transparent),
-      color-mix(in oklch, #d62300 35%, transparent) 60%,
+      color-mix(in oklch, #2453ff 55%, transparent),
+      color-mix(in oklch, #1a3fd6 35%, transparent) 60%,
       transparent 80%
     );
     filter: blur(40px);
@@ -199,5 +197,41 @@
     .gem-showcase {
       animation: none;
     }
+  }
+
+  /* Kategori şeridi için sonsuz döngülü yatay kayma — iki kopya art arda
+     render edilip %50 kaydırılarak kesintisiz döngü sağlanır. */
+  @keyframes rz-marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+  .rz-marquee-track {
+    animation: rz-marquee var(--rz-marquee-duration, 30s) linear infinite;
+  }
+  .rz-marquee-track.rz-marquee-reverse {
+    animation-direction: reverse;
+  }
+
+  /* Hero'daki 3B kart tekerleği — her grup kendi başlangıç açısından
+     (--rz-wheel-base) başlayıp sabit hızda tam tur döner. Tekerlek geriye
+     yatırılmış bir 3B sahnenin içinde olduğu için translateZ korunmalı. */
+  @keyframes rz-wheel-spin {
+    from {
+      transform: translateZ(1px) rotate(var(--rz-wheel-base, 0deg));
+    }
+    to {
+      transform: translateZ(1px)
+        rotate(calc(var(--rz-wheel-base, 0deg) - 360deg));
+    }
+  }
+  /* NOT: Buradaki sürekli animasyonlar bilinçli olarak
+     `prefers-reduced-motion` ile durdurulmuyor — bkz. `motion-provider.tsx`
+     içindeki `reducedMotion="never"` kararı. */
+  .rz-wheel {
+    animation: rz-wheel-spin var(--rz-wheel-duration, 40s) linear infinite;
   }
 }

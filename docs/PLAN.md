@@ -174,6 +174,22 @@ mantığına dokunulmadı, yeni bağımlılık eklenmedi.
 ama unwired), derin a11y geçişi (image-dropzone/concept-card), SSS accordion,
 ikon boyutu kozmetik temizliği, `--sidebar-*` ölü CSS token'larının kaderi.
 
+### Pazarlama Sitesi — Yeni Tasarıma Geçiş ✅ TAMAMLANDI (2026-08-13)
+Ayrıntılı kayıt: **`docs/tasks/yeni-tasarim-gecisi.md`**.
+
+Özet: landing (`(marketing)/page.tsx`) referans tasarıma göre baştan yazıldı;
+renk paleti ve hero gökyüzü kapağı korundu, sitedeki TÜM ürün görselleri
+Stüdyo'nun gerçek üretimlerinden statik dosya olarak `public/showcase/` altına
+alındı (sahte yorum/rakam üretilmedi). Başlık ve altbilgi tüm sitede tekleşti
+(`site/site-header*.tsx` + `site/site-footer.tsx`; eski `navbar.tsx`/
+`nav-link.tsx`/`footer.tsx` SİLİNDİ — geri eklenmemeli). Yol boyunca üç eski
+hata düzeltildi: `"/studio"` önekinin herkese açık `/studios`u kilitlemesi,
+flex kapsayıcıda `mx-auto` daralması, Stüdyo'daki iki panelin hizasızlığı.
+
+⚠️ Kalıcı kural: motion bileşenlerinde `useReducedMotion()` ile render
+dallandırma YAPILMAZ (SSR hydration uyuşmazlığı içeriği kalıcı `opacity:0`da
+bırakıyor); karar kökteki `MotionConfig`ten verilir — şu anki değer `"never"`.
+
 ### Faz D — Prod'a Çıkış
 - [ ] D1. Supabase Cloud (schema.sql tek sefer SQL Editor) + .env değişimi
 - [ ] D2. Vercel deploy + domain + Auth redirect URL'leri
